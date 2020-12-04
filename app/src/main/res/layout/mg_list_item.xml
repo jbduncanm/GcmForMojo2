@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minHeight="10dip">
+
+
+<TextView android:id="@+id/text_message_item"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:textColor="#FF777676"
+    android:gravity="center_vertical"
+    android:paddingLeft="6dip"
+    android:minHeight="10dip"
+    android:textIsSelectable="true"
+    android:autoLink="web"/>
+
+</LinearLayout>

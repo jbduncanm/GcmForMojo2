@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/dialog_bg"
+    android:orientation="vertical"
+    android:id="@+id/ReplyLinearLayout">
+
+    <RelativeLayout
+        android:id="@+id/title_relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:onClick="onTitleClick">
+        <ImageView
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_marginLeft="5dp"
+            android:src="@mipmap/pin"
+            android:id="@+id/msgType_imageView" />
+        <TextView
+            android:id="@+id/textView_sender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2.0dip"
+            android:layout_alignBottom="@id/msgType_imageView"
+            android:text="测试内容"
+            android:textColor="#757575"
+            android:layout_toRightOf="@+id/msgType_imageView"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="center_vertical" />
+    </RelativeLayout>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textIsSelectable="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="12dp"
+        android:id="@+id/myToken" />
+</LinearLayout>

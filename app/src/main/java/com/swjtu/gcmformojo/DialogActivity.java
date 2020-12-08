@@ -247,7 +247,6 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                     msgSave.put(msgIdReplyDo,msgList);
                 }
 
-                
                 //将发送信息加入会话列表
                 User currentUser = new User(messageTitleDo,msgIdReplyDo,msgTypeDo,editText_content.getText().toString(),curTime(),ReplyTypeDo,NotificationIdDo,"0");
                 for(int    i=0;    i<currentUserList.size();    i++){

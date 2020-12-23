@@ -65,7 +65,19 @@ public class UserAdapter extends ArrayAdapter<User> {
         }else if(user.getUserType().equals("Mojo-Weixin")){
             ViewHolder.itemType.setImageResource(R.mipmap.weixin_ico);
         }else {
-            ViewHolder.itemType.setImageResource(R.mipmap.message);
+            switch (user.getUserId()) {
+                case "0":
+                    ViewHolder.itemType.setImageResource(R.mipmap.message);
+                    break;
+                case "1":
+                    ViewHolder.itemType.setImageResource(R.mipmap.qq_ico);
+                    break;
+                case "2":
+                    ViewHolder.itemType.setImageResource(R.mipmap.weixin_ico);
+                    break;
+                default:
+                    ViewHolder.itemType.setImageResource(R.mipmap.message);
+            }
         }
 
         ViewHolder.itemName.setText(user.getUserName());

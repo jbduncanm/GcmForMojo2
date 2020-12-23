@@ -18,6 +18,9 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import static com.swjtu.gcmformojo.MyFirebaseMessagingService.QQ;
+import static com.swjtu.gcmformojo.MyFirebaseMessagingService.SYS;
+import static com.swjtu.gcmformojo.MyFirebaseMessagingService.WEIXIN;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.curTime;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.currentUserAdapter;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.currentUserList;
@@ -63,11 +66,11 @@ public class CurrentUserActivity extends AppCompatActivity {
         currentUserListView = (ListView) findViewById(R.id.current_user_list_view);
 
         if(currentUserList.size()==0) {
-            User systemQqUser = new User("QQ机器人(未开放)","1","Mojo-Webqq","用于添加删除群消息。",curTime(),"1",1,"0");
+            User systemQqUser = new User("QQ机器人(未开放)","1",QQ,"用于控制服务端。",curTime(),"1",1,"0");
             currentUserList.add(systemQqUser);
-            User systemWxUser = new User("微信机器人(未开放)","2","Mojo-Weixin","用于添加删除群消息。",curTime(),"1",2,"0");
+            User systemWxUser = new User("微信机器人(未开放)","2",WEIXIN,"用于控制服务端。",curTime(),"1",2,"0");
             currentUserList.add(systemWxUser);
-            User systemUser = new User("欢迎使用GcmForMojo","0","Mojo-Sys","请点击右上角选项获取设备码。",curTime(),"1",0,"0");
+            User systemUser = new User("欢迎使用GcmForMojo","0",SYS,"请点击右上角选项获取设备码。",curTime(),"1",0,"0");
             currentUserList.add(systemUser);
         }
 

@@ -69,6 +69,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     final private static Map<String, Integer> msgIdMap = new HashMap<>();
     final public static ArrayList<User> currentUserList = new ArrayList<>();
 
+    //消息类型常量
+    final public static String QQ="Mojo-Webqq";
+    final public static String WEIXIN="Mojo-Weixin";
+    final public static String SYS="Mojo-Sys";
+
     final public static String qqColor="#1296DB";
     final public static String wxColor="#62B900";
 

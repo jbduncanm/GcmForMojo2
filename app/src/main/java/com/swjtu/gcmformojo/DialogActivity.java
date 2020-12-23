@@ -164,7 +164,21 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 editText_content.setText("服务端未登录");
             }
         }else {
-            imgMsgType.setImageResource(R.mipmap.pin);
+            //系统消息中的QQ和微信服务通知图标
+            switch (msgIdReplyDo) {
+                case "0":
+                    imgMsgType.setImageResource(R.mipmap.pin);
+                    break;
+                case "1":
+                    imgMsgType.setImageResource(R.mipmap.qq);
+                    break;
+                case "2":
+                    imgMsgType.setImageResource(R.mipmap.weixin);
+                    break;
+                default:
+                    imgMsgType.setImageResource(R.mipmap.pin);
+            }
+
             imageButton_send.setEnabled(false);
             editText_content.setEnabled(false);
             editText_content.setText("系统控制");

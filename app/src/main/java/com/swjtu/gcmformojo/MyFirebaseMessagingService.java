@@ -18,6 +18,7 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -182,9 +183,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             msgCountMap.put(NotificationId,msgCount);
 
             //无论任何设置都先存储消息，供对话列表使用,仅更新最后一条消息
-            SimpleDateFormat formatter    =   new    SimpleDateFormat  ("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
-            Date curTime    =   new    Date(System.currentTimeMillis());//获取当前时间
-            User currentUser = new User(remoteMessage.getData().get("title"),msgId,msgType,remoteMessage.getData().get("message"),formatter.format(curTime),senderType,NotificationId,String.valueOf(msgCount));
+            User currentUser = new User(remoteMessage.getData().get("title"),msgId,msgType,remoteMessage.getData().get("message"),curTime(),senderType,NotificationId,String.valueOf(msgCount));
             for(int    i=0;    i<currentUserList.size();    i++){
                if(currentUserList.get(i).getUserId().equals(msgId)){
                    currentUserList.remove(i);
@@ -195,7 +194,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if(CurrentUserActivity.userHandler!=null)
                 new userThread().start();
 
-            //存储对话框消息记录
+            //存储对话框消息记录：有可能存储后系统回收内存造成点击通知进入列表界面后为空，需要在点击时将相关变量传入会话列表界面。
             Spanned spannedMessage=toSpannedMessage(msgTime(msgType,false)+remoteMessage.getData().get("message"));
 
           if(msgSave.get(msgId)==null) {
@@ -489,9 +488,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntentCancel = PendingIntent.getBroadcast(this, NotificationId, intentCancel, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //通知点击事件
-        //应用界面
+        //应用界面 需要传递最后一次消息内容 避免会话列表为空
         Intent intent = new Intent(this, CurrentUserActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Bundle msgBundle = new Bundle();
+        msgBundle.putString("userName",messageTitle);
+        msgBundle.putString("userId",msgIdReply);
+        msgBundle.putString("userType",QQ);
+        msgBundle.putString("userMessage",messageBody);
+        msgBundle.putString("userTime",curTime());
+        msgBundle.putString("senderType",senderType);
+        msgBundle.putInt("NotificationId",NotificationId);
+        msgBundle.putString("msgCount",String.valueOf(msgCount));
+        intent.putExtras(msgBundle);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, NotificationId /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
         //qq界面
         Intent intentClick = new Intent(this, QqNotificationBroadcastReceiver.class);
@@ -590,6 +599,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //应用界面
         Intent intent = new Intent(this, CurrentUserActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Bundle msgBundle = new Bundle();
+        msgBundle.putString("userName",messageTitle);
+        msgBundle.putString("userId",msgIdReply);
+        msgBundle.putString("userType",WEIXIN);
+        msgBundle.putString("userMessage",messageBody);
+        msgBundle.putString("userTime",curTime());
+        msgBundle.putString("senderType",senderType);
+        msgBundle.putInt("NotificationId",NotificationId);
+        msgBundle.putString("msgCount",String.valueOf(msgCount));
+        intent.putExtras(msgBundle);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, NotificationId /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
         //微信界面
         Intent intentClick = new Intent(this, WeixinNotificationBroadcastReceiver.class);
@@ -673,6 +692,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void sendNotificationSys(String messageTitle,String messageBody,String msgId, int NotificationId,int msgCount) {
         Intent intent = new Intent(this, CurrentUserActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Bundle msgBundle = new Bundle();
+        msgBundle.putString("userName",messageTitle);
+        msgBundle.putString("userId",msgId);
+        msgBundle.putString("userType",SYS);
+        msgBundle.putString("userMessage",messageBody);
+        msgBundle.putString("userTime",curTime());
+        msgBundle.putString("senderType","1");
+        msgBundle.putInt("NotificationId",NotificationId);
+        msgBundle.putString("msgCount",String.valueOf(msgCount));
+        intent.putExtras(msgBundle);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, NotificationId /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
@@ -909,6 +938,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 break;
             }
         }
+
+    }
+
+    public static Boolean  isHaveMsg(String msgId){
+
+        for(int    i=0;    i<currentUserList.size();    i++){
+            if(currentUserList.get(i).getUserId().equals(msgId)){
+                return true;
+            }
+        }
+        return false;
 
     }
 

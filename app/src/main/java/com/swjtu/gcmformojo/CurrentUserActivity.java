@@ -24,6 +24,7 @@ import static com.swjtu.gcmformojo.MyFirebaseMessagingService.WEIXIN;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.curTime;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.currentUserAdapter;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.currentUserList;
+import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isHaveMsg;
 
 public class CurrentUserActivity extends AppCompatActivity {
 
@@ -65,14 +66,23 @@ public class CurrentUserActivity extends AppCompatActivity {
 
         currentUserListView = (ListView) findViewById(R.id.current_user_list_view);
 
-        if(currentUserList.size()==0) {
-            User systemQqUser = new User("QQ机器人(未开放)","1",QQ,"用于控制服务端。",curTime(),"1",1,"0");
-            currentUserList.add(systemQqUser);
-            User systemWxUser = new User("微信机器人(未开放)","2",WEIXIN,"用于控制服务端。",curTime(),"1",2,"0");
-            currentUserList.add(systemWxUser);
-            User systemUser = new User("欢迎使用GcmForMojo","0",SYS,"请点击右上角选项获取设备码。",curTime(),"1",0,"0");
-            currentUserList.add(systemUser);
+        //点击通知增加会话内容，用于缓存被杀时列表内容为空的情况，使用通知自带的最后一条消息
+        Intent intentCurrentListUser = this.getIntent();
+        Bundle msgBundle =  intentCurrentListUser.getExtras();
+        if(msgBundle!=null) {
+            User noifyMsg = new User(msgBundle.getString("userName"),msgBundle.getString("userId"),msgBundle.getString("userType"),msgBundle.getString("userMessage"),msgBundle.getString("userTime"),msgBundle.getString("senderType"),msgBundle.getInt("NotificationId"),msgBundle.getString("msgCount"));
+           if(!isHaveMsg(msgBundle.getString("userId")))
+            currentUserList.add(0,noifyMsg);
         }
+
+        if(!isHaveMsg("2"))
+            currentUserList.add(new User("微信机器人(未开放)","2",WEIXIN,"用于控制服务端。",curTime(),"1",2,"0"));
+        if(!isHaveMsg("1"))
+            currentUserList.add(new User("QQ机器人(未开放)","1",QQ,"用于控制服务端。",curTime(),"1",1,"0"));
+        if(!isHaveMsg("0"))
+             currentUserList.add(new User("欢迎使用GcmForMojo","0",SYS,"请点击右上角选项获取设备码。",curTime(),"1",0,"0"));
+
+
 
         currentUserAdapter = new UserAdapter(CurrentUserActivity.this,R.layout.current_user_item,currentUserList);
         currentUserListView.setAdapter(currentUserAdapter);

@@ -34,6 +34,7 @@
     <!-- Title end -->
     <!-- Message content start -->
     <LinearLayout
+        android:id="@+id/msg_list_ll"
         android:layout_width="match_parent"
         android:layout_height="128.0dip"
         android:layout_marginBottom="3.0dip"
@@ -62,6 +63,16 @@
             </ListView>
         </LinearLayout>
     </LinearLayout>
+    <TextView
+        android:text="TextView"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textIsSelectable="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="12dp"
+        android:id="@+id/msgType_text" />
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
@@ -82,7 +93,7 @@
             android:layout_marginLeft="15dp"
             android:layout_weight="1.0"
             android:hint="输入信息"
-            android:imeOptions="actionSend|flagNoEnterAction"
+            android:imeOptions="actionSend"
             android:inputType="textCapSentences|textAutoCorrect|textMultiLine|textShortMessage"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:maxLines="3"
@@ -100,8 +111,7 @@
                 android:src="@android:drawable/ic_menu_send"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:background="#00000000"
-                />
+                android:background="#00000000" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

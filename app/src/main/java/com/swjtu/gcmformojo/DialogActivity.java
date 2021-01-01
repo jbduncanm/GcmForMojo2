@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -113,7 +114,10 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
             notificationManager.cancel(NotificationIdDo);
         }
 
+
+
         //显示弹窗界面
+
         setContentView(R.layout.activity_dialog);
 
         //清除列表未读计数
@@ -136,6 +140,18 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         imgMsgType = (ImageView) findViewById(R.id.msgType_imageView);
         imageButton_send = (ImageButton) findViewById(R.id.imagebutton_send);
         editText_content = (EditText) findViewById(R.id.edittext_content);
+        LinearLayout msgListLinearLayout = (LinearLayout) findViewById(R.id.msg_list_ll);
+        TextView sysTextView = (TextView) findViewById(R.id.msgType_text);
+
+        //纯系统消息选择屏蔽Listview消息记录，单独显示Textview
+        if(msgIdReplyDo.equals("0")) {
+
+            msgListLinearLayout.setVisibility(View.GONE);
+            imageButton_send.setVisibility(View.GONE);
+            sysTextView.setVisibility(View.VISIBLE);
+            sysTextView.setText("请点击右上角选项获取设备码。");
+
+        }
 
         //弹窗图标和是否开启发送按钮
         if(msgTypeDo.equals("Mojo-Webqq")) {

@@ -8,7 +8,7 @@
     <ImageView
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:src="@mipmap/QQ_ic"
+        android:src="@mipmap/qq_ico"
         android:layout_margin="5dp"
         android:id="@+id/current_user_item_type" />
         <RelativeLayout
@@ -57,7 +57,7 @@
                 android:paddingRight="60dp"
                 android:focusable="false"/>
             <TextView
-                android:id="@+id/current_user_item_num"
+                android:id="@+id/current_user_item_msgcount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1"

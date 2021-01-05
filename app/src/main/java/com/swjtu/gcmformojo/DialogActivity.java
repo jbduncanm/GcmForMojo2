@@ -149,7 +149,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
             msgListLinearLayout.setVisibility(View.GONE);
             imageButton_send.setVisibility(View.GONE);
             sysTextView.setVisibility(View.VISIBLE);
-            sysTextView.setText("请点击右上角选项获取设备码。");
+            sysTextView.setText("\t\t首次使用,请点击右上角选项获取设备码(卸载重装以及清除数据需要重新获取)，更多请阅读使用帮助并参考酷安发布的教程！");
 
         }
 

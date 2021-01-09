@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,19 +19,20 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import static com.swjtu.gcmformojo.MyFirebaseMessagingService.MYTAG;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.QQ;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.SYS;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.WEIXIN;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.curTime;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.currentUserAdapter;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.currentUserList;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isHaveMsg;
 
 public class CurrentUserActivity extends AppCompatActivity {
 
+    final public static ArrayList<User> currentUserList = new ArrayList<>();
     public static Handler userHandler;
     public ListView currentUserListView;
-    ArrayList<User> currentUserListTest = new ArrayList<>();
+
+    public ArrayList<User> currentUserListTest = new ArrayList<>();
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     final private static String[] PERMISSIONS_STORAGE = {
@@ -67,20 +69,29 @@ public class CurrentUserActivity extends AppCompatActivity {
         currentUserListView = (ListView) findViewById(R.id.current_user_list_view);
 
         //点击通知增加会话内容，用于缓存被杀时列表内容为空的情况，使用通知自带的最后一条消息
-        Intent intentCurrentListUser = this.getIntent();
-        Bundle msgBundle =  intentCurrentListUser.getExtras();
-        if(msgBundle!=null) {
-            User noifyMsg = new User(msgBundle.getString("userName"),msgBundle.getString("userId"),msgBundle.getString("userType"),msgBundle.getString("userMessage"),msgBundle.getString("userTime"),msgBundle.getString("senderType"),msgBundle.getInt("NotificationId"),msgBundle.getString("msgCount"));
-           if(!isHaveMsg(msgBundle.getString("userId")))
-            currentUserList.add(0,noifyMsg);
+       Intent intentCurrentListUser = this.getIntent();
+        if(intentCurrentListUser!=null) {
+            Bundle msgBundle = intentCurrentListUser.getExtras();
+            if (msgBundle != null && msgBundle.containsKey("userId")) {
+                Log.d(MYTAG, msgBundle.toString());
+               // Toast.makeText(getApplicationContext(),msgBundle.toString() , Toast.LENGTH_SHORT).show();
+
+                User noifyMsg = new User(msgBundle.getString("userName"), msgBundle.getString("userId"), msgBundle.getString("userType"), msgBundle.getString("userMessage"), msgBundle.getString("userTime"), msgBundle.getString("senderType"), msgBundle.getInt("NotificationId"), msgBundle.getString("msgCount"));
+                //Toast.makeText(getApplicationContext(),noifyMsg.getUserId() , Toast.LENGTH_SHORT).show();
+                 if (!isHaveMsg(currentUserList, msgBundle.getString("userId"))) {
+                    currentUserList.add(0, noifyMsg);
+
+                    if (currentUserAdapter != null) {
+                        currentUserAdapter.notifyDataSetChanged();
+                    }
+
+                }
+            } else {
+                Log.d(MYTAG, "bunndle为空");
+            }
+
         }
 
-        if(!isHaveMsg("2"))
-            currentUserList.add(new User("微信机器人(未开放)","2",WEIXIN,"用于控制服务端。",curTime(),"1",2,"0"));
-        if(!isHaveMsg("1"))
-            currentUserList.add(new User("QQ机器人(未开放)","1",QQ,"用于控制服务端。",curTime(),"1",1,"0"));
-        if(!isHaveMsg("0"))
-             currentUserList.add(new User("欢迎使用GcmForMojo","0",SYS,"请点击右上角选项获取设备码。",curTime(),"1",0,"0"));
 
 
 
@@ -116,17 +127,12 @@ public class CurrentUserActivity extends AppCompatActivity {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent,View view,int position,long id) {
-                // TODO Auto-generated method stub
-
                 currentUserList.remove(position);
                 currentUserAdapter.notifyDataSetChanged();
-
                 return true;//当返回true时,不会触发短按事件
                 //return false;//当返回false时,会触发短按事件
             }
-
         });
-
     }
 
     @Override
@@ -183,7 +189,7 @@ public class CurrentUserActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("currentUserListTest",currentUserList);
+     //   outState.putSerializable("currentUserListTest",currentUserList);
     //    Log.d("测试","记录参数");
     }
 
@@ -191,9 +197,36 @@ public class CurrentUserActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
 
         super.onRestoreInstanceState(savedInstanceState);
-        currentUserListTest = (ArrayList<User>) savedInstanceState.getSerializable("currentUserListTest");
+      //  currentUserListTest = (ArrayList<User>) savedInstanceState.getSerializable("currentUserListTest");
    //     Log.d("测试","恢复参数");
 
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+        if (!isHaveMsg(currentUserList,"2"))
+            currentUserList.add(new User("微信机器人(未开放)", "2", WEIXIN, "用于控制服务端。", curTime(), "1", 2, "0"));
+        if (!isHaveMsg(currentUserList,"1"))
+            currentUserList.add(new User("QQ机器人(未开放)", "1", QQ, "用于控制服务端。", curTime(), "1", 1, "0"));
+        if (!isHaveMsg(currentUserList,"0"))
+            currentUserList.add(new User("欢迎使用GcmForMojo", "0", SYS, "请点击右上角选项获取设备码。", curTime(), "1", 0, "0"));
+
+    }
+
+    public  Boolean  isHaveMsg(final ArrayList<User> userList,final String userId){
+        if(userList.size()==0) {
+            return false;
+        }
+        for(int    i=0;    i<userList.size();    i++){
+            String str = userList.get(i).getUserId();
+
+            if(str.equals(userId)){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

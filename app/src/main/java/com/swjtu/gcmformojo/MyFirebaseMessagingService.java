@@ -58,17 +58,18 @@ import java.util.Random;
 
 import static android.app.Notification.DEFAULT_LIGHTS;
 import static android.text.Html.FROM_HTML_MODE_COMPACT;
+import static com.swjtu.gcmformojo.CurrentUserActivity.currentUserList;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "GcmForMojo";
+    public static final String MYTAG = "GcmForMojo";
 
 
     final public static Map<Integer, Integer> msgCountMap = new HashMap<>();
     final public static Map<String, List<Spanned>> msgSave = new HashMap<>();
 
     final private static Map<String, Integer> msgIdMap = new HashMap<>();
-    final public static ArrayList<User> currentUserList = new ArrayList<>();
+
 
     //消息类型常量
     final public static String QQ="Mojo-Webqq";
@@ -106,11 +107,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //handler = new Handler(Looper.getMainLooper()); // 使用应用的主消息循环
 
 
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
+        Log.d(MYTAG, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "原始信息: " + remoteMessage.getData());
+            Log.d(MYTAG, "原始信息: " + remoteMessage.getData());
 
 
            // Looper.prepare();
@@ -123,7 +124,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
       // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            Log.d(MYTAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -253,7 +254,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //QQ判断
                 if(qqReciveType.equals("1")){//不检测运行状态
 
-                    Log.d(TAG, "QQ不检测运行状态！");
+                    Log.d(MYTAG, "QQ不检测运行状态！");
 
                 }else if(qqReciveType.equals("2")){ //前台时不推送
 
@@ -262,7 +263,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         isForeground = queryAppUsageStats(this,qqPackgeName);
                         if(isForeground) {
-                            Log.d(TAG, "QQ前台不推送！");
+                            Log.d(MYTAG, "QQ前台不推送！");
                             return;
                         }
 
@@ -270,7 +271,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         isForeground = BackgroundUtil.getRunningTask(this, qqPackgeName);
                         if(isForeground) {
-                            Log.d(TAG, "QQ前台不推送！");
+                            Log.d(MYTAG, "QQ前台不推送！");
                             return;
                         }
 
@@ -278,7 +279,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         isForeground = BackgroundUtil.getLinuxCoreInfo(this, qqPackgeName);
                         if(isForeground) {
-                            Log.d(TAG, "QQ前台不推送！");
+                            Log.d(MYTAG, "QQ前台不推送！");
                             return;
                         }
 
@@ -287,7 +288,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }else if(qqReciveType.equals("3")){ //运行时不推送
 
                     if(isServiceRunning(this,qqPackgeName)) {
-                        Log.d(TAG, "QQ运行不推送！");
+                        Log.d(MYTAG, "QQ运行不推送！");
                         return;
                     }
 
@@ -300,7 +301,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if(!usageStatsManager.isAppInactive(qqPackgeName)){
-                                Log.d(TAG, "QQ启用不推送！");
+                                Log.d(MYTAG, "QQ启用不推送！");
                                 return;
                             }
                         }
@@ -329,7 +330,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 if(wxReciveType.equals("1")){//不检测运行状态
 
-                    Log.d(TAG, "微信不检测运行状态！");
+                    Log.d(MYTAG, "微信不检测运行状态！");
 
                 }else if(wxReciveType.equals("2")){ //前台时不推送
 
@@ -337,7 +338,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         Boolean isForeground = queryAppUsageStats(this,wxPackgeName);
                         if(isForeground) {
-                            Log.d(TAG, "微信前台不推送！");
+                            Log.d(MYTAG, "微信前台不推送！");
                             return;
                         }
 
@@ -345,14 +346,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         Boolean isForeground = BackgroundUtil.getRunningTask(this, wxPackgeName);
                         if (isForeground) {
-                            Log.d(TAG, "微信前台不推送！");
+                            Log.d(MYTAG, "微信前台不推送！");
                             return;
                         }
                     }else {
 
                         Boolean isForeground = BackgroundUtil.getLinuxCoreInfo(this, wxPackgeName);
                         if (isForeground) {
-                            Log.d(TAG, "微信前台不推送！");
+                            Log.d(MYTAG, "微信前台不推送！");
                             return;
                         }
                     }
@@ -360,7 +361,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }else if(wxReciveType.equals("3")){ //运行时不推送
 
                     if(isServiceRunning(this,wxPackgeName)) {
-                        Log.d(TAG, "微信运行不推送！");
+                        Log.d(MYTAG, "微信运行不推送！");
                         return;
                     }
 
@@ -373,7 +374,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if(!usageStatsManager.isAppInactive(wxPackgeName)){
-                                Log.d(TAG, "微信启用不推送！");
+                                Log.d(MYTAG, "微信启用不推送！");
                                 return;
                             }
                         }
@@ -900,7 +901,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
         Collections.sort(usageStats, mRecentComp);
         String currentTopPackage = usageStats.get(0).getPackageName();
-        Log.d(TAG,currentTopPackage);
+        Log.d(MYTAG,currentTopPackage);
 
         return currentTopPackage.equals(packageName);
     }
@@ -941,16 +942,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
-    public static Boolean  isHaveMsg(String msgId){
 
-        for(int    i=0;    i<currentUserList.size();    i++){
-            if(currentUserList.get(i).getUserId().equals(msgId)){
-                return true;
-            }
-        }
-        return false;
-
-    }
 
     /**
      *  转换文字格式

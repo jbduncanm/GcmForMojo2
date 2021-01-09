@@ -32,7 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.curTime;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.currentUserList;
+import static com.swjtu.gcmformojo.CurrentUserActivity.currentUserList;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isQqOnline;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isWxOnline;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.msgCountMap;

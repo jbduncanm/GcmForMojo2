@@ -9,7 +9,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.currentUserList;
+import static com.swjtu.gcmformojo.CurrentUserActivity.currentUserList;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.msgCountMap;
 
 /**

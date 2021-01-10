@@ -491,7 +491,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //通知点击事件
         //应用界面 需要传递最后一次消息内容 避免会话列表为空
         Intent intent = new Intent(this, CurrentUserActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Bundle msgBundle = new Bundle();
         msgBundle.putString("userName",messageTitle);
         msgBundle.putString("userId",msgIdReply);
@@ -502,7 +502,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         msgBundle.putInt("NotificationId",NotificationId);
         msgBundle.putString("msgCount",String.valueOf(msgCount));
         intent.putExtras(msgBundle);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, NotificationId /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, NotificationId /* Request code */, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //qq界面
         Intent intentClick = new Intent(this, QqNotificationBroadcastReceiver.class);
         intentClick.setAction("qq_notification_clicked");
@@ -599,7 +599,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //通知点击事件
         //应用界面
         Intent intent = new Intent(this, CurrentUserActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Bundle msgBundle = new Bundle();
         msgBundle.putString("userName",messageTitle);
         msgBundle.putString("userId",msgIdReply);
@@ -610,7 +610,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         msgBundle.putInt("NotificationId",NotificationId);
         msgBundle.putString("msgCount",String.valueOf(msgCount));
         intent.putExtras(msgBundle);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, NotificationId /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, NotificationId /* Request code */, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //微信界面
         Intent intentClick = new Intent(this, WeixinNotificationBroadcastReceiver.class);
         intentClick.setAction("weixin_notification_clicked");
@@ -692,7 +692,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     //系统通知方法
     private void sendNotificationSys(String messageTitle,String messageBody,String msgId, int NotificationId,int msgCount) {
         Intent intent = new Intent(this, CurrentUserActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Bundle msgBundle = new Bundle();
         msgBundle.putString("userName",messageTitle);
         msgBundle.putString("userId",msgId);
@@ -704,7 +704,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         msgBundle.putString("msgCount",String.valueOf(msgCount));
         intent.putExtras(msgBundle);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, NotificationId /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
         //通知清除事件
         Intent intentCancel = new Intent(this, SysNotificationBroadcastReceiver.class);

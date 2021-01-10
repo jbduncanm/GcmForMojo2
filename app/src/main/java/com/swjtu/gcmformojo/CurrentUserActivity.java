@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +18,6 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.MYTAG;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.QQ;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.SYS;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.WEIXIN;
@@ -67,33 +65,7 @@ public class CurrentUserActivity extends AppCompatActivity {
         final  String wxPackgeName=Settings.getString("edit_text_preference_wx_packgename","com.tencent.mm");
 
         currentUserListView = (ListView) findViewById(R.id.current_user_list_view);
-
-        //点击通知增加会话内容，用于缓存被杀时列表内容为空的情况，使用通知自带的最后一条消息
-       Intent intentCurrentListUser = this.getIntent();
-        if(intentCurrentListUser!=null) {
-            Bundle msgBundle = intentCurrentListUser.getExtras();
-            if (msgBundle != null && msgBundle.containsKey("userId")) {
-                Log.d(MYTAG, msgBundle.toString());
-               // Toast.makeText(getApplicationContext(),msgBundle.toString() , Toast.LENGTH_SHORT).show();
-
-                User noifyMsg = new User(msgBundle.getString("userName"), msgBundle.getString("userId"), msgBundle.getString("userType"), msgBundle.getString("userMessage"), msgBundle.getString("userTime"), msgBundle.getString("senderType"), msgBundle.getInt("NotificationId"), msgBundle.getString("msgCount"));
-                //Toast.makeText(getApplicationContext(),noifyMsg.getUserId() , Toast.LENGTH_SHORT).show();
-                 if (!isHaveMsg(currentUserList, msgBundle.getString("userId"))) {
-                    currentUserList.add(0, noifyMsg);
-
-                    if (currentUserAdapter != null) {
-                        currentUserAdapter.notifyDataSetChanged();
-                    }
-
-                }
-            } else {
-                Log.d(MYTAG, "bunndle为空");
-            }
-
-        }
-
-
-
+        addNotfiyContent();
 
         currentUserAdapter = new UserAdapter(CurrentUserActivity.this,R.layout.current_user_item,currentUserList);
         currentUserListView.setAdapter(currentUserAdapter);
@@ -127,13 +99,39 @@ public class CurrentUserActivity extends AppCompatActivity {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent,View view,int position,long id) {
-                currentUserList.remove(position);
-                currentUserAdapter.notifyDataSetChanged();
+
+                //系统信息不能删除
+                if(!currentUserList.get(position).getUserId().equals("0") && !currentUserList.get(position).getUserId().equals("1") && !currentUserList.get(position).getUserId().equals("2")) {
+                    currentUserList.remove(position);
+                    currentUserAdapter.notifyDataSetChanged();
+                }
                 return true;//当返回true时,不会触发短按事件
                 //return false;//当返回false时,会触发短按事件
             }
         });
     }
+
+    public void addNotfiyContent() {
+
+        //点击通知增加会话内容，用于缓存被杀时列表内容为空的情况，使用通知自带的最后一条消息
+
+        Intent intentCurrentListUser = getIntent();
+        if(intentCurrentListUser!=null) {
+            Bundle msgBundle = intentCurrentListUser.getExtras();
+            if (msgBundle != null && msgBundle.containsKey("userId")) {
+
+                if (!isHaveMsg(currentUserList, msgBundle.getString("userId"))) {
+                    User noifyMsg = new User(msgBundle.getString("userName"), msgBundle.getString("userId"), msgBundle.getString("userType"), msgBundle.getString("userMessage"), msgBundle.getString("userTime"), msgBundle.getString("senderType"), msgBundle.getInt("NotificationId"), msgBundle.getString("msgCount"));
+                    currentUserList.add(0, noifyMsg);
+
+                    if (currentUserAdapter != null) {
+                        currentUserAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -189,17 +187,11 @@ public class CurrentUserActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-     //   outState.putSerializable("currentUserListTest",currentUserList);
-    //    Log.d("测试","记录参数");
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-
         super.onRestoreInstanceState(savedInstanceState);
-      //  currentUserListTest = (ArrayList<User>) savedInstanceState.getSerializable("currentUserListTest");
-   //     Log.d("测试","恢复参数");
-
     }
 
     @Override
@@ -213,6 +205,13 @@ public class CurrentUserActivity extends AppCompatActivity {
         if (!isHaveMsg(currentUserList,"0"))
             currentUserList.add(new User("欢迎使用GcmForMojo", "0", SYS, "请点击右上角选项获取设备码。", curTime(), "1", 0, "0"));
 
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        addNotfiyContent();
     }
 
     public  Boolean  isHaveMsg(final ArrayList<User> userList,final String userId){

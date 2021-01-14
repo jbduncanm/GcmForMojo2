@@ -359,8 +359,6 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 );
         try {
             sendResultJson =  future.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

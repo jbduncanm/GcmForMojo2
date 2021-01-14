@@ -147,6 +147,14 @@ public class CurrentUserActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
 
         switch(item.getItemId()) {
+            case R.id.action_friend:
+                Intent intentFriend = new Intent(this,FriendActivity.class);
+                startActivity(intentFriend);
+                break;
+            case R.id.action_group:
+                Intent intentGroup = new Intent(this,GroupActivity.class);
+                startActivity(intentGroup);
+                break;
             case R.id.action_settings:
                 Intent intentSettings = new Intent(this, FragmentPreferences.class);
                 startActivity(intentSettings);

@@ -7,8 +7,8 @@ android {
         applicationId "com.swjtu.gcmformojo"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 18
-        versionName '1.6.8'
+        versionCode 19
+        versionName '1.6.9'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

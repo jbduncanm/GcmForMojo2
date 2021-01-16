@@ -14,7 +14,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main"
+    <include layout="@layout/activity_help"
         android:id="@+id/include" />
 
 </android.support.design.widget.CoordinatorLayout>

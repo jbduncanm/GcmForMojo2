@@ -86,8 +86,7 @@
         <activity
             android:name=".TokenActivity"
             android:theme="@style/MyDialog" />
-        <activity android:name=".FriendActivity" />
-        <activity android:name=".GroupActivity"></activity>
+        <activity android:name=".QqContactsActivity" />
     </application>
 
 </manifest>

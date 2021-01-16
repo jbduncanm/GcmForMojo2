@@ -11,7 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.swjtu.gcmformojo.HelpActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_help_main">
 
     <TextView
         android:layout_width="wrap_content"

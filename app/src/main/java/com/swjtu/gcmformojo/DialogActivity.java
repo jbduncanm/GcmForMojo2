@@ -218,7 +218,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         }
 
         textView_sender.setText(messageTitleDo); //弹窗标题
-        msgAdapter = new ArrayAdapter<>(DialogActivity.this,R.layout.mg_list_item,R.id.text_message_item,msgSave.get(msgIdReplyDo));
+        msgAdapter = new ArrayAdapter<>(DialogActivity.this,R.layout.dialog_msglist_item,R.id.text_message_item,msgSave.get(msgIdReplyDo));
         msgListView.setAdapter(msgAdapter);
         imageButton_send.setOnClickListener(this);
     }

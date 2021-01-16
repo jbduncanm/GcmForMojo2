@@ -67,7 +67,7 @@ public class CurrentUserActivity extends AppCompatActivity {
         currentUserListView = (ListView) findViewById(R.id.current_user_list_view);
         addNotfiyContent();
 
-        currentUserAdapter = new UserAdapter(CurrentUserActivity.this,R.layout.current_user_item,currentUserList);
+        currentUserAdapter = new UserAdapter(CurrentUserActivity.this,R.layout.current_userlist_item,currentUserList);
         currentUserListView.setAdapter(currentUserAdapter);
         currentUserListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
@@ -147,13 +147,9 @@ public class CurrentUserActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
 
         switch(item.getItemId()) {
-            case R.id.action_friend:
-                Intent intentFriend = new Intent(this,FriendActivity.class);
+            case R.id.action_qq_contacts:
+                Intent intentFriend = new Intent(this,QqContactsActivity.class);
                 startActivity(intentFriend);
-                break;
-            case R.id.action_group:
-                Intent intentGroup = new Intent(this,GroupActivity.class);
-                startActivity(intentGroup);
                 break;
             case R.id.action_settings:
                 Intent intentSettings = new Intent(this, FragmentPreferences.class);

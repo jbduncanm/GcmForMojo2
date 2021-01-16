@@ -3,8 +3,7 @@
     <string name="action_settings">设置</string>
     <string name="action_help">帮助</string>
     <string name="action_token">设备码</string>
-    <string name="action_friend">好友</string>
-    <string name="action_group">群聊</string>
+    <string name="action_qq_contacts">QQ联系人</string>
 
     <string name="About_GcmForMojo">什么是GcmForMojo？</string>
     <string name="can_not_find_version_name">版本错误 </string>

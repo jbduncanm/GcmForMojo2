@@ -6,25 +6,25 @@ import java.util.List;
  * Created by HeiPi on 2017/2/21.
  */
 
-public class GroupFriend {
-    private String groupName;// 大组名称
-    private List<Friend> groupChild;// 对应大组的小组成员对象数组
+public class QqGroupFriend {
+    private String groupName;// 分组名称
+    private List<QqFriend> groupChild;// 对应分组的小组成员对象数组
 
-    public GroupFriend() {
+    public QqGroupFriend() {
         super();
     }
 
-    public GroupFriend(String groupName, List<Friend> groupChild) {
+    public QqGroupFriend(String groupName, List<QqFriend> groupChild) {
         super();
         this.groupName = groupName;
         this.groupChild = groupChild;
     }
 
-    public void add(Friend u) {// 往小组中添加用户
+    public void add(QqFriend u) {// 往小组中添加用户
         groupChild.add(u);
     }
 
-    public void remove(Friend u) {// 根据用户对象移除用户
+    public void remove(QqFriend u) {// 根据用户对象移除用户
         groupChild.remove(u);
     }
 
@@ -36,7 +36,7 @@ public class GroupFriend {
         return groupChild.size();
     }
 
-    public Friend getChild(int index) {// 根据下标得到用户
+    public QqFriend getChild(int index) {// 根据下标得到用户
         return groupChild.get(index);
     }
 
@@ -49,11 +49,11 @@ public class GroupFriend {
         this.groupName = groupName;
     }
 
-    public List<Friend> getGroupChild() {
+    public List<QqFriend> getGroupChild() {
         return groupChild;
     }
 
-    public void setGroupChild(List<Friend> groupChild) {
+    public void setGroupChild(List<QqFriend> groupChild) {
         this.groupChild = groupChild;
     }
 }

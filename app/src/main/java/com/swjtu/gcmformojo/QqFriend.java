@@ -4,7 +4,7 @@ package com.swjtu.gcmformojo;
  * Created by HeiPi on 2017/2/21.
  */
 
-public class Friend {
+public class QqFriend {
     private String category;
     private String client_type;
     private String face;
@@ -17,7 +17,7 @@ public class Friend {
     private String uid;
     private String vip_level;
 
-    public Friend(String category, String client_type, String face, String flag, String id, String is_vip, String markname, String name, String state, String uid, String vip_level) {
+    public QqFriend(String category, String client_type, String face, String flag, String id, String is_vip, String markname, String name, String state, String uid, String vip_level) {
 
         this.category=category;
         this.client_type=client_type;
@@ -33,7 +33,7 @@ public class Friend {
 
     }
 
-    public  String category (){
+    public  String get_category (){
         return category;
     }
     public  String get_client_type (){

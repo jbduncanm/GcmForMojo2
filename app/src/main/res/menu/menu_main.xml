@@ -4,15 +4,9 @@
     tools:context="com.swjtu.gcmformojo.HelpActivity">
 
     <item
-        android:id="@+id/action_friend"
+        android:id="@+id/action_qq_contacts"
         android:orderInCategory="100"
-        android:title="@string/action_friend"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_group"
-        android:orderInCategory="100"
-        android:title="@string/action_group"
+        android:title="@string/action_qq_contacts"
         app:showAsAction="never" />
 
     <item

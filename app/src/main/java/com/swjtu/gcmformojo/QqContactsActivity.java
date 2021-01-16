@@ -17,16 +17,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class FriendActivity extends AppCompatActivity {
+public class QqContactsActivity extends AppCompatActivity {
 
-    public final static ArrayList<Friend> QQ_FRIEND_LIST = new ArrayList<>();
+    public final static ArrayList<QqFriend> QQ_QQ_FRIEND_LIST = new ArrayList<>();
 
     ExpandableListView qQfriendExpandListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_friend);
+        setContentView(R.layout.activity_qq_contacts);
 
         qQfriendExpandListView = (ExpandableListView) findViewById(R.id.qq_friend_ExpandListView);
 
@@ -47,7 +47,7 @@ public class FriendActivity extends AppCompatActivity {
         //wxServer = Settings.getString("edit_text_preference_qq_replyurl","");
 
         //获取好友数据存到list中
-        if(QQ_FRIEND_LIST.size()==0) {
+        if(QQ_QQ_FRIEND_LIST.size()==0) {
             HashMap emptyMap = new HashMap<>();
             getQqFriendData(qqFriendUrl, emptyMap);
         }
@@ -87,7 +87,7 @@ public class FriendActivity extends AppCompatActivity {
                 if(!jsonObject.has("uid"))
                     jsonObject.put("uid","0");
 
-                QQ_FRIEND_LIST.add(new Friend(jsonObject.getString("category"),jsonObject.getString("client_type"),jsonObject.getString("face"),jsonObject.getString("flag"),jsonObject.getString("id"),jsonObject.getString("is_vip"),
+                QQ_QQ_FRIEND_LIST.add(new QqFriend(jsonObject.getString("category"),jsonObject.getString("client_type"),jsonObject.getString("face"),jsonObject.getString("flag"),jsonObject.getString("id"),jsonObject.getString("is_vip"),
                         jsonObject.getString("markname"),jsonObject.getString("name"),jsonObject.getString("state"),jsonObject.getString("uid"),jsonObject.getString("vip_level")));
             }
 

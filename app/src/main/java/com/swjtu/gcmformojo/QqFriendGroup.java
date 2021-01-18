@@ -6,15 +6,15 @@ import java.util.List;
  * Created by HeiPi on 2017/2/21.
  */
 
-public class QqGroupFriend {
+public class QqFriendGroup {
     private String groupName;// 分组名称
     private List<QqFriend> groupChild;// 对应分组的小组成员对象数组
 
-    public QqGroupFriend() {
+    public QqFriendGroup() {
         super();
     }
 
-    public QqGroupFriend(String groupName, List<QqFriend> groupChild) {
+    public QqFriendGroup(String groupName, List<QqFriend> groupChild) {
         super();
         this.groupName = groupName;
         this.groupChild = groupChild;

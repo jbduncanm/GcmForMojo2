@@ -16,14 +16,14 @@ import java.util.List;
 public class QqFriendAdapter extends BaseExpandableListAdapter {
 
     private Context context;
-    private List<QqGroupFriend> group;// 传递过来的经过处理的总数据
-    public QqFriendAdapter(Context context, List<QqGroupFriend> group) {
+    private List<QqFriendGroup> group;
+    public QqFriendAdapter(Context context, List<QqFriendGroup> group) {
         super();
         this.context = context;
         this.group = group;
     }
 
-    // 得到大组成员的view
+
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -83,39 +83,16 @@ public class QqFriendAdapter extends BaseExpandableListAdapter {
                 */
         final String name = group.get(groupPosition).getChild(childPosition)
                 .get_name();
-        qqFriendNameView.setText(name);// 大标题
-       // title2.setText(id);// 小标题
-        //icon.setImageResource(imgs[img]);
+        final String markname = group.get(groupPosition).getChild(childPosition)
+                .get_markname();
+        if(markname.equals("null"))
+            qqFriendNameView.setText("\t\t"+name);
+        else
+            qqFriendNameView.setText("\t\t"+markname);
 
 
-        convertView.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                // 下面是添加到最近会话列表处理
-                /*
-                RecentChatEntity entity = new RecentChatEntity(img, 0, name,
-                        MyDate.getDateEN(), "");
-                FriendListActivity.mRecentList.add(entity);
-                FriendListActivity.mRecentAdapter = new RecentChatAdapter(
-                        context, FriendListActivity.mRecentList);
-                FriendListActivity.mRecentListView
-                        .setAdapter(FriendListActivity.mRecentAdapter);
-                */
-                // 下面是切换到聊天界面处理
-                /*
-                QqFriend u = new QqFriend();
-                u.setName(name);
-                u.setId(Integer.parseInt(id));
-                u.setImg(img);
-                Intent intent = new Intent(context, ChatActivity.class);
-                intent.putExtra("user", u);
-                context.startActivity(intent);
-                */
-                // Toast.makeText(Tab2.this, "开始聊天", 0).show();
 
-            }
-        });
         return convertView;
     }
 
@@ -156,9 +133,10 @@ public class QqFriendAdapter extends BaseExpandableListAdapter {
      * @param group
      *            传递进来的新数据
      */
-    public void updata(List<QqGroupFriend> group) {
+    public void updata(List<QqFriendGroup> group) {
         this.group = null;
         this.group = group;
     }
+
 
 }

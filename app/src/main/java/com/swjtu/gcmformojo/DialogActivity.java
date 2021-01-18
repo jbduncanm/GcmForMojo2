@@ -213,8 +213,13 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
            }else if(msgTypeDo.equals("Mojo-Sys")){
                str    =    "<small>"+ recivedTimeDo +"</small><br>";
            }
-           msgList.add(toSpannedMessage(str+ messageBodyDo));
-           msgSave.put(msgIdReplyDo,msgList);
+           if(!messageBodyDo.equals("主动聊天")) {
+               msgList.add(toSpannedMessage(str + messageBodyDo));
+
+           }else {
+               msgList.add(toSpannedMessage(""));
+           }
+           msgSave.put(msgIdReplyDo, msgList);
         }
 
         textView_sender.setText(messageTitleDo); //弹窗标题

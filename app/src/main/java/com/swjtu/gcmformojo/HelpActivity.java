@@ -4,12 +4,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-
-import com.google.firebase.iid.FirebaseInstanceId;
 
 public class HelpActivity extends AppCompatActivity {
 
@@ -25,30 +20,8 @@ public class HelpActivity extends AppCompatActivity {
         textView_Version = (TextView) findViewById(R.id.textVesion);
         textView_Version.setText(getVersion());
 
-        Button logTokenButton = (Button) findViewById(R.id.button2);
-
-        logTokenButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get token
-                String tokenNo = "尚未注册成功，稍后再试！";
-                String token = FirebaseInstanceId.getInstance().getToken();
-
-                TextView textView5 = (TextView) findViewById(R.id.textView5);
-
-                if (token == null) {
-                    Log.d(TAG, tokenNo);
-                    textView5.setText(tokenNo);
-                }else{
-                    Log.d(TAG, token);
-                    textView5.setText(token);
-                }
-            }
-        });
-
 
     }
-
 
     /**
      * 获取版本号

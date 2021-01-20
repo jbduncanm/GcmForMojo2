@@ -11,9 +11,9 @@
     <string name="About_GcmForMojo_detail">\t\t这是一个GCM消息接收程序，需要将令牌写入服务器端配合Mojo-WebQQ以及MoJo-WeiXin一起使用，将QQ和微信的消息通过FCM/GCM发送到您的手机！感谢绿色守护作者Oasis Feng、Mojo-WebQQ作者灰灰、leobin、BurgerTown以及群里各位朋友的帮助！QQ群:611537356</string>
 
     <string name="Update_GcmForMojo">\t\t主要功能：\n\t\t1、通过FCM/GCM推送QQ、微信消息，并可回复（需服务端支持）！\n\t\t2、传统休眠，建议选择第3项（运行时不弹出消息）；浅度睡眠（AppStandby），QQ可选择第4项（无需关闭自带通知），微信可选择第1项（需关闭自带通知）。
-    \n\t\t3、Linux服务端设置 http://t.cn/RJIWJYu Linux一键安装脚本 http://t.cn/RJIWEBa openshift服务端 http://t.cn/RJJVnvF ；Windows服务端 http://pan.baidu.com/s/1nv0Qmlr</string>
+    \n\t\t3、Linux服务端设置 http://t.cn/RJIWJYu Linux一键安装脚本 http://t.cn/RJIWEBa openshift服务端 http://t.cn/RJJVnvF ；Windows服务端 http://pan.baidu.com/s/1nv0Qmlr\n\t\t4、建议初次打开应用时使用VPN（不要休眠、阻止运行谷歌服务），以便程序自动注册获取到正确的令牌。一旦获取到令牌后，不需要VPN也能正常接受推送消息。应用卸载后重新安装或者清除数据后会注册新的令牌，需要修改服务端配置。</string>
     <string name="Type_Token">显示令牌</string>
-    <string name="About_Token">\t\t即registration_id（可复制），建议初次打开应用时使用VPN（不要休眠、阻止运行谷歌服务），以便程序自动注册获取到正确的令牌。一旦获取到令牌后，不需要VPN也能正常接受推送消息。应用卸载后重新安装或者清除数据后会注册新的令牌，需要修改服务端配置。</string>
+    <string name="About_Token"></string>
 
 
     <string-array name="qq_list_preference_entries">

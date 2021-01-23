@@ -4,12 +4,10 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-import android.widget.Toast;
 
-//import static com.swjtu.gcmformojo.MyFirebaseMessagingService.NotificationId;
 import static com.swjtu.gcmformojo.CurrentUserActivity.currentUserList;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.msgCountMap;
 
@@ -20,19 +18,17 @@ import static com.swjtu.gcmformojo.MyFirebaseMessagingService.msgCountMap;
 
 public class SysNotificationBroadcastReceiver extends BroadcastReceiver {
 
-    public static final String IntentNotificationId = "intentnotificationid";
-    private static final String TAG = "GcmForMojoSys";
-
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        int intentNotificationId = intent.getIntExtra(IntentNotificationId, 0);
+        Bundle msgNotifyBundle = intent.getExtras();
+        int notifyId = msgNotifyBundle.getInt("notifyId");
 
-        if (intentNotificationId != -1) {
+        if (notifyId != -1) {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(intentNotificationId);
+            notificationManager.cancel(notifyId);
             for(int    i=0;    i<currentUserList.size();    i++){
-                if(currentUserList.get(i).getNotificationId()==intentNotificationId){
+                if(currentUserList.get(i).getNotifyId()==notifyId){
                     currentUserList.get(i).setMsgCount("0");
                     if(CurrentUserActivity.userHandler!=null)
                         new userThread().start();
@@ -44,20 +40,13 @@ public class SysNotificationBroadcastReceiver extends BroadcastReceiver {
         if (action.equals("sys_notification_clicked")) {
             //处理点击事件
 
-            Log.d(TAG, "跳转到sys");
-
-            msgCountMap.put(intentNotificationId,0);
-            Toast.makeText(context.getApplicationContext(), "服务端通知信息", Toast.LENGTH_LONG).show();
-
-
-
+            msgCountMap.put(notifyId,0);
         }
 
         if (action.equals("sys_notification_cancelled")) {
             //处理滑动清除和点击删除事件
 
-            Log.d(TAG, "清除未读计数");
-            msgCountMap.put(intentNotificationId,0);
+            msgCountMap.put(notifyId,0);
         }
     }
 

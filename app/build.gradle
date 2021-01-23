@@ -35,7 +35,7 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:10.0.1'
     compile 'com.github.wenmingvs:AndroidProcess:-SNAPSHOT'
     testCompile 'junit:junit:4.12'
-    provided files(getLayoutLibPath())
+   // provided files(getLayoutLibPath())
 }
 
 def getLayoutLibPath() {

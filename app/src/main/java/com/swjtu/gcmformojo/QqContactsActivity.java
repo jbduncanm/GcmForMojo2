@@ -28,12 +28,11 @@ import static com.swjtu.gcmformojo.MyFirebaseMessagingService.curTime;
 public class QqContactsActivity extends AppCompatActivity implements View.OnClickListener{
 
     public final static ArrayList<QqFriend> qqFriendArrayList = new ArrayList<>();
+    public final static ArrayList<QqFriendGroup> qqFriendGroups= new ArrayList<>();
 
     ExpandableListView qqFriendExpandListView;
     Button qqContactsUpdateButton;
     QqFriendAdapter qqFriendAdapter;
-
-    public final static List<QqFriendGroup> qqFriendGroups= new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,24 +52,24 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
             int groupPosition, int childPosition, long id) {
-                Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+                Intent intentSend = new Intent(getApplicationContext(), DialogActivity.class);
                 QqFriend p= (QqFriend) qqFriendAdapter.getChild(groupPosition,childPosition);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra(DialogActivity.msgIdReply, p.get_id());
-                intent.putExtra(DialogActivity.qqReplyUrl, "");
-                intent.putExtra(DialogActivity.wxReplyUrl, "");
-                intent.putExtra(DialogActivity.ReplyType, "1");
-                intent.putExtra(DialogActivity.msgType, QQ);
+                intentSend.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                 String name=p.get_name();
-                String markname=p.get_markname();
-                if(!markname.equals("null")) name=markname;
-                intent.putExtra(DialogActivity.messageTitle, name);
-                intent.putExtra(DialogActivity.messageBody, "主动聊天");
-                intent.putExtra(DialogActivity.NotificationId,p.get_id() );
-                intent.putExtra(DialogActivity.RecivedTime, curTime());
-                intent.putExtra(DialogActivity.qqPackgeName, "");
-                intent.putExtra(DialogActivity.wxPackgeName, "");
-                startActivity(intent);
+                if(!p.get_markname().equals("null")) name=p.get_markname();
+
+                Bundle msgDialogBundle = new Bundle();
+                msgDialogBundle.putString("msgId",p.get_id());
+                msgDialogBundle.putString("senderType","1");
+                msgDialogBundle.putString("msgType",QQ);
+                msgDialogBundle.putString("msgTitle",name);
+                msgDialogBundle.putString("msgBody","主动聊天");
+                msgDialogBundle.putInt("notifyId",Integer.parseInt(p.get_id()));
+                msgDialogBundle.putString("msgTime",curTime());
+
+                intentSend.putExtras(msgDialogBundle);
+                startActivity(intentSend);
                 return true;
             }
         });

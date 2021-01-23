@@ -22,15 +22,13 @@ import static com.swjtu.gcmformojo.MyFirebaseMessagingService.QQ;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.SYS;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.WEIXIN;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.curTime;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.currentUserAdapter;
 
 public class CurrentUserActivity extends AppCompatActivity {
 
     final public static ArrayList<User> currentUserList = new ArrayList<>();
     public static Handler userHandler;
     public ListView currentUserListView;
-
-    public ArrayList<User> currentUserListTest = new ArrayList<>();
+    public UserAdapter currentUserAdapter;
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     final private static String[] PERMISSIONS_STORAGE = {
@@ -58,7 +56,6 @@ public class CurrentUserActivity extends AppCompatActivity {
         };
 
         SharedPreferences Settings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
-        Boolean qqIsReply=Settings.getBoolean("check_box_preference_qq_reply",false);
         final String qqReplyUrl=Settings.getString("edit_text_preference_qq_replyurl","");
         final String wxReplyUrl=Settings.getString("edit_text_preference_wx_replyurl","");
         final  String qqPackgeName=Settings.getString("edit_text_preference_qq_packgename","com.tencent.mobileqq");
@@ -77,21 +74,24 @@ public class CurrentUserActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 User p=(User) parent.getItemAtPosition(position);
-                Intent intentReply = new Intent(getApplicationContext(), DialogActivity.class);
-                intentReply.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intentReply.putExtra(DialogActivity.msgIdReply, p.getUserId());
-                intentReply.putExtra(DialogActivity.qqReplyUrl, qqReplyUrl);
-                intentReply.putExtra(DialogActivity.wxReplyUrl, wxReplyUrl);
-                intentReply.putExtra(DialogActivity.ReplyType, p.getSenderType());
-                intentReply.putExtra(DialogActivity.msgType, p.getUserType());
-                intentReply.putExtra(DialogActivity.messageTitle, p.getUserName());
-                intentReply.putExtra(DialogActivity.messageBody, p.getUserMessage());
-                intentReply.putExtra(DialogActivity.NotificationId, p.getNotificationId());
-                intentReply.putExtra(DialogActivity.RecivedTime, p.getUserTime());
-                intentReply.putExtra(DialogActivity.qqPackgeName, qqPackgeName);
-                intentReply.putExtra(DialogActivity.wxPackgeName, wxPackgeName);
+                Intent intentSend = new Intent(getApplicationContext(), DialogActivity.class);
+                intentSend.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                startActivity(intentReply);
+                Bundle msgDialogBundle = new Bundle();
+                msgDialogBundle.putString("msgId",p.getUserId());
+                msgDialogBundle.putString("qqReplyUrl",qqReplyUrl);
+                msgDialogBundle.putString("wxReplyUrl",wxReplyUrl);
+                msgDialogBundle.putString("senderType", p.getSenderType());
+                msgDialogBundle.putString("msgType",p.getUserType());
+                msgDialogBundle.putString("msgTitle",p.getUserName());
+                msgDialogBundle.putString("msgBody",p.getUserMessage());
+                msgDialogBundle.putInt("notifyId", p.getNotifyId());
+                msgDialogBundle.putString("msgTime",p.getUserTime());
+                msgDialogBundle.putString("qqPackgeName",qqPackgeName);
+                msgDialogBundle.putString("wxPackgeName",wxPackgeName);
+                intentSend.putExtras(msgDialogBundle);
+
+                startActivity(intentSend);
             }
         });
 

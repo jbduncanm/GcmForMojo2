@@ -31,6 +31,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.swjtu.gcmformojo.MyFirebaseMessagingService.QQ;
+import static com.swjtu.gcmformojo.MyFirebaseMessagingService.SYS;
+import static com.swjtu.gcmformojo.MyFirebaseMessagingService.WEIXIN;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.curTime;
 import static com.swjtu.gcmformojo.CurrentUserActivity.currentUserList;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isQqOnline;
@@ -46,27 +49,32 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
     private EditText editText_content;
     private ListView msgListView;
-    private String msgIdReplyDo;
-    private String messageTitleDo;
-    private String ReplyTypeDo;
-    private String msgTypeDo;
-    private String wxPackgeNameDo;
-    private String qqPackgeNameDo;
-    static int NotificationIdDo;
+    private String msgId;
+    private String msgTitle;
+    private String msgBody;
+    private String senderType;
+    private String msgType;
+    private String msgTime;
+    private String wxPackgeName;
+    private String qqPackgeName;
+    private String wxReplyUrl;
+    private String qqReplyUrl;
     private static ArrayAdapter<Spanned> msgAdapter;
-    static Handler msgHandler;
 
-    public static final String msgIdReply="msgIdReply";
-    public static final String qqReplyUrl="qqReplyUrl";
-    public static final String ReplyType="ReplyType";
-    public static final String msgType="msgType";
-    public static final String wxReplyUrl="wxReplyUrl";
-    public static final String messageTitle="messageTitle";
-    public static final String messageBody="messageBody";
-    public static final String NotificationId="NotificationId";
-    public static final String RecivedTime="RecivedTime";
-    public static final String wxPackgeName="wxPackgeName";
-    public static final String qqPackgeName="qqPackgeName";
+    public static Handler msgHandler;
+    public static int notifyId;
+
+//    public static final String msgIdReply="msgIdReply";
+  //  public static final String qqReplyUrl="qqReplyUrl";
+    //public static final String ReplyType="ReplyType";
+    //public static final String msgType="msgType";
+    //public static final String wxReplyUrl="wxReplyUrl";
+    //public static final String messageTitle="messageTitle";
+    //public static final String messageBody="messageBody";
+ //   public static final String NotificationId="NotificationId";
+    //public static final String RecivedTime="RecivedTime";
+    //public static final String wxPackgeName="wxPackgeName";
+    //public static final String qqPackgeName="qqPackgeName";
 
 
     @Override
@@ -87,7 +95,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
                 if(msgAdapter!=null){
                     msgAdapter.notifyDataSetChanged();
-                    msgListView.setSelection(msgSave.get(msgIdReplyDo).size());
+                    msgListView.setSelection(msgSave.get(msgId).size());
                 }
 
                 super.handleMessage(msg);
@@ -95,26 +103,27 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         };
 
         Intent intent = this.getIntent();
+        Bundle msgDialogBundle = intent.getExtras();
 
-        NotificationIdDo = intent.getIntExtra(NotificationId, -1);
-        msgIdReplyDo = intent.getStringExtra(msgIdReply);
-        messageTitleDo = intent.getStringExtra(messageTitle);
-        String messageBodyDo = intent.getStringExtra(messageBody);
-        ReplyTypeDo = intent.getStringExtra(ReplyType);
-        msgTypeDo = intent.getStringExtra(msgType);
-        String recivedTimeDo = intent.getStringExtra(RecivedTime);
-        qqPackgeNameDo = intent.getStringExtra(qqPackgeName);
-        wxPackgeNameDo = intent.getStringExtra(wxPackgeName);
+        notifyId = msgDialogBundle.getInt("notifyId");
+        msgId = msgDialogBundle.getString("msgId");
+        msgTitle =msgDialogBundle.getString("msgTitle");
+        msgBody =msgDialogBundle.getString("msgBody");
+        senderType =msgDialogBundle.getString("senderType");
+        msgType =msgDialogBundle.getString("msgType");
+        msgTime =msgDialogBundle.getString("msgTime");
+        if(msgDialogBundle.containsKey("qqPackgeName")) qqPackgeName =msgDialogBundle.getString("qqPackgeName");
+       // if(msgDialogBundle.containsKey("qqReplyUrl"))  qqReplyUrl =msgDialogBundle.getString("qqReplyUrl");
+        if(msgDialogBundle.containsKey("wxPackgeName"))  wxPackgeName =msgDialogBundle.getString("wxPackgeName");
+      //  if(msgDialogBundle.containsKey("wxReplyUrl"))  wxReplyUrl =msgDialogBundle.getString("wxReplyUrl");
 
         //重新计数并清除通知
-        if(msgCountMap.get(NotificationIdDo)!=null)
-        msgCountMap.put(NotificationIdDo, 0);
-        if (NotificationIdDo != -1) {
+        if(msgCountMap.get(notifyId)!=null)
+        msgCountMap.put(notifyId, 0);
+        if (notifyId != -1) {
             NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(NotificationIdDo);
+            notificationManager.cancel(notifyId);
         }
-
-
 
         //显示弹窗界面
 
@@ -122,7 +131,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
         //清除列表未读计数
         for(int    i=0;    i<currentUserList.size();    i++){
-            if(currentUserList.get(i).getUserId().equals(msgIdReplyDo)){
+            if(currentUserList.get(i).getUserId().equals(msgId)){
                 currentUserList.get(i).setMsgCount("0");
                 if(CurrentUserActivity.userHandler!=null)
                     new userThread().start();
@@ -144,7 +153,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         TextView sysTextView = (TextView) findViewById(R.id.msgType_text);
 
         //纯系统消息选择屏蔽Listview消息记录，单独显示Textview
-        if(msgIdReplyDo.equals("0")) {
+        if(msgId.equals("0")) {
 
             msgListLinearLayout.setVisibility(View.GONE);
             imageButton_send.setVisibility(View.GONE);
@@ -154,7 +163,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         }
 
         //弹窗图标和是否开启发送按钮
-        if(msgTypeDo.equals("Mojo-Webqq")) {
+        if(msgType.equals(QQ)) {
             imgMsgType.setImageResource(R.mipmap.qq);
             if(!qqIsReply) {
                 imageButton_send.setEnabled(false);
@@ -167,7 +176,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 editText_content.setText("服务端未登录");
             }
 
-        }else if(msgTypeDo.equals("Mojo-Weixin")){
+        }else if(msgType.equals(WEIXIN)){
             imgMsgType.setImageResource(R.mipmap.weixin);
             if(!wxIsReply) {
                 imageButton_send.setEnabled(false);
@@ -181,7 +190,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
             }
         }else {
             //系统消息中的QQ和微信服务通知图标
-            switch (msgIdReplyDo) {
+            switch (msgId) {
                 case "0":
                     imgMsgType.setImageResource(R.mipmap.pin);
                     break;
@@ -202,28 +211,28 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         }
 
         //应用杀掉后读取最后一条通知内容作为聊天记录
-       if(msgSave.get(msgIdReplyDo)==null) {
+       if(msgSave.get(msgId)==null) {
 
            List<Spanned> msgList = new ArrayList<>();
            String    str    =    "";
-           if(msgTypeDo.equals("Mojo-Webqq")){
-               str    =    "<font color='"+qqColor+"'><small>"+ recivedTimeDo +"</small></font><br>";
-           }else if(msgTypeDo.equals("Mojo-Weixin")){
-               str    =    "<font color='"+wxColor+"'><small>"+ recivedTimeDo +"</small></font><br>";
-           }else if(msgTypeDo.equals("Mojo-Sys")){
-               str    =    "<small>"+ recivedTimeDo +"</small><br>";
+           if(msgType.equals(QQ)){
+               str    =    "<font color='"+qqColor+"'><small>"+ msgTime +"</small></font><br>";
+           }else if(msgType.equals(WEIXIN)){
+               str    =    "<font color='"+wxColor+"'><small>"+ msgTime +"</small></font><br>";
+           }else if(msgType.equals(SYS)){
+               str    =    "<small>"+ msgTime +"</small><br>";
            }
-           if(!messageBodyDo.equals("主动聊天")) {
-               msgList.add(toSpannedMessage(str + messageBodyDo));
+           if(!msgBody.equals("主动聊天")) {
+               msgList.add(toSpannedMessage(str + msgBody));
 
            }else {
                msgList.add(toSpannedMessage(""));
            }
-           msgSave.put(msgIdReplyDo, msgList);
+           msgSave.put(msgId, msgList);
         }
 
-        textView_sender.setText(messageTitleDo); //弹窗标题
-        msgAdapter = new ArrayAdapter<>(DialogActivity.this,R.layout.dialog_msglist_item,R.id.text_message_item,msgSave.get(msgIdReplyDo));
+        textView_sender.setText(msgTitle); //弹窗标题
+        msgAdapter = new ArrayAdapter<>(DialogActivity.this,R.layout.dialog_msglist_item,R.id.text_message_item,msgSave.get(msgId));
         msgListView.setAdapter(msgAdapter);
         imageButton_send.setOnClickListener(this);
     }
@@ -231,21 +240,21 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         //窗口清除时将消息ID设为-1，供消息处理判断是否弹出通知
-        NotificationIdDo=-1;
+        notifyId =-1;
         super.onDestroy();
     }
 
     @Override
     protected void onStop() {
         //窗口清除时将消息ID设为-1，供消息处理判断是否弹出通知
-        NotificationIdDo=-1;
+        notifyId =-1;
         super.onStop();
     }
 
     @Override
     protected void onPause() {
         //窗口清除时将消息ID设为-1，供消息处理判断是否弹出通知
-        NotificationIdDo=-1;
+        notifyId =-1;
         super.onPause();
     }
 
@@ -260,7 +269,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
                 if(editText_content.getText().toString().length()==0)
                     break;
-                String sendResult = sendMessage(editText_content.getText().toString(), msgIdReplyDo,ReplyTypeDo,msgTypeDo);
+                String sendResult = sendMessage(editText_content.getText().toString(), msgId, senderType, msgType);
                 String isSucess = "";
                 if(sendResult.equals("发送成功")) {
                     isSucess = "";
@@ -271,21 +280,21 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
                 //将发送信息加入聊天记录
                 Spanned mySendMsg;
-                mySendMsg=toSpannedMessage(msgTime(msgTypeDo,true) + isSucess + editText_content.getText().toString());
-                if(msgSave.get(msgIdReplyDo)==null) {
+                mySendMsg=toSpannedMessage(msgTime(msgType,true) + isSucess + editText_content.getText().toString());
+                if(msgSave.get(msgId)==null) {
                     List<Spanned> msgList = new ArrayList<>();
                     msgList.add(mySendMsg);
-                    msgSave.put(msgIdReplyDo,msgList);
+                    msgSave.put(msgId,msgList);
                 } else {
-                    List<Spanned> msgList=msgSave.get(msgIdReplyDo);
+                    List<Spanned> msgList=msgSave.get(msgId);
                     msgList.add(mySendMsg);
-                    msgSave.put(msgIdReplyDo,msgList);
+                    msgSave.put(msgId,msgList);
                 }
 
                 //将发送信息加入会话列表
-                User currentUser = new User(messageTitleDo,msgIdReplyDo,msgTypeDo,editText_content.getText().toString(),curTime(),ReplyTypeDo,NotificationIdDo,"0");
+                User currentUser = new User(msgTitle, msgId, msgType,editText_content.getText().toString(),curTime(), senderType, notifyId,"0");
                 for(int    i=0;    i<currentUserList.size();    i++){
-                    if(currentUserList.get(i).getUserId().equals(msgIdReplyDo)){
+                    if(currentUserList.get(i).getUserId().equals(msgId)){
                         currentUserList.remove(i);
                         break;
                     }
@@ -297,14 +306,14 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                     new userThread().start();
 
                 msgAdapter.notifyDataSetChanged();
-                msgListView.setSelection(msgSave.get(msgIdReplyDo).size());
+                msgListView.setSelection(msgSave.get(msgId).size());
                 editText_content.setText("");
             //    DialogActivity.this.finish();
                 break;
         }
     }
 
-    private String sendMessage(String content, String msgIdReply ,String senderTypeReply,String msgTypeReply) {
+    private String sendMessage(String msgSend, String msgId ,String senderType,String msgType) {
 
         SharedPreferences Settings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
         String urlServer="";
@@ -312,29 +321,29 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         String urlQX="";
         String urlSend="";
 
-        HashMap<String, String> request = new HashMap<>();
+        HashMap<String, String> msgSendRequest = new HashMap<>();
 
-        if(msgTypeReply.equals("Mojo-Webqq")){
+        if(msgType.equals(QQ)){
             urlServer=Settings.getString("edit_text_preference_qq_replyurl","");
             urlQX="openqq";
-        }else if(msgTypeReply.equals("Mojo-Weixin")){
+        }else if(msgType.equals(WEIXIN)){
             urlServer=Settings.getString("edit_text_preference_wx_replyurl","");
             urlQX="openwx";
         }
 
-        if(senderTypeReply.equals("1")){
+        if(senderType.equals("1")){
             urlType="/"+urlQX+"/send_friend_message";
-        }else if(senderTypeReply.equals("2")){
+        }else if(senderType.equals("2")){
             urlType="/"+urlQX+"/send_group_message";
-        }else if(senderTypeReply.equals("3")){
+        }else if(senderType.equals("3")){
             urlType="/"+urlQX+"/send_discuss_message";
         }
 
         urlSend=urlServer+urlType;
-        request.put("id",msgIdReply);
-        request.put("content",content);
+        msgSendRequest.put("id",msgId);
+        msgSendRequest.put("content",msgSend);
 
-        return doGetRequestResutl(urlSend,request);
+        return doGetRequestResutl(urlSend,msgSendRequest);
 
     }
 
@@ -379,8 +388,6 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         }
 
         return sendResult;
-
-
     }
 
     @Override
@@ -395,10 +402,10 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         switch (v.getId()){
             case R.id.title_relativeLayout:
                 //System.out.println("整个布局被点击");
-                if(msgTypeDo.equals("Mojo-Webqq")) {
+                if(msgType.equals(QQ)) {
                     //打开QQ
                     // 通过包名获取要跳转的app，创建intent对象
-                    Intent intentNewQq = this.getPackageManager().getLaunchIntentForPackage(qqPackgeNameDo);
+                    Intent intentNewQq = this.getPackageManager().getLaunchIntentForPackage(qqPackgeName);
 
                     if (intentNewQq != null) {
                         this.startActivity(intentNewQq);
@@ -407,10 +414,10 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                         Toast.makeText(this.getApplicationContext(), "未检测到"+qqPackgeName, Toast.LENGTH_LONG).show();
                     }
 
-                }else if(msgTypeDo.equals("Mojo-Weixin")){
+                }else if(msgType.equals(WEIXIN)){
                     //打开微信
 
-                    Intent intentNewWx = this.getPackageManager().getLaunchIntentForPackage(wxPackgeNameDo);
+                    Intent intentNewWx = this.getPackageManager().getLaunchIntentForPackage(wxPackgeName);
 
                     if (intentNewWx != null) {
                         this.startActivity(intentNewWx);
@@ -419,7 +426,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                         Toast.makeText(this.getApplicationContext(), "未检测到"+wxPackgeName, Toast.LENGTH_LONG).show();
                     }
 
-                }else if(msgTypeDo.equals("Mojo-Sys")) {
+                }else if(msgType.equals(SYS)) {
                     //打开主界面
                     Intent intentNewSys = new Intent(this, CurrentUserActivity.class);
                     this.startActivity(intentNewSys);

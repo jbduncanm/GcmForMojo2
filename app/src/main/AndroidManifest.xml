@@ -67,7 +67,6 @@
             <intent-filter>
                 <action android:name="qq_notification_cancelled" />
                 <action android:name="qq_notification_clicked" />
-                <action android:name="qq_notification_reply" />
             </intent-filter>
         </receiver>
         <receiver

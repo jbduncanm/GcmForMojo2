@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 public class User implements Serializable {
 
-    public User(String userName,String userId,String userType,String userMessage,String userTime,String senderType,int NotificationId,String msgCount){
+    public User(String userName,String userId,String userType,String userMessage,String userTime,String senderType,int notifyId,String msgCount){
 
         this.userName=userName;
         this.userId=userId;
@@ -17,7 +17,7 @@ public class User implements Serializable {
         this.userMessage=userMessage;
         this.userTime=userTime;
         this.senderType=senderType;
-        this.NotificationId=NotificationId;
+        this.notifyId =notifyId;
         this.msgCount=msgCount;
 
     }
@@ -28,7 +28,7 @@ public class User implements Serializable {
     private String userMessage;
     private String userTime;
     private String senderType;
-    private int NotificationId;
+    private int notifyId;
     private String msgCount;
 
     public  String getUserName (){
@@ -49,13 +49,12 @@ public class User implements Serializable {
     public  String getSenderType (){
         return senderType;
     }
-    public  int getNotificationId (){
-        return NotificationId;
+    public  int getNotifyId(){
+        return notifyId;
     }
     public  String getMsgCount (){
         return msgCount;
     }
-
 
     public void setUserName(String userName) {
         this.userName = userName;
@@ -73,8 +72,8 @@ public class User implements Serializable {
     public void setUSenderType(String senderType) {
         this.senderType = senderType;
     }
-    public void setNotificationId(int NotificationId) {
-        this.NotificationId = NotificationId;
+    public void setNotifyId(int NotificationId) {
+        this.notifyId = NotificationId;
     }
     public void setMsgCount(String msgCount) {
         this.msgCount = msgCount;

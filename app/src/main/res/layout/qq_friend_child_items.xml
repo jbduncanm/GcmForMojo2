@@ -9,6 +9,6 @@
         android:layout_width="wrap_content"
         android:id="@+id/qq_friend_child_name"
         android:layout_weight="1"
-        android:layout_height="25dp"
+        android:layout_height="30dp"
         android:gravity="left|center_vertical" />
 </LinearLayout>

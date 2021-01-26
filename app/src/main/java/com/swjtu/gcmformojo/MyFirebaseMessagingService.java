@@ -26,7 +26,6 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
-import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.widget.Toast;
@@ -43,41 +42,36 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
 import static android.app.Notification.DEFAULT_LIGHTS;
-import static android.text.Html.FROM_HTML_MODE_COMPACT;
-import static com.swjtu.gcmformojo.CurrentUserActivity.currentUserList;
+import static com.swjtu.gcmformojo.MyApplication.MYTAG;
+import static com.swjtu.gcmformojo.MyApplication.QQ;
+import static com.swjtu.gcmformojo.MyApplication.SYS;
+import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
+import static com.swjtu.gcmformojo.MyApplication.getColorMsgTime;
+import static com.swjtu.gcmformojo.MyApplication.getCurTime;
+import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
+
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    public static final String MYTAG = "GcmForMojo";
-
-    final public static Map<Integer, Integer> msgCountMap = new HashMap<>();
-    final public static Map<String, List<Spanned>> msgSave = new HashMap<>();
-    final private static Map<String, Integer> msgIdMap = new HashMap<>();
-
-
-    //消息类型常量
-    final public static String QQ="Mojo-Webqq";
-    final public static String WEIXIN="Mojo-Weixin";
-    final public static String SYS="Mojo-Sys";
-
-    final public static String qqColor="#1296DB";
-    final public static String wxColor="#62B900";
+    private Map<String, List<Spanned>> msgSave;
+    private Map<Integer, Integer> msgCountMap;
+    private ArrayList<User> currentUserList;
+    private static Map<String, Integer> msgIdMap = new HashMap<>();
 
     public static  int isQqOnline=1;
     public static  int isWxOnline=1;
+
+
 
 
     /**
@@ -101,6 +95,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         //handler = new Handler(Looper.getMainLooper()); // 使用应用的主消息循环
+
+
+        msgSave = MyApplication.getInstance().getMsgSave();
+        msgCountMap = MyApplication.getInstance().getMsgCountMap();
+        currentUserList = MyApplication.getInstance().getCurrentUserList();
 
 
         Log.d(MYTAG, "From: " + remoteMessage.getFrom());
@@ -127,6 +126,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // message, here is where that should be initiated. See sendNotification method below.
 
         if (remoteMessage.getData().size() > 0) {
+
+
 
             String msgId;
             String userId;
@@ -187,7 +188,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             msgCountMap.put(notifyId,msgCount);
 
             //无论任何设置都先存储消息，供对话列表使用,仅更新最后一条消息
-            User currentUser = new User(msgTitle,msgId,msgType,msgBody,curTime(),senderType,notifyId,String.valueOf(msgCount));
+            User currentUser = new User(msgTitle,msgId,msgType,msgBody, getCurTime(),senderType,notifyId,String.valueOf(msgCount));
             for(int    i=0;    i<currentUserList.size();    i++){
                if(currentUserList.get(i).getUserId().equals(msgId)){
                    currentUserList.remove(i);
@@ -199,7 +200,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 new userThread().start();
 
             //存储对话框消息记录：有可能存储后系统回收内存造成点击通知进入列表界面后为空，需要在点击时将相关变量传入会话列表界面。
-            Spanned spannedMessage=toSpannedMessage(msgTime(msgType,false)+msgBody);
+            Spanned spannedMessage=toSpannedMessage(getColorMsgTime(msgType,false)+msgBody);
 
           if(msgSave.get(msgId)==null) {
 
@@ -497,7 +498,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         msgListBundle.putString("userId",msgId);
         msgListBundle.putString("userType",QQ);
         msgListBundle.putString("userMessage",msgBody);
-        msgListBundle.putString("userTime",curTime());
+        msgListBundle.putString("userTime", getCurTime());
         msgListBundle.putString("senderType",senderType);
         msgListBundle.putInt("notifyId",notifyId);
         msgListBundle.putString("msgCount",String.valueOf(msgCount));
@@ -569,7 +570,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             msgDialogBundle.putString("msgTitle",msgTitle);
             msgDialogBundle.putString("msgBody",msgBody);
             msgDialogBundle.putInt("notifyId",notifyId);
-            msgDialogBundle.putString("msgTime",curTime());
+            msgDialogBundle.putString("msgTime", getCurTime());
             msgDialogBundle.putString("qqPackgeName",qqPackgeName);
             intentReply.putExtras(msgDialogBundle);
 
@@ -613,7 +614,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         msgListBundle.putString("userId",msgId);
         msgListBundle.putString("userType",WEIXIN);
         msgListBundle.putString("userMessage",msgBody);
-        msgListBundle.putString("userTime",curTime());
+        msgListBundle.putString("userTime", getCurTime());
         msgListBundle.putString("senderType",senderType);
         msgListBundle.putInt("notifyId",notifyId);
         msgListBundle.putString("msgCount",String.valueOf(msgCount));
@@ -684,7 +685,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             msgDialogBundle.putString("msgTitle",msgTitle);
             msgDialogBundle.putString("msgBody",msgBody);
             msgDialogBundle.putInt("notifyId",notifyId);
-            msgDialogBundle.putString("msgTime",curTime());
+            msgDialogBundle.putString("msgTime", getCurTime());
             msgDialogBundle.putString("wxPackgeName",wxPackgeName);
             intentReply.putExtras(msgDialogBundle);
 
@@ -708,7 +709,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         msgListBundle.putString("userId",msgId);
         msgListBundle.putString("userType",SYS);
         msgListBundle.putString("userMessage",msgBody);
-        msgListBundle.putString("userTime",curTime());
+        msgListBundle.putString("userTime", getCurTime());
         msgListBundle.putString("senderType","1");
         msgListBundle.putInt("notifyId",notifyId);
         msgListBundle.putString("msgCount",String.valueOf(msgCount));
@@ -939,89 +940,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
 
-    public static void  clearMsgCount(String msgId,int motifyId){
 
-        msgCountMap.put(motifyId, 0);
-        for(int    i=0;    i<currentUserList.size();    i++){
-            if(currentUserList.get(i).getUserId().equals(msgId)){
-                currentUserList.get(i).setMsgCount("0");
-               // if(CurrentUserActivity.userHandler!=null)
-              //      new userThread().start();
-                break;
-            }
-        }
-
-    }
-
-
-
-    /**
-     *  转换文字格式
-     *
-     *
-     */
-
-    public static String curTime(){
-
-        SimpleDateFormat formatter    =   new    SimpleDateFormat    ("yyyy/MM/dd HH:mm:ss",Locale.getDefault());
-        Date curDate    =   new    Date(System.currentTimeMillis());//获取当前时间
-        return formatter.format(curDate);
-    }
-
-
-    public static Spanned toSpannedMessage(String message){
-
-        Spanned tmpMsg;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            tmpMsg=Html.fromHtml(message,FROM_HTML_MODE_COMPACT);
-        } else {
-            tmpMsg=Html.fromHtml(message);
-        }
-
-        return tmpMsg;
-
-    }
-
-
-    public static String msgTime(String messageType,Boolean isSend){
-
-        String    str    =    "";
-        if(!isSend) {
-            if(messageType.equals("Mojo-Webqq")){
-                str    =    "<font color='"+qqColor+"'><small>"+curTime()+"</small></font><br>";
-            }else if(messageType.equals("Mojo-Weixin")){
-                str    =    "<font color='"+wxColor+"'><small>"+curTime()+"</small></font><br>";
-            }
-        }else {
-            if(messageType.equals("Mojo-Webqq")){
-                str    =    "<font color='"+wxColor+"'><small>"+curTime()+"</small></font><br>";
-            }else if(messageType.equals("Mojo-Weixin")){
-                str    =    "<font color='"+qqColor+"'><small>"+curTime()+"</small></font><br>";
-            }
-        }
-        return str;
-    }
-
-
-    public static String msgColor(String message,String messageType,Boolean isSend) {
-
-        String str = "";
-        if(!isSend) {
-            if (messageType.equals("Mojo-Webqq")) {
-                str = "<font color='"+qqColor+"'>" + message + "</font>";
-            } else if (messageType.equals("Mojo-Weixin")) {
-                str = "<font color='"+wxColor+"'>" + message + "</font>";
-            }
-        }else {
-            if (messageType.equals("Mojo-Webqq")) {
-                str = "<font color='"+wxColor+"'>" + message + "</font>";
-            } else if (messageType.equals("Mojo-Weixin")) {
-                str = "<font color='"+qqColor+"'>" + message + "</font>";
-            }
-        }
-        return str;
-    }
 
 /*
 *子线程处理弹出框通信

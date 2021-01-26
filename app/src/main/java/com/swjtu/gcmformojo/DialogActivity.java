@@ -26,26 +26,31 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.QQ;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.SYS;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.WEIXIN;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.curTime;
-import static com.swjtu.gcmformojo.CurrentUserActivity.currentUserList;
+
+import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isQqOnline;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isWxOnline;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.msgCountMap;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.msgSave;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.msgTime;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.qqColor;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.toSpannedMessage;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.wxColor;
+import static com.swjtu.gcmformojo.MyApplication.QQ;
+import static com.swjtu.gcmformojo.MyApplication.SYS;
+import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
+import static com.swjtu.gcmformojo.MyApplication.getColorMsgTime;
+import static com.swjtu.gcmformojo.MyApplication.getCurTime;
+import static com.swjtu.gcmformojo.MyApplication.qqColor;
+import static com.swjtu.gcmformojo.MyApplication.wxColor;
+
 
 public class DialogActivity extends Activity  implements View.OnClickListener {
+
+   // private MyApplication MyApplication;
+    private ArrayList<User> currentUserList;
+    private Map<String, List<Spanned>> msgSave;
+    private Map<Integer, Integer> msgCountMap;
 
     private EditText editText_content;
     private ListView msgListView;
@@ -64,18 +69,6 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
     public static Handler msgHandler;
     public static int notifyId;
 
-//    public static final String msgIdReply="msgIdReply";
-  //  public static final String qqReplyUrl="qqReplyUrl";
-    //public static final String ReplyType="ReplyType";
-    //public static final String msgType="msgType";
-    //public static final String wxReplyUrl="wxReplyUrl";
-    //public static final String messageTitle="messageTitle";
-    //public static final String messageBody="messageBody";
- //   public static final String NotificationId="NotificationId";
-    //public static final String RecivedTime="RecivedTime";
-    //public static final String wxPackgeName="wxPackgeName";
-    //public static final String qqPackgeName="qqPackgeName";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,10 +81,15 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE); //hide activity title
         setFinishOnTouchOutside(true);//
 
+        //MyApplication = (MyApplication) getApplication();
+        msgSave = MyApplication.getInstance().getMsgSave();
+        currentUserList = MyApplication.getInstance().getCurrentUserList();
+        msgCountMap = MyApplication.getInstance().getMsgCountMap();
+
         msgHandler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
-                String string = (String)msg.obj;
+                String handlerMsg = (String)msg.obj;
 
                 if(msgAdapter!=null){
                     msgAdapter.notifyDataSetChanged();
@@ -280,7 +278,8 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
                 //将发送信息加入聊天记录
                 Spanned mySendMsg;
-                mySendMsg=toSpannedMessage(msgTime(msgType,true) + isSucess + editText_content.getText().toString());
+                String str = getColorMsgTime(msgType,true);
+                mySendMsg=toSpannedMessage( str + isSucess + editText_content.getText().toString());
                 if(msgSave.get(msgId)==null) {
                     List<Spanned> msgList = new ArrayList<>();
                     msgList.add(mySendMsg);
@@ -292,7 +291,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 }
 
                 //将发送信息加入会话列表
-                User currentUser = new User(msgTitle, msgId, msgType,editText_content.getText().toString(),curTime(), senderType, notifyId,"0");
+                User currentUser = new User(msgTitle, msgId, msgType,editText_content.getText().toString(), getCurTime(), senderType, notifyId,"0");
                 for(int    i=0;    i<currentUserList.size();    i++){
                     if(currentUserList.get(i).getUserId().equals(msgId)){
                         currentUserList.remove(i);

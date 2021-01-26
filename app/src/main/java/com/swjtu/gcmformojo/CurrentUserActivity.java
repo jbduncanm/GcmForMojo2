@@ -15,17 +15,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import java.util.ArrayList;
 
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.QQ;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.SYS;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.WEIXIN;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.curTime;
+import static com.swjtu.gcmformojo.MyApplication.QQ;
+import static com.swjtu.gcmformojo.MyApplication.SYS;
+import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
+import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 
 public class CurrentUserActivity extends AppCompatActivity {
 
-    final public static ArrayList<User> currentUserList = new ArrayList<>();
+    private MyApplication MyApplication;
+    private ArrayList<User> currentUserList;
     public static Handler userHandler;
     public ListView currentUserListView;
     public UserAdapter currentUserAdapter;
@@ -41,6 +41,10 @@ public class CurrentUserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_current_user);
+
+        MyApplication = (MyApplication) getApplication();
+        currentUserList = MyApplication.getCurrentUserList();
+
         verifyStoragePermissions(this);
 
         userHandler = new Handler(){
@@ -203,11 +207,11 @@ public class CurrentUserActivity extends AppCompatActivity {
 
         super.onResume();
         if (!isHaveMsg(currentUserList,"2"))
-            currentUserList.add(new User("微信机器人(未开放)", "2", WEIXIN, "用于控制服务端。", curTime(), "1", 2, "0"));
+            currentUserList.add(new User("微信机器人(未开放)", "2", WEIXIN, "用于控制服务端。", getCurTime(), "1", 2, "0"));
         if (!isHaveMsg(currentUserList,"1"))
-            currentUserList.add(new User("QQ机器人(未开放)", "1", QQ, "用于控制服务端。", curTime(), "1", 1, "0"));
+            currentUserList.add(new User("QQ机器人(未开放)", "1", QQ, "用于控制服务端。", getCurTime(), "1", 1, "0"));
         if (!isHaveMsg(currentUserList,"0"))
-            currentUserList.add(new User("欢迎使用GcmForMojo", "0", SYS, "请点击右上角选项获取设备码。", curTime(), "1", 0, "0"));
+            currentUserList.add(new User("欢迎使用GcmForMojo", "0", SYS, "请点击右上角选项获取设备码。", getCurTime(), "1", 0, "0"));
 
     }
 

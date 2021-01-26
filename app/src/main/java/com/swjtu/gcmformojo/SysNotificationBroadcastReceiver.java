@@ -7,9 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-
-import static com.swjtu.gcmformojo.CurrentUserActivity.currentUserList;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.msgCountMap;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by HeiPi on 2017/1/15.
@@ -18,8 +17,17 @@ import static com.swjtu.gcmformojo.MyFirebaseMessagingService.msgCountMap;
 
 public class SysNotificationBroadcastReceiver extends BroadcastReceiver {
 
+  //  private MyApplication MyApplication;
+    private ArrayList<User> currentUserList;
+    private Map<Integer, Integer> msgCountMap;
+
     @Override
     public void onReceive(Context context, Intent intent) {
+
+     //   MyApplication = (MyApplication) context.getApplicationContext();
+        currentUserList = MyApplication.getInstance().getCurrentUserList();
+        msgCountMap = MyApplication.getInstance().getMsgCountMap();
+
         String action = intent.getAction();
         Bundle msgNotifyBundle = intent.getExtras();
         int notifyId = msgNotifyBundle.getInt("notifyId");

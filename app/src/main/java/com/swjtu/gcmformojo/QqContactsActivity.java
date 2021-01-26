@@ -22,13 +22,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.QQ;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.curTime;
+import static com.swjtu.gcmformojo.MyApplication.QQ;
+import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 
 public class QqContactsActivity extends AppCompatActivity implements View.OnClickListener{
 
-    public final static ArrayList<QqFriend> qqFriendArrayList = new ArrayList<>();
-    public final static ArrayList<QqFriendGroup> qqFriendGroups= new ArrayList<>();
+   // public final static ArrayList<QqFriend> qqFriendArrayList = new ArrayList<>();
+   // public final static ArrayList<QqFriendGroup> qqFriendGroups= new ArrayList<>();
+    private ArrayList<QqFriend> qqFriendArrayList;
+    private ArrayList<QqFriendGroup> qqFriendGroups;
 
     ExpandableListView qqFriendExpandListView;
     Button qqContactsUpdateButton;
@@ -38,6 +40,10 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qq_contacts);
+
+        qqFriendArrayList = MyApplication.getInstance().getQqFriendArrayList();
+        qqFriendGroups = MyApplication.getInstance().getQqFriendGroups();
+
 
         qqFriendExpandListView = (ExpandableListView) findViewById(R.id.qq_friend_ExpandListView);
         qqContactsUpdateButton = (Button) findViewById(R.id.qq_contacts_update);
@@ -66,7 +72,7 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
                 msgDialogBundle.putString("msgTitle",name);
                 msgDialogBundle.putString("msgBody","主动聊天");
                 msgDialogBundle.putInt("notifyId",Integer.parseInt(p.get_id()));
-                msgDialogBundle.putString("msgTime",curTime());
+                msgDialogBundle.putString("msgTime", getCurTime());
 
                 intentSend.putExtras(msgDialogBundle);
                 startActivity(intentSend);

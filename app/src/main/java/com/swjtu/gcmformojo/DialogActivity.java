@@ -44,6 +44,7 @@ import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 import static com.swjtu.gcmformojo.MyApplication.qqColor;
 import static com.swjtu.gcmformojo.MyApplication.wxColor;
 
+
 public class DialogActivity extends Activity  implements View.OnClickListener {
 
    // private MyApplication MyApplication;

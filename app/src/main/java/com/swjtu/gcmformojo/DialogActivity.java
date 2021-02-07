@@ -32,7 +32,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-
 import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isQqOnline;
 import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isWxOnline;

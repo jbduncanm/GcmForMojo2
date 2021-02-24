@@ -85,7 +85,7 @@
         android:orientation="horizontal"
         android:paddingBottom="1dp" >
 
-        <EditText
+  <EditText
             android:id="@+id/edittext_content"
             android:layout_width="0.0dip"
             android:layout_height="match_parent"
@@ -94,9 +94,11 @@
             android:layout_weight="1.0"
             android:hint="输入信息"
             android:imeOptions="actionSend"
-            android:inputType="textCapSentences|textAutoCorrect|textMultiLine|textShortMessage"
+            android:inputType="text"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:maxLines="3"
+            android:maxLines="1"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:textColor="@android:color/black"
             android:background="@null" />
 

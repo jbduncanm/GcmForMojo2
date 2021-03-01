@@ -23,7 +23,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.text.Spanned;
@@ -64,10 +63,8 @@ import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 public class MyFirebaseMessagingService extends FirebaseMessagingService
 {
 
-    private static final String TAG = "MyFirebaseMessagingServ";
-    private Map<String, List<Spanned>> msgSave;
-    private Map<Integer, Integer> msgCountMap;
-    private ArrayList<User> currentUserList;
+  //  private static final String TAG = "MyFirebaseMessagingServ";
+
     private static Map<String, Integer> msgIdMap = new HashMap<>();
 
     public static int isQqOnline = 1;
@@ -96,6 +93,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         //handler = new Handler(Looper.getMainLooper()); // 使用应用的主消息循环
+
+        Map<String, List<Spanned>> msgSave;
+        Map<Integer, Integer> msgCountMap;
+        ArrayList<User> currentUserList;
 
 
         msgSave = MyApplication.getInstance().getMsgSave();
@@ -477,27 +478,34 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 }
 
                 //清除会话列表
-                if (remoteMessage.getData().get("title").contains("登录"))
+                if (msgTitle.contains("登录"))
                 {
                     if (msgId.equals("1"))
                     {
                         for (int i = 0; i < currentUserList.size(); i++)
                         {
-                            if (currentUserList.get(i).getUserType().equals("Mojo-Webqq"))
+                            if (currentUserList.get(i).getUserType().equals(QQ))
                             {
                                 currentUserList.remove(i);
                             }
                         }
+                        MyApplication.getInstance().getQqFriendArrayList().clear();
+                        MyApplication.getInstance().getQqFriendGroups().clear();
                     } else if (msgId.equals("2"))
                     {
                         for (int i = 0; i < currentUserList.size(); i++)
                         {
-                            if (currentUserList.get(i).getUserType().equals("Mojo-Weixin"))
+                            if (currentUserList.get(i).getUserType().equals(WEIXIN))
                             {
                                 currentUserList.remove(i);
                             }
                         }
                     }
+
+                    if (CurrentUserActivity.userHandler != null)
+                        new userThread().start();
+                 //   if (DialogActivity.msgHandler != null)
+                 //       new MsgThread().start();
 
                 }
 
@@ -521,12 +529,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                     if (msgId.equals("1"))
                     {
                         isQqOnline = 1;
-                        Log.i(TAG, "onMessageReceived: 准备删除二维码");
+                        /*
+                        //清除会话列表
+                        for(int i=0 ;i<currentUserList.size();i++) {
+                            if(currentUserList.get(i).getUserType().equals(QQ))
+                                currentUserList.remove(i);
+                        }
+
+                        //清除聊天记录
+                        Iterator p = msgSave.entrySet().iterator();
+                        while(p.hasNext()){
+                            Object o = p.next();
+                            String key = o.toString();
+                            if(key.length()>=9)
+                                msgSave.remove(key);
+                        }
+
+*/
+                        Log.i(MYTAG, "onMessageReceived: 准备删除二维码");
                         File file = new File(Environment.getExternalStorageDirectory() + "/GcmForMojo/");
                         File[] childFiles = file.listFiles();
                         for (File temp : childFiles)
                         {
-                            Log.d(TAG, "onMessageReceived: delete: " + temp.getAbsolutePath());
+                            Log.d(MYTAG, "onMessageReceived: delete: " + temp.getAbsolutePath());
                             temp.delete();
                         }
                     } else if (msgId.equals("2"))

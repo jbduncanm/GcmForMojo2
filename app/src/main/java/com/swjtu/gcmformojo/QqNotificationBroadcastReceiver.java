@@ -19,11 +19,13 @@ import java.util.Map;
 public class QqNotificationBroadcastReceiver extends BroadcastReceiver {
 
    // private MyApplication MyApplication;
-    private ArrayList<User> currentUserList;
-    private Map<Integer, Integer> msgCountMap;
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        ArrayList<User> currentUserList;
+        Map<Integer, Integer> msgCountMap;
 
       //  MyApplication = (MyApplication) context.getApplicationContext();
         currentUserList = MyApplication.getInstance().getCurrentUserList();

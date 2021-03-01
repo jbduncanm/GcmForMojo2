@@ -18,14 +18,12 @@ import java.util.Map;
 
 public class WeixinNotificationBroadcastReceiver extends BroadcastReceiver {
 
-   // private MyApplication MyApplication;
-    private ArrayList<User> currentUserList;
-    private Map<Integer, Integer> msgCountMap;
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
-      //  MyApplication = (MyApplication) context.getApplicationContext();
+        ArrayList<User> currentUserList;
+        Map<Integer, Integer> msgCountMap;
+
         currentUserList = MyApplication.getInstance().getCurrentUserList();
         msgCountMap = MyApplication.getInstance().getMsgCountMap();
 

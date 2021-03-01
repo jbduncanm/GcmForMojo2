@@ -61,8 +61,6 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
     private String msgTime;
     private String wxPackgeName;
     private String qqPackgeName;
-    private String wxReplyUrl;
-    private String qqReplyUrl;
     private static ArrayAdapter<Spanned> msgAdapter;
 
     public static Handler msgHandler;
@@ -273,7 +271,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 }else if(sendResult.equals("success")) {
                     isSucess = "";
                 }else
-                    isSucess = "<font color='#CC0000'>!</font> ";
+                    isSucess = "! ";
 
                 //将发送信息加入聊天记录
                 Spanned mySendMsg;
@@ -290,7 +288,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 }
 
                 //将发送信息加入会话列表
-                User currentUser = new User(msgTitle, msgId, msgType,editText_content.getText().toString(), getCurTime(), senderType, notifyId,"0");
+                User currentUser = new User(msgTitle, msgId, msgType,isSucess+editText_content.getText().toString(), getCurTime(), senderType, notifyId,"0");
                 for(int    i=0;    i<currentUserList.size();    i++){
                     if(currentUserList.get(i).getUserId().equals(msgId)){
                         currentUserList.remove(i);
@@ -346,15 +344,6 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
     }
 
     //子线程处理发送消息
-    private void  doGetRequest(final String URL, final HashMap<String, String> data){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-               NetUtil.doGetRequest(URL, data);
-            }
-        }).start();
-    }
-
     private String  doGetRequestResutl(final String URL, final HashMap<String, String> data){
 
         String sendResultJson="";
@@ -366,7 +355,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                             public String call() throws Exception {
                                //Thread.sleep(2000);
                                return NetUtil.doGetRequest(URL, data);
-                            };
+                            }
                         }
                 );
         try {

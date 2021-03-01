@@ -24,7 +24,6 @@ import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 
 public class CurrentUserActivity extends AppCompatActivity {
 
-    private MyApplication MyApplication;
     private ArrayList<User> currentUserList;
     public static Handler userHandler;
     public ListView currentUserListView;
@@ -42,8 +41,7 @@ public class CurrentUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_current_user);
 
-        MyApplication = (MyApplication) getApplication();
-        currentUserList = MyApplication.getCurrentUserList();
+        currentUserList = MyApplication.getInstance().getCurrentUserList();
 
         verifyStoragePermissions(this);
 

@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Spanned;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -32,17 +34,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-
-import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isQqOnline;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isWxOnline;
 import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.SYS;
 import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
 import static com.swjtu.gcmformojo.MyApplication.getColorMsgTime;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 import static com.swjtu.gcmformojo.MyApplication.qqColor;
+import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 import static com.swjtu.gcmformojo.MyApplication.wxColor;
+import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isQqOnline;
+import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isWxOnline;
 
 public class DialogActivity extends Activity  implements View.OnClickListener {
 
@@ -229,6 +230,22 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         textView_sender.setText(msgTitle); //弹窗标题
         msgAdapter = new ArrayAdapter<>(DialogActivity.this,R.layout.dialog_msglist_item,R.id.text_message_item,msgSave.get(msgId));
         msgListView.setAdapter(msgAdapter);
+
+        editText_content.setFocusable(true);
+        editText_content.setFocusableInTouchMode(true);
+        editText_content.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId,
+                                          KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    //imageButton_send.setOnClickListener(this);
+                    sendMsgAction();
+                }
+
+                return false;
+            }
+        });
+
         imageButton_send.setOnClickListener(this);
     }
 
@@ -253,6 +270,53 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         super.onPause();
     }
 
+    public void sendMsgAction() {
+        if(editText_content.getText().toString().length()==0)
+            return;
+        String sendResult = sendMessage(editText_content.getText().toString(), msgId, senderType, msgType);
+        String isSucess = "";
+        if(sendResult.equals("发送成功")) {
+            isSucess = "";
+        }else if(sendResult.equals("success")) {
+            isSucess = "";
+        }else
+            isSucess = "! ";
+
+        //将发送信息加入聊天记录
+        Spanned mySendMsg;
+        String str = getColorMsgTime(msgType,true);
+        mySendMsg=toSpannedMessage( str + isSucess + editText_content.getText().toString());
+        if(msgSave.get(msgId)==null) {
+            List<Spanned> msgList = new ArrayList<>();
+            msgList.add(mySendMsg);
+            msgSave.put(msgId,msgList);
+        } else {
+            List<Spanned> msgList=msgSave.get(msgId);
+            msgList.add(mySendMsg);
+            msgSave.put(msgId,msgList);
+        }
+
+        //将发送信息加入会话列表
+        User currentUser = new User(msgTitle, msgId, msgType,isSucess+editText_content.getText().toString(), getCurTime(), senderType, notifyId,"0");
+        for(int    i=0;    i<currentUserList.size();    i++){
+            if(currentUserList.get(i).getUserId().equals(msgId)){
+                currentUserList.remove(i);
+                break;
+            }
+        }
+        currentUserList.add(0,currentUser);
+
+        //更新会话列表界面
+        if(CurrentUserActivity.userHandler!=null)
+            new userThread().start();
+
+        msgAdapter.notifyDataSetChanged();
+        msgListView.setSelection(msgSave.get(msgId).size());
+        editText_content.setText("");
+        //    DialogActivity.this.finish();
+    }
+
+
     @Override
     public void onClick(View v) {
 
@@ -261,50 +325,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
             //    DialogActivity.this.finish();
             //    break;
             case R.id.imagebutton_send:
-
-                if(editText_content.getText().toString().length()==0)
-                    break;
-                String sendResult = sendMessage(editText_content.getText().toString(), msgId, senderType, msgType);
-                String isSucess = "";
-                if(sendResult.equals("发送成功")) {
-                    isSucess = "";
-                }else if(sendResult.equals("success")) {
-                    isSucess = "";
-                }else
-                    isSucess = "! ";
-
-                //将发送信息加入聊天记录
-                Spanned mySendMsg;
-                String str = getColorMsgTime(msgType,true);
-                mySendMsg=toSpannedMessage( str + isSucess + editText_content.getText().toString());
-                if(msgSave.get(msgId)==null) {
-                    List<Spanned> msgList = new ArrayList<>();
-                    msgList.add(mySendMsg);
-                    msgSave.put(msgId,msgList);
-                } else {
-                    List<Spanned> msgList=msgSave.get(msgId);
-                    msgList.add(mySendMsg);
-                    msgSave.put(msgId,msgList);
-                }
-
-                //将发送信息加入会话列表
-                User currentUser = new User(msgTitle, msgId, msgType,isSucess+editText_content.getText().toString(), getCurTime(), senderType, notifyId,"0");
-                for(int    i=0;    i<currentUserList.size();    i++){
-                    if(currentUserList.get(i).getUserId().equals(msgId)){
-                        currentUserList.remove(i);
-                        break;
-                    }
-                }
-                currentUserList.add(0,currentUser);
-
-                //更新会话列表界面
-                if(CurrentUserActivity.userHandler!=null)
-                    new userThread().start();
-
-                msgAdapter.notifyDataSetChanged();
-                msgListView.setSelection(msgSave.get(msgId).size());
-                editText_content.setText("");
-            //    DialogActivity.this.finish();
+                sendMsgAction();
                 break;
         }
     }

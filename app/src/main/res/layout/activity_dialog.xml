@@ -109,7 +109,6 @@
             <ImageButton
                 android:id="@+id/imagebutton_send"
                 android:layout_width="wrap_content"
-                android:nextFocusLeft="@id/edittext_content"
                 android:src="@android:drawable/ic_menu_send"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

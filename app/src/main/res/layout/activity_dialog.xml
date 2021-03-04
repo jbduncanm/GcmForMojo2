@@ -97,10 +97,10 @@
             android:inputType="text"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:maxLines="1"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:textColor="@android:color/black"
-            android:background="@null" />
+            android:background="@null">
+            <requestFocus />
+  </EditText>
 
         <LinearLayout
             android:id="@+id/button_with_counter"

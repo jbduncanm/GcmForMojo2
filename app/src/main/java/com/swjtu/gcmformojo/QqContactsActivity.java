@@ -33,9 +33,9 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<QqFriend> qqFriendArrayList;
     private ArrayList<QqFriendGroup> qqFriendGroups;
 
-    ExpandableListView qqFriendExpandListView;
-    Button qqContactsUpdateButton;
-    QqFriendAdapter qqFriendAdapter;
+    private ExpandableListView qqFriendExpandListView;
+    private Button qqContactsUpdateButton;
+    private QqFriendAdapter qqFriendAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -140,12 +140,6 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
                 break;
 
         }
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
     }
 
     //获取好友信息

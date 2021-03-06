@@ -48,8 +48,9 @@ public class CurrentUserActivity extends AppCompatActivity {
         userHandler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
+                String handlerMsg = (String)msg.obj;
 
-                if(currentUserAdapter!=null){
+                if(handlerMsg.equals("UpdateCurrentUserList") && currentUserAdapter!=null){
                     currentUserAdapter.notifyDataSetChanged();
                 }
 
@@ -188,16 +189,6 @@ public class CurrentUserActivity extends AppCompatActivity {
 
     public Handler getHandler(){
         return userHandler;
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override

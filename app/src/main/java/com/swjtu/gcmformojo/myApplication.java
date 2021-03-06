@@ -29,12 +29,12 @@ public class MyApplication extends Application {
     final public static String qqColor="#1296DB";
     final public static String wxColor="#62B900";
 
-    private Map<String, List<Spanned>> msgSave = new HashMap<>();
-    private Map<Integer, Integer> msgCountMap = new HashMap<>();
-    private ArrayList<User> currentUserList = new ArrayList<>();
+    private final Map<String, List<Spanned>> msgSave = new HashMap<>();
+    private final Map<Integer, Integer> msgCountMap = new HashMap<>();
+    private final ArrayList<User> currentUserList = new ArrayList<>();
 
-    private ArrayList<QqFriend> qqFriendArrayList = new ArrayList<>();
-    private ArrayList<QqFriendGroup> qqFriendGroups= new ArrayList<>();
+    private final ArrayList<QqFriend> qqFriendArrayList = new ArrayList<>();
+    private final ArrayList<QqFriendGroup> qqFriendGroups= new ArrayList<>();
 
     private static MyApplication myApp;
 
@@ -109,6 +109,7 @@ public class MyApplication extends Application {
 
     }
 
+    @Deprecated
     public static String msgColor(String message,String messageType,Boolean isSend) {
 
         String str = "";

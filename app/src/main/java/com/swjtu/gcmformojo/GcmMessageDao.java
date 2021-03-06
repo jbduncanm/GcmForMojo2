@@ -160,7 +160,7 @@ public class GcmMessageDao {
         if(cursor.moveToNext()){
             phone=cursor.getString(0);
         }
-        cursor.close(); // 记得关闭 corsor
+        cursor.close(); // 记得关闭
         readableDatabase.close(); // 关闭数据库
         return phone;
     }

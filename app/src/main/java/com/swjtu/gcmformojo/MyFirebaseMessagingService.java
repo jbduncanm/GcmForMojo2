@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
@@ -46,6 +45,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -65,7 +65,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
   //  private static final String TAG = "MyFirebaseMessagingServ";
 
-    private static Map<String, Integer> msgIdMap = new HashMap<>();
+    private static final Map<String, Integer> msgIdMap = new HashMap<>();
 
     public static int isQqOnline = 1;
     public static int isWxOnline = 1;
@@ -482,15 +482,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 {
                     if (msgId.equals("1"))
                     {
-                        for (int i = 0; i < currentUserList.size(); i++)
-                        {
-                            if (currentUserList.get(i).getUserType().equals(QQ))
-                            {
-                                currentUserList.remove(i);
-                            }
-                        }
-                        MyApplication.getInstance().getQqFriendArrayList().clear();
-                        MyApplication.getInstance().getQqFriendGroups().clear();
+
                     } else if (msgId.equals("2"))
                     {
                         for (int i = 0; i < currentUserList.size(); i++)
@@ -502,14 +494,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                         }
                     }
 
-                    if (CurrentUserActivity.userHandler != null)
-                        new userThread().start();
-                 //   if (DialogActivity.msgHandler != null)
-                 //       new MsgThread().start();
+
 
                 }
 
-                //设置登录成功变量
+                //设置登录变量
                 if (msgTitle.contains("扫描二维码事件"))
                 {
 
@@ -526,38 +515,75 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 if (msgBody.contains("登录成功"))
                 {
 
-                    if (msgId.equals("1"))
+                    if (msgId.equals("1")) //QQ登录事件
                     {
                         isQqOnline = 1;
-                        /*
+
                         //清除会话列表
-                        for(int i=0 ;i<currentUserList.size();i++) {
-                            if(currentUserList.get(i).getUserType().equals(QQ))
+                        for (int i = 0; i < currentUserList.size(); i++)
+                        {
+                            if (currentUserList.get(i).getUserType().equals(QQ))
+                            {
                                 currentUserList.remove(i);
+                            }
                         }
+
+                        //清除好友列表
+                        MyApplication.getInstance().getQqFriendArrayList().clear();
+                        MyApplication.getInstance().getQqFriendGroups().clear();
 
                         //清除聊天记录
                         Iterator p = msgSave.entrySet().iterator();
                         while(p.hasNext()){
                             Object o = p.next();
                             String key = o.toString();
-                            if(key.length()>=9)
+                            if(key.length()==10)  //QQ的key使用msgId为10位
                                 msgSave.remove(key);
                         }
 
-*/
-                        Log.i(MYTAG, "onMessageReceived: 准备删除二维码");
-                        File file = new File(Environment.getExternalStorageDirectory() + "/GcmForMojo/");
-                        File[] childFiles = file.listFiles();
-                        for (File temp : childFiles)
-                        {
-                            Log.d(MYTAG, "onMessageReceived: delete: " + temp.getAbsolutePath());
-                            temp.delete();
-                        }
-                    } else if (msgId.equals("2"))
+
+                    } else if (msgId.equals("2")) //微信登录事件
                     {
                         isWxOnline = 1;
+
+                        //清除会话列表
+                        for (int i = 0; i < currentUserList.size(); i++)
+                        {
+                            if (currentUserList.get(i).getUserType().equals(WEIXIN))
+                            {
+                                currentUserList.remove(i);
+                            }
+                        }
+
+                        //清除好友列表
+
+                        //清除聊天记录
+                        Iterator p = msgSave.entrySet().iterator();
+                        while(p.hasNext()){
+                            Object o = p.next();
+                            String key = o.toString();
+                            if(key.length()>10)  //微信的key使用msgId大于10位
+                                msgSave.remove(key);
+                        }
+
                     }
+
+                    //删除所有二维码
+                    Log.i(MYTAG, "onMessageReceived: 准备删除二维码");
+                    File file = new File(Environment.getExternalStorageDirectory() + "/GcmForMojo/");
+                    File[] childFiles = file.listFiles();
+                    for (File temp : childFiles)
+                    {
+                        Log.d(MYTAG, "onMessageReceived: delete: " + temp.getAbsolutePath());
+                        temp.delete();
+                    }
+
+                    //更新会话列表
+                    if (CurrentUserActivity.userHandler != null)
+                        new userThread().start();
+                    //更新聊天对话框
+                    if (DialogActivity.msgHandler != null)
+                        new MsgThread().start();
 
                 }
 
@@ -922,8 +948,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     }
 
     //下载二维码
-    private static String download(Context context, String docUrl) throws Exception
-    {                           /***加载正文***/
+    private static void download(Context context, String docUrl) throws Exception
+    {
         //获取存储卡路径、构成保存文件的目标路径
         //SD卡具有读写权限、指定附件存储路径为SD卡上指定的文件夹
         String dirName = Environment.getExternalStorageDirectory() + "/GcmForMojo/";
@@ -935,7 +961,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         //准备拼接新的文件名
         String[] list = docUrl.split("/");
         String fileName = list[list.length - 1];
-        String fileNameTemp = fileName;
         fileName = dirName + fileName;
         File file = new File(fileName);
         if (file.exists())
@@ -1001,7 +1026,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         intent.setData(uri);
         context.sendBroadcast(intent);
         */
-        return fileName;
+       // return fileName;
     }
 
 
@@ -1095,27 +1120,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     *子线程处理弹出框通信
     *
      */
-    class MsgThread extends Thread
+    private class MsgThread extends Thread
     {
-        private Context context;
-        private Handler handler;
-
-        public MsgThread()
-        {
-
-        }
-
-        public MsgThread(Context context)
-        {
-            this.context = context;
-            this.handler = ((DialogActivity) context).getHandler();
-        }
-
         @Override
         public void run()
         {
             Message msg = new Message();
-            msg.obj = "Update msgList";
+            msg.obj = "UpdateMsgList";
             DialogActivity.msgHandler.sendMessage(msg);
             super.run();
         }
@@ -1127,25 +1138,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
  */
     class userThread extends Thread
     {
-        private Context context;
-        private Handler handler;
-
-        public userThread()
-        {
-
-        }
-
-        public userThread(Context context)
-        {
-            this.context = context;
-            this.handler = ((CurrentUserActivity) context).getHandler();
-        }
-
         @Override
         public void run()
         {
             Message msg = new Message();
-            msg.obj = "Update currentUserList";
+            msg.obj = "UpdateCurrentUserList";
             CurrentUserActivity.userHandler.sendMessage(msg);
             super.run();
         }

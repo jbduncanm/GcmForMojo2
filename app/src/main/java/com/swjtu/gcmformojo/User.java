@@ -7,7 +7,7 @@ import java.io.Serializable;
  * 消息列表数据结构
  */
 
-public class User implements Serializable {
+class User implements Serializable {
 
     public User(String userName,String userId,String userType,String userMessage,String userTime,String senderType,int notifyId,String msgCount){
 

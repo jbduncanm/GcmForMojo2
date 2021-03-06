@@ -13,7 +13,7 @@ import java.util.List;
  * Created by HeiPi on 2017/2/21.
  */
 
-public class QqFriendAdapter extends BaseExpandableListAdapter {
+class QqFriendAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private List<QqFriendGroup> group;

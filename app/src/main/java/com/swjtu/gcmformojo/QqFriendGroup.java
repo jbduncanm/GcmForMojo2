@@ -6,7 +6,7 @@ import java.util.List;
  * Created by HeiPi on 2017/2/21.
  */
 
-public class QqFriendGroup {
+class QqFriendGroup {
     private String groupName;// 分组名称
     private List<QqFriend> groupChild;// 对应分组的小组成员对象数组
 

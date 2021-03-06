@@ -8,8 +8,6 @@ import android.widget.TextView;
 
 public class HelpActivity extends AppCompatActivity {
 
-    private static final String TAG = "HelpActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +25,7 @@ public class HelpActivity extends AppCompatActivity {
      * 获取版本号
      * @return 当前应用的版本号
      */
-    public String getVersion() {
+    private String getVersion() {
         try {
             PackageManager manager = this.getPackageManager();
             PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);

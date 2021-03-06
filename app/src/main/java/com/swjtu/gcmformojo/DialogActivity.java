@@ -89,7 +89,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
             public void handleMessage(Message msg) {
                 String handlerMsg = (String)msg.obj;
 
-                if(msgAdapter!=null){
+                if(handlerMsg.equals("UpdateMsgList") && msgAdapter!=null){
                     msgAdapter.notifyDataSetChanged();
                     msgListView.setSelection(msgSave.get(msgId).size());
                 }
@@ -450,21 +450,10 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
     //子线程处理ui更新
     class userThread extends Thread {
-        private Context context;
-        private Handler handler;
-        public userThread(){
-
-        }
-
-        public userThread(Context context) {
-            this.context = context;
-            this.handler = ((CurrentUserActivity) context).getHandler();
-        }
-
         @Override
         public void run() {
             Message msg = new Message();
-            msg.obj = "Update currentUserList!";
+            msg.obj = "UpdateCurrentUserList";
             CurrentUserActivity.userHandler.sendMessage(msg);
             super.run();
         }

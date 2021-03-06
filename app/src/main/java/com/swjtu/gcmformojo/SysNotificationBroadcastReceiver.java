@@ -5,8 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -61,22 +61,11 @@ public class SysNotificationBroadcastReceiver extends BroadcastReceiver {
 *子线程处理会话界面通信
 *
 */
-    class userThread extends Thread {
-        private Context context;
-        private Handler handler;
-        public userThread(){
-
-        }
-
-        public userThread(Context context) {
-            this.context = context;
-            this.handler = ((CurrentUserActivity) context).getHandler();
-        }
-
+    private class userThread extends Thread {
         @Override
         public void run() {
             Message msg = new Message();
-            msg.obj = "Update currentUserList";
+            msg.obj = "UpdateCurrentUserList";
             CurrentUserActivity.userHandler.sendMessage(msg);
             super.run();
         }

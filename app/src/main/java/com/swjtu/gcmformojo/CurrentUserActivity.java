@@ -1,6 +1,7 @@
 package com.swjtu.gcmformojo;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
 import java.util.ArrayList;
 
 import static com.swjtu.gcmformojo.MyApplication.QQ;
@@ -65,6 +67,7 @@ public class CurrentUserActivity extends AppCompatActivity {
         final  String wxPackgeName=Settings.getString("edit_text_preference_wx_packgename","com.tencent.mm");
 
         currentUserListView = (ListView) findViewById(R.id.current_user_list_view);
+
         addNotfiyContent();
 
         currentUserAdapter = new UserAdapter(CurrentUserActivity.this,R.layout.current_userlist_item,currentUserList);
@@ -122,6 +125,21 @@ public class CurrentUserActivity extends AppCompatActivity {
         if(intentCurrentListUser!=null) {
             Bundle msgBundle = intentCurrentListUser.getExtras();
             if (msgBundle != null && msgBundle.containsKey("userId")) {
+
+                if (msgBundle.getInt("notifyId") != -1) {
+                    NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.cancel(msgBundle.getInt("notifyId"));
+                 /*   for(int    i=0;    i<currentUserList.size();    i++){
+                        if(currentUserList.get(i).getNotifyId()==notifyId){
+                            currentUserList.get(i).setMsgCount("0");
+                            if(CurrentUserActivity.userHandler!=null)
+                                new WeixinNotificationBroadcastReceiver.userThread().start();
+                            break;
+                        }
+                    }
+                    */
+
+                }
 
                 if (!isHaveMsg(currentUserList, msgBundle.getString("userId"))) {
                     User noifyMsg = new User(msgBundle.getString("userName"), msgBundle.getString("userId"), msgBundle.getString("userType"), msgBundle.getString("userMessage"), msgBundle.getString("userTime"), msgBundle.getString("senderType"), msgBundle.getInt("NotificationId"), msgBundle.getString("msgCount"));

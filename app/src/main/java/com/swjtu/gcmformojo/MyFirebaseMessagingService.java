@@ -673,11 +673,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 .setDefaults(DEFAULT_LIGHTS)
                 .setDeleteIntent(pendingIntentCancel);
 
-        //开启应用界面还是QQ界面
-        if (isOpenQq)
-            notificationBuilder.setContentIntent(pendingIntentClickQq);
-        else
-            notificationBuilder.setContentIntent(pendingIntent);
 
         //自动弹出
         notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
@@ -697,9 +692,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             notificationBuilder.setVibrate(new long[]{0});
         }
 
-        //快速回复功能
-        if (qqIsReply)
-        {
+        //通知按钮
+     //   if (qqIsReply)
+     //   {
             Intent intentReply = new Intent(this, DialogActivity.class);
             intentReply.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -716,9 +711,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             intentReply.putExtras(msgDialogBundle);
 
             PendingIntent pendingIntentReply = PendingIntent.getActivity(this, notifyId, intentReply, PendingIntent.FLAG_UPDATE_CURRENT);
-            notificationBuilder.addAction(0, "回复", pendingIntentReply);
+            notificationBuilder.addAction(0, "列表", pendingIntent);
             notificationBuilder.addAction(0, "清除", pendingIntentCancel);
-        }
+      //  }
+
+        //开启应用界面还是QQ界面
+        if (isOpenQq)
+            notificationBuilder.setContentIntent(pendingIntentClickQq);
+        else
+            notificationBuilder.setContentIntent(pendingIntentReply);
+
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -795,10 +797,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 .setDefaults(DEFAULT_LIGHTS)
                 .setDeleteIntent(pendingIntentCancel);
 
-        if (isOpenWx)
-            notificationBuilder.setContentIntent(pendingIntentClickWx);
-        else
-            notificationBuilder.setContentIntent(pendingIntent);
+
 
         //自动弹出
         notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
@@ -818,10 +817,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             notificationBuilder.setVibrate(new long[]{0});
         }
 
-        //快速回复功能
+        //通知按钮
 
-        if (wxIsReply)
-        {
+       // if (wxIsReply)
+       // {
             Intent intentReply = new Intent(this, DialogActivity.class);
             intentReply.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -838,9 +837,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             intentReply.putExtras(msgDialogBundle);
 
             PendingIntent pendingIntentReply = PendingIntent.getActivity(this, notifyId, intentReply, PendingIntent.FLAG_UPDATE_CURRENT);
-            notificationBuilder.addAction(0, "回复", pendingIntentReply);
+            notificationBuilder.addAction(0, "列表", pendingIntent);
             notificationBuilder.addAction(0, "清除", pendingIntentCancel);
-        }
+       // }
+
+        if (isOpenWx)
+            notificationBuilder.setContentIntent(pendingIntentClickWx);
+        else
+            notificationBuilder.setContentIntent(pendingIntentReply);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 

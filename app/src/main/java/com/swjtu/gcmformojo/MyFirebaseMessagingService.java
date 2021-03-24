@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -63,7 +64,7 @@ import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 public class MyFirebaseMessagingService extends FirebaseMessagingService
 {
 
-  //  private static final String TAG = "MyFirebaseMessagingServ";
+    //  private static final String TAG = "MyFirebaseMessagingServ";
 
     private static final Map<String, Integer> msgIdMap = new HashMap<>();
 
@@ -98,7 +99,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         Map<Integer, Integer> msgCountMap;
         ArrayList<User> currentUserList;
 
-
         msgSave = MyApplication.getInstance().getMsgSave();
         msgCountMap = MyApplication.getInstance().getMsgCountMap();
         currentUserList = MyApplication.getInstance().getCurrentUserList();
@@ -111,12 +111,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         {
             Log.d(MYTAG, "原始信息: " + remoteMessage.getData());
 
-
             // Looper.prepare();
             //  Toast.makeText(getApplicationContext(), remoteMessage.getData().get("title"), Toast.LENGTH_LONG).show();
             // Looper.loop();
-
-
         }
 
 
@@ -131,8 +128,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         if (remoteMessage.getData().size() > 0)
         {
-
-
             String msgId;
             String userId;
             String msgType;
@@ -263,9 +258,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             //通过设置参数进行通知
             if (msgType.equals(QQ))
             {
-
+                long time = new Date().getTime();
+                long paused_time = getSharedPreferences("paused_time", MODE_PRIVATE).getLong("paused_time", 0);
                 if (!Settings.getBoolean("check_box_preference_qq", false))
                 { //关闭推送
+                    return;
+                } else if (time < paused_time)
+                { //暂停通知
                     return;
                 }
 
@@ -449,6 +448,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                     msgBody = "你收到了消息！";
                 }
 
+                Calendar calendar = Calendar.getInstance();
                 sendNotificationQq(msgTitle, msgBody, notifyId, msgCount, qqSound, qqVibrate, msgId, senderType, qqPackgeName);
 
             } else if (msgType.equals(WEIXIN))
@@ -495,7 +495,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                     }
 
 
-
                 }
 
                 //设置登录变量
@@ -534,10 +533,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
                         //清除聊天记录
                         Iterator p = msgSave.entrySet().iterator();
-                        while(p.hasNext()){
+                        while (p.hasNext())
+                        {
                             Object o = p.next();
                             String key = o.toString();
-                            if(key.length()==10)  //QQ的key使用msgId为10位
+                            if (key.length() == 10)  //QQ的key使用msgId为10位
                                 msgSave.remove(key);
                         }
 
@@ -559,10 +559,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
                         //清除聊天记录
                         Iterator p = msgSave.entrySet().iterator();
-                        while(p.hasNext()){
+                        while (p.hasNext())
+                        {
                             Object o = p.next();
                             String key = o.toString();
-                            if(key.length()>10)  //微信的key使用msgId大于10位
+                            if (key.length() > 10)  //微信的key使用msgId大于10位
                                 msgSave.remove(key);
                         }
 
@@ -622,6 +623,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         intentCancel.setAction("qq_notification_cancelled");
         intentCancel.putExtras(msgNotifyBundle);
         PendingIntent pendingIntentCancel = PendingIntent.getBroadcast(this, notifyId, intentCancel, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //通知暂停事件 by Mystery0
+        Intent intentPause = new Intent(this, QqPausedNotificationReceiver.class);
+        intentPause.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intentCancel.setAction("qq_notification_paused");
+        intentCancel.putExtras(msgNotifyBundle);
+        PendingIntent pendingIntentPause = PendingIntent.getBroadcast(this, notifyId, intentPause, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //通知点击事件
         //应用界面 需要传递最后一次消息内容 避免会话列表为空
@@ -693,27 +701,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         }
 
         //通知按钮
-     //   if (qqIsReply)
-     //   {
-            Intent intentReply = new Intent(this, DialogActivity.class);
-            intentReply.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //   if (qqIsReply)
+        //   {
+        Intent intentReply = new Intent(this, DialogActivity.class);
+        intentReply.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            Bundle msgDialogBundle = new Bundle();
-            msgDialogBundle.putString("msgId", msgId);
-            // msgDialogBundle.putString("qqReplyUrl",qqReplyUrl);
-            msgDialogBundle.putString("senderType", senderType);
-            msgDialogBundle.putString("msgType", QQ);
-            msgDialogBundle.putString("msgTitle", msgTitle);
-            msgDialogBundle.putString("msgBody", msgBody);
-            msgDialogBundle.putInt("notifyId", notifyId);
-            msgDialogBundle.putString("msgTime", getCurTime());
-            msgDialogBundle.putString("qqPackgeName", qqPackgeName);
-            intentReply.putExtras(msgDialogBundle);
+        Bundle msgDialogBundle = new Bundle();
+        msgDialogBundle.putString("msgId", msgId);
+        // msgDialogBundle.putString("qqReplyUrl",qqReplyUrl);
+        msgDialogBundle.putString("senderType", senderType);
+        msgDialogBundle.putString("msgType", QQ);
+        msgDialogBundle.putString("msgTitle", msgTitle);
+        msgDialogBundle.putString("msgBody", msgBody);
+        msgDialogBundle.putInt("notifyId", notifyId);
+        msgDialogBundle.putString("msgTime", getCurTime());
+        msgDialogBundle.putString("qqPackgeName", qqPackgeName);
+        intentReply.putExtras(msgDialogBundle);
 
-            PendingIntent pendingIntentReply = PendingIntent.getActivity(this, notifyId, intentReply, PendingIntent.FLAG_UPDATE_CURRENT);
-            notificationBuilder.addAction(0, "列表", pendingIntent);
-            notificationBuilder.addAction(0, "清除", pendingIntentCancel);
-      //  }
+        PendingIntent pendingIntentReply = PendingIntent.getActivity(this, notifyId, intentReply, PendingIntent.FLAG_UPDATE_CURRENT);
+        notificationBuilder.addAction(0, "列表", pendingIntent);
+        notificationBuilder.addAction(0, "清除", pendingIntentCancel);
+        notificationBuilder.addAction(0, "暂停", pendingIntentPause);
+        //  }
 
         //开启应用界面还是QQ界面
         if (isOpenQq)
@@ -798,7 +807,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 .setDeleteIntent(pendingIntentCancel);
 
 
-
         //自动弹出
         notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
 
@@ -819,27 +827,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         //通知按钮
 
-       // if (wxIsReply)
-       // {
-            Intent intentReply = new Intent(this, DialogActivity.class);
-            intentReply.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        // if (wxIsReply)
+        // {
+        Intent intentReply = new Intent(this, DialogActivity.class);
+        intentReply.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            Bundle msgDialogBundle = new Bundle();
-            msgDialogBundle.putString("msgId", msgId);
-            // msgDialogBundle.putString("wxReplyUrl",wxReplyUrl);
-            msgDialogBundle.putString("senderType", senderType);
-            msgDialogBundle.putString("msgType", WEIXIN);
-            msgDialogBundle.putString("msgTitle", msgTitle);
-            msgDialogBundle.putString("msgBody", msgBody);
-            msgDialogBundle.putInt("notifyId", notifyId);
-            msgDialogBundle.putString("msgTime", getCurTime());
-            msgDialogBundle.putString("wxPackgeName", wxPackgeName);
-            intentReply.putExtras(msgDialogBundle);
+        Bundle msgDialogBundle = new Bundle();
+        msgDialogBundle.putString("msgId", msgId);
+        // msgDialogBundle.putString("wxReplyUrl",wxReplyUrl);
+        msgDialogBundle.putString("senderType", senderType);
+        msgDialogBundle.putString("msgType", WEIXIN);
+        msgDialogBundle.putString("msgTitle", msgTitle);
+        msgDialogBundle.putString("msgBody", msgBody);
+        msgDialogBundle.putInt("notifyId", notifyId);
+        msgDialogBundle.putString("msgTime", getCurTime());
+        msgDialogBundle.putString("wxPackgeName", wxPackgeName);
+        intentReply.putExtras(msgDialogBundle);
 
-            PendingIntent pendingIntentReply = PendingIntent.getActivity(this, notifyId, intentReply, PendingIntent.FLAG_UPDATE_CURRENT);
-            notificationBuilder.addAction(0, "列表", pendingIntent);
-            notificationBuilder.addAction(0, "清除", pendingIntentCancel);
-       // }
+        PendingIntent pendingIntentReply = PendingIntent.getActivity(this, notifyId, intentReply, PendingIntent.FLAG_UPDATE_CURRENT);
+        notificationBuilder.addAction(0, "列表", pendingIntent);
+        notificationBuilder.addAction(0, "清除", pendingIntentCancel);
+        // }
 
         if (isOpenWx)
             notificationBuilder.setContentIntent(pendingIntentClickWx);
@@ -1030,7 +1038,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         intent.setData(uri);
         context.sendBroadcast(intent);
         */
-       // return fileName;
+        // return fileName;
     }
 
 

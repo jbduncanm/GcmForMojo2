@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.swjtu.gcmformojo">
+<manifest package="com.swjtu.gcmformojo"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-    <permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions" />
+        tools:ignore="ProtectedPermissions"/>
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:name=".MyApplication"
         android:theme="@style/AppTheme"
         tools:replace="android:name">
         <activity
@@ -27,21 +27,21 @@
             android:launchMode="singleTask"
             android:theme="@style/AppTheme">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".FragmentPreferences"
-            android:label="设置" />
+            android:label="设置"/>
 
         <!-- [START firebase_service] -->
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
         <!-- [END firebase_service] -->
@@ -50,7 +50,7 @@
             android:name=".MyFirebaseInstanceIDService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
         <!-- [END firebase_iid_service] -->
@@ -59,36 +59,48 @@
             android:name=".SysNotificationBroadcastReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="sys_notification_cancelled" />
-                <action android:name="sys_notification_clicked" />
+                <action android:name="sys_notification_cancelled"/>
+                <action android:name="sys_notification_clicked"/>
             </intent-filter>
         </receiver>
         <receiver
             android:name=".QqNotificationBroadcastReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="qq_notification_cancelled" />
-                <action android:name="qq_notification_clicked" />
+                <action android:name="qq_notification_cancelled"/>
+                <action android:name="qq_notification_clicked"/>
             </intent-filter>
         </receiver>
         <receiver
             android:name=".WeixinNotificationBroadcastReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="weixin_notification_cancelled" />
-                <action android:name="weixin_notification_clicked" />
+                <action android:name="weixin_notification_cancelled"/>
+                <action android:name="weixin_notification_clicked"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".QqPausedNotificationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="qq_notification_paused"/>
             </intent-filter>
         </receiver>
 
         <activity
             android:name=".DialogActivity"
             android:theme="@style/MyDialog"
-            android:windowSoftInputMode="stateVisible|adjustPan" />
-        <activity android:name=".HelpActivity" />
+            android:windowSoftInputMode="stateVisible|adjustPan"/>
+        <activity android:name=".HelpActivity"/>
         <activity
             android:name=".TokenActivity"
-            android:theme="@style/MyDialog" />
-        <activity android:name=".QqContactsActivity" />
+            android:theme="@style/MyDialog"/>
+        <activity android:name=".QqContactsActivity"/>
+        <activity
+            android:name=".QqPausedNotificationActivity"
+            android:theme="@style/MyDialog">
+        </activity>
+
     </application>
 
 </manifest>

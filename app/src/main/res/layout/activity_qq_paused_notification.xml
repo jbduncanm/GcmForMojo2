@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context="com.swjtu.gcmformojo.QqPausedNotificationActivity">
+
+        <RadioButton
+            android:id="@+id/paused_one_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/paused_one_hour"
+            android:textColor="#000000"/>
+
+        <RadioButton
+            android:id="@+id/paused_two_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paused_two_hour"
+            android:textColor="#000000"/>
+
+        <RadioButton
+            android:id="@+id/paused_six_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paused_six_hour"
+            android:textColor="#000000"/>
+
+        <RadioButton
+            android:id="@+id/paused_one_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paused_one_day"
+            android:textColor="#000000"/>
+
+        <RadioButton
+            android:id="@+id/paused_oneself"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paused_oneself"
+            android:textColor="#000000"/>
+
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/input_oneself"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/radio_group"
+        android:hint="@string/paused_oneself_hint"
+        android:inputType="number"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/input_oneself"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/action_cancel"/>
+
+        <Button
+            android:id="@+id/btn_done"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/action_done"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

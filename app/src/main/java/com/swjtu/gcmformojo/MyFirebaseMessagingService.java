@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,13 +62,7 @@ import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 public class MyFirebaseMessagingService extends FirebaseMessagingService
 {
 
-  //  private static final String TAG = "MyFirebaseMessagingServ";
-
-    private static final Map<String, Integer> msgIdMap = new HashMap<>();
-
-    public static int isQqOnline = 1;
-    public static int isWxOnline = 1;
-
+   private SharedPreferences mySettings;
 
     /**
      * Called when message is received.
@@ -96,12 +89,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         Map<String, List<Spanned>> msgSave;
         Map<Integer, Integer> msgCountMap;
+        Map<String, Integer> msgIdMap;
         ArrayList<User> currentUserList;
+
+
 
 
         msgSave = MyApplication.getInstance().getMsgSave();
         msgCountMap = MyApplication.getInstance().getMsgCountMap();
+        msgIdMap = MyApplication.getInstance().getMsgIdMap();
         currentUserList = MyApplication.getInstance().getCurrentUserList();
+        mySettings  = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
 
 
         Log.d(MYTAG, "From: " + remoteMessage.getFrom());
@@ -111,14 +109,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         {
             Log.d(MYTAG, "原始信息: " + remoteMessage.getData());
 
-
-            // Looper.prepare();
-            //  Toast.makeText(getApplicationContext(), remoteMessage.getData().get("title"), Toast.LENGTH_LONG).show();
-            // Looper.loop();
-
-
         }
-
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null)
@@ -126,15 +117,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             Log.d(MYTAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
 
         if (remoteMessage.getData().size() > 0)
         {
 
+            int isQqOnline = MyApplication.getInstance().getIsQqOnline();
+            int isWxOnline = MyApplication.getInstance().getIsWxOnline();
 
             String msgId;
-            String userId;
             String msgType;
             String senderType;
             String msgTitle;
@@ -150,8 +140,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
             if (msgId == null) msgId = "0"; //处理特殊情况
             if (senderType == null) senderType = "1"; //处理特殊情况 默认为好友
-
-            userId = msgId;
 
             //进行通知数据准备
             //利用msgId生成通知id存储到hashmap中全局使用
@@ -238,20 +226,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 new MsgThread().start();
 
             //提取设置数据
-            SharedPreferences Settings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
-            String qqReciveType = Settings.getString("qq_list_preference_1", "1");
-            String wxReciveType = Settings.getString("wx_list_preference_1", "1");
-            Boolean qqIsDetail = Settings.getBoolean("check_box_preference_qq_detail", true);
-            Boolean wxIsDetail = Settings.getBoolean("check_box_preference_wx_detail", true);
-            String qqSound = Settings.getString("ringtone_preference_qq", "");
-            String wxSound = Settings.getString("ringtone_preference_wx", "");
-            String qqVibrate = Settings.getString("qq_list_preference_vibrate", "1");
-            String wxVibrate = Settings.getString("wx_list_preference_vibrate", "1");
-            Boolean qqIsReciveGroup = Settings.getBoolean("check_box_preference_qq_isReciveGroup", true);
-            Boolean wxIsReciveGroup = Settings.getBoolean("check_box_preference_wx_isReciveGroup", true);
+            String qqReciveType = mySettings.getString("qq_list_preference_1", "1");
+            String wxReciveType = mySettings.getString("wx_list_preference_1", "1");
+            Boolean qqIsDetail = mySettings.getBoolean("check_box_preference_qq_detail", true);
+            Boolean wxIsDetail = mySettings.getBoolean("check_box_preference_wx_detail", true);
+            String qqSound = mySettings.getString("ringtone_preference_qq", "");
+            String wxSound = mySettings.getString("ringtone_preference_wx", "");
+            String qqVibrate = mySettings.getString("qq_list_preference_vibrate", "1");
+            String wxVibrate = mySettings.getString("wx_list_preference_vibrate", "1");
+            Boolean qqIsReciveGroup = mySettings.getBoolean("check_box_preference_qq_isReciveGroup", true);
+            Boolean wxIsReciveGroup = mySettings.getBoolean("check_box_preference_wx_isReciveGroup", true);
 
-            String qqPackgeName = Settings.getString("edit_text_preference_qq_packgename", "com.tencent.mobileqq");
-            String wxPackgeName = Settings.getString("edit_text_preference_wx_packgename", "com.tencent.mm");
+            String qqPackgeName = mySettings.getString("edit_text_preference_qq_packgename", "com.tencent.mobileqq");
+            String wxPackgeName = mySettings.getString("edit_text_preference_wx_packgename", "com.tencent.mm");
 
 
             //  如果当前聊天对象已经弹出窗口则终止通知 最高优先级
@@ -264,7 +251,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             if (msgType.equals(QQ))
             {
 
-                if (!Settings.getBoolean("check_box_preference_qq", false))
+                if (!mySettings.getBoolean("check_box_preference_qq", false))
                 { //关闭推送
                     return;
                 }
@@ -335,8 +322,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
                     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                     {
-                        UsageStatsManager usageStatsManager = null;
-                        usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
+                        UsageStatsManager usageStatsManager =  (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
                         if (!usageStatsManager.isAppInactive(qqPackgeName))
                         {
                             Log.d(MYTAG, "QQ启用不推送！");
@@ -356,7 +342,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             if (msgType.equals(WEIXIN))
             {
 
-                if (!Settings.getBoolean("check_box_preference_wx", false))
+                if (!mySettings.getBoolean("check_box_preference_wx", false))
                 { //关闭推送
                     return;
                 }
@@ -421,8 +407,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
                     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                     {
-                        UsageStatsManager usageStatsManager = null;
-                        usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
+                        UsageStatsManager usageStatsManager =  (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
 
                         if (!usageStatsManager.isAppInactive(wxPackgeName))
                         {
@@ -607,11 +592,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                                     String senderType, String qqPackgeName)
     {
 
-        SharedPreferences Settings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
-        Boolean qqIsReply = Settings.getBoolean("check_box_preference_qq_reply", false);
-        Boolean isOpenQq = Settings.getBoolean("check_box_preference_qq_isOpenQq", true);
-        String qqReplyUrl = Settings.getString("edit_text_preference_qq_replyurl", "");
-
+        Boolean isOpenQq = mySettings.getBoolean("check_box_preference_qq_isOpenQq", true);
 
         Bundle msgNotifyBundle = new Bundle();
         msgNotifyBundle.putInt("notifyId", notifyId);
@@ -625,8 +606,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         //通知点击事件
         //应用界面 需要传递最后一次消息内容 避免会话列表为空
-        Intent intent = new Intent(this, CurrentUserActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent intentList = new Intent(this, CurrentUserActivity.class);
+        intentList.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Bundle msgListBundle = new Bundle();
         msgListBundle.putString("userName", msgTitle);
@@ -637,15 +618,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         msgListBundle.putString("senderType", senderType);
         msgListBundle.putInt("notifyId", notifyId);
         msgListBundle.putString("msgCount", String.valueOf(msgCount));
-        intent.putExtras(msgListBundle);
+        intentList.putExtras(msgListBundle);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, notifyId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntentList = PendingIntent.getActivity(this, notifyId, intentList, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //qq界面(接收器)
-        Intent intentClick = new Intent(this, QqNotificationBroadcastReceiver.class);
-        intentClick.setAction("qq_notification_clicked");
-        intentClick.putExtras(msgNotifyBundle);
-        PendingIntent pendingIntentClickQq = PendingIntent.getBroadcast(this, notifyId, intentClick, PendingIntent.FLAG_ONE_SHOT);
+        Intent intentQq = new Intent(this, QqNotificationBroadcastReceiver.class);
+        intentQq.setAction("qq_notification_clicked");
+        intentQq.putExtras(msgNotifyBundle);
+        PendingIntent pendingIntentQq = PendingIntent.getBroadcast(this, notifyId, intentQq, PendingIntent.FLAG_ONE_SHOT);
 
         StringBuffer ticker = new StringBuffer();
         ticker.append(msgTitle);
@@ -692,15 +673,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             notificationBuilder.setVibrate(new long[]{0});
         }
 
-        //通知按钮
-     //   if (qqIsReply)
-     //   {
-            Intent intentReply = new Intent(this, DialogActivity.class);
-            intentReply.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Intent intentDialog = new Intent(this, DialogActivity.class);
+            intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             Bundle msgDialogBundle = new Bundle();
             msgDialogBundle.putString("msgId", msgId);
-            // msgDialogBundle.putString("qqReplyUrl",qqReplyUrl);
             msgDialogBundle.putString("senderType", senderType);
             msgDialogBundle.putString("msgType", QQ);
             msgDialogBundle.putString("msgTitle", msgTitle);
@@ -708,18 +685,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             msgDialogBundle.putInt("notifyId", notifyId);
             msgDialogBundle.putString("msgTime", getCurTime());
             msgDialogBundle.putString("qqPackgeName", qqPackgeName);
-            intentReply.putExtras(msgDialogBundle);
+            intentDialog.putExtras(msgDialogBundle);
 
-            PendingIntent pendingIntentReply = PendingIntent.getActivity(this, notifyId, intentReply, PendingIntent.FLAG_UPDATE_CURRENT);
-            notificationBuilder.addAction(0, "列表", pendingIntent);
+            PendingIntent pendingIntentDialog = PendingIntent.getActivity(this, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            notificationBuilder.addAction(0, "列表", pendingIntentList);
             notificationBuilder.addAction(0, "清除", pendingIntentCancel);
-      //  }
+
 
         //开启应用界面还是QQ界面
         if (isOpenQq)
-            notificationBuilder.setContentIntent(pendingIntentClickQq);
+            notificationBuilder.setContentIntent(pendingIntentQq);
         else
-            notificationBuilder.setContentIntent(pendingIntentReply);
+            notificationBuilder.setContentIntent(pendingIntentDialog);
 
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -732,11 +710,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     private void sendNotificationWx(String msgTitle, String msgBody, int notifyId, int msgCount, String wxSound, String wxVibrate, String msgId,
                                     String senderType, String wxPackgeName)
     {
-
-        SharedPreferences Settings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
-        Boolean wxIsReply = Settings.getBoolean("check_box_preference_wx_reply", false);
-        Boolean isOpenWx = Settings.getBoolean("check_box_preference_wx_isOpenWx", true);
-        String wxReplyUrl = Settings.getString("edit_text_preference_wx_replyurl", "");
+        Boolean isOpenWx = mySettings.getBoolean("check_box_preference_wx_isOpenWx", true);
 
         Bundle msgNotifyBundle = new Bundle();
         msgNotifyBundle.putInt("notifyId", notifyId);
@@ -750,9 +724,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         //通知点击事件
         //应用界面
-        Intent intent = new Intent(this, CurrentUserActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
+        Intent intentList = new Intent(this, CurrentUserActivity.class);
+        intentList.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Bundle msgListBundle = new Bundle();
         msgListBundle.putString("userName", msgTitle);
         msgListBundle.putString("userId", msgId);
@@ -762,14 +735,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         msgListBundle.putString("senderType", senderType);
         msgListBundle.putInt("notifyId", notifyId);
         msgListBundle.putString("msgCount", String.valueOf(msgCount));
-        intent.putExtras(msgListBundle);
+        intentList.putExtras(msgListBundle);
+        PendingIntent pendingIntentList = PendingIntent.getActivity(this, notifyId, intentList, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, notifyId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //微信界面
-        Intent intentClick = new Intent(this, WeixinNotificationBroadcastReceiver.class);
-        intentClick.setAction("weixin_notification_clicked");
-        intentClick.putExtras(msgNotifyBundle);
-        PendingIntent pendingIntentClickWx = PendingIntent.getBroadcast(this, notifyId, intentClick, PendingIntent.FLAG_ONE_SHOT);
+        Intent intentWx = new Intent(this, WeixinNotificationBroadcastReceiver.class);
+        intentWx.setAction("weixin_notification_clicked");
+        intentWx.putExtras(msgNotifyBundle);
+        PendingIntent pendingIntentWx = PendingIntent.getBroadcast(this, notifyId, intentWx, PendingIntent.FLAG_ONE_SHOT);
 
         StringBuffer tickerWx = new StringBuffer();
         tickerWx.append(msgTitle);
@@ -819,10 +792,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         //通知按钮
 
-       // if (wxIsReply)
-       // {
-            Intent intentReply = new Intent(this, DialogActivity.class);
-            intentReply.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Intent intentDialog = new Intent(this, DialogActivity.class);
+            intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             Bundle msgDialogBundle = new Bundle();
             msgDialogBundle.putString("msgId", msgId);
@@ -834,17 +805,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             msgDialogBundle.putInt("notifyId", notifyId);
             msgDialogBundle.putString("msgTime", getCurTime());
             msgDialogBundle.putString("wxPackgeName", wxPackgeName);
-            intentReply.putExtras(msgDialogBundle);
+            intentDialog.putExtras(msgDialogBundle);
 
-            PendingIntent pendingIntentReply = PendingIntent.getActivity(this, notifyId, intentReply, PendingIntent.FLAG_UPDATE_CURRENT);
-            notificationBuilder.addAction(0, "列表", pendingIntent);
+            PendingIntent pendingIntentDialog = PendingIntent.getActivity(this, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            notificationBuilder.addAction(0, "列表", pendingIntentList);
             notificationBuilder.addAction(0, "清除", pendingIntentCancel);
-       // }
+
 
         if (isOpenWx)
-            notificationBuilder.setContentIntent(pendingIntentClickWx);
+            notificationBuilder.setContentIntent(pendingIntentWx);
         else
-            notificationBuilder.setContentIntent(pendingIntentReply);
+            notificationBuilder.setContentIntent(pendingIntentDialog);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -1079,9 +1051,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
 
-                Looper.prepare();
-                Toast.makeText(context, "权限不够\n请打开手机设置，点击安全-高级，在有权查看使用情况的应用中，为这个App打上勾", Toast.LENGTH_SHORT).show();
-                Looper.loop();
+             //   Looper.prepare();
+             //   Toast.makeText(context, "权限不够\n请打开手机设置，点击安全-高级，在有权查看使用情况的应用中，为这个App打上勾", Toast.LENGTH_SHORT).show();
+             //   Looper.loop();
 
             }
 

@@ -42,8 +42,6 @@ import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 import static com.swjtu.gcmformojo.MyApplication.qqColor;
 import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 import static com.swjtu.gcmformojo.MyApplication.wxColor;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isQqOnline;
-import static com.swjtu.gcmformojo.MyFirebaseMessagingService.isWxOnline;
 
 public class DialogActivity extends Activity  implements View.OnClickListener {
 
@@ -51,6 +49,9 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
     private ArrayList<User> currentUserList;
     private Map<String, List<Spanned>> msgSave;
     private Map<Integer, Integer> msgCountMap;
+
+    int isQqOnline = MyApplication.getInstance().getIsQqOnline();
+    int isWxOnline = MyApplication.getInstance().getIsWxOnline();
 
     private EditText editText_content;
     private ListView msgListView;
@@ -280,7 +281,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         }else if(sendResult.equals("success")) {
             isSucess = "";
         }else
-            isSucess = "! ";
+            isSucess = "[!"+sendResult+"] ";
 
         //将发送信息加入聊天记录
         Spanned mySendMsg;

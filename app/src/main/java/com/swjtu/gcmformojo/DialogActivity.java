@@ -53,6 +53,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
     int isQqOnline = MyApplication.getInstance().getIsQqOnline();
     int isWxOnline = MyApplication.getInstance().getIsWxOnline();
 
+    private View line_view;
     private EditText editText_content;
     private ListView msgListView;
     private String msgId;
@@ -148,12 +149,14 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         editText_content = (EditText) findViewById(R.id.edittext_content);
         LinearLayout msgListLinearLayout = (LinearLayout) findViewById(R.id.msg_list_ll);
         TextView sysTextView = (TextView) findViewById(R.id.msgType_text);
+        line_view = findViewById(R.id.msgType_line_view);
 
         //纯系统消息选择屏蔽Listview消息记录，单独显示Textview
         if(msgId.equals("0")) {
 
             msgListLinearLayout.setVisibility(View.GONE);
             imageButton_send.setVisibility(View.GONE);
+            line_view.setVisibility(View.GONE);
             sysTextView.setVisibility(View.VISIBLE);
             sysTextView.setText("\t\t首次使用,请点击右上角选项获取设备码(卸载重装以及清除数据需要重新获取)，更多请阅读使用帮助并参考酷安发布的教程！");
 

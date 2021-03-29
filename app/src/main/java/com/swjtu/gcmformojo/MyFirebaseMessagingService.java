@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.text.Spanned;
@@ -937,6 +938,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         //准备拼接新的文件名
         String[] list = docUrl.split("/");
         String fileName = list[list.length - 1];
+        String fileNameTemp = fileName;
         fileName = dirName + fileName;
         File file = new File(fileName);
         if (file.exists())
@@ -984,13 +986,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             throw e;
         }
 
-        /*
+
         // 其次把文件插入到系统图库
         try
         {
             MediaStore.Images.Media.insertImage(context.getContentResolver(),
                     file.getAbsolutePath(), fileNameTemp, null);
-            Log.i(TAG, file.getAbsolutePath() + fileNameTemp);
+            Log.i(MYTAG, file.getAbsolutePath() + fileNameTemp);
         } catch (FileNotFoundException e)
         {
             e.printStackTrace();
@@ -1001,7 +1003,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         Uri uri = Uri.fromFile(new File(fileName));
         intent.setData(uri);
         context.sendBroadcast(intent);
-        */
+
        // return fileName;
     }
 

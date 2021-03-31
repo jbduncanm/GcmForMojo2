@@ -29,8 +29,12 @@ public class MyApplication extends Application {
     final public static String qqColor="#1296DB";
     final public static String wxColor="#62B900";
 
+    private  int isQqOnline = 1;
+    private  int isWxOnline = 1;
+
     private final Map<String, List<Spanned>> msgSave = new HashMap<>();
     private final Map<Integer, Integer> msgCountMap = new HashMap<>();
+    private final Map<String, Integer> msgIdMap = new HashMap<>();
     private final ArrayList<User> currentUserList = new ArrayList<>();
 
     private final ArrayList<QqFriend> qqFriendArrayList = new ArrayList<>();
@@ -47,8 +51,20 @@ public class MyApplication extends Application {
         return this.msgSave;
     }
 
+    public int getIsQqOnline () {
+        return this.isQqOnline;
+    }
+
+    public int getIsWxOnline () {
+        return this.isWxOnline;
+    }
+
     public Map<Integer, Integer> getMsgCountMap () {
         return this.msgCountMap;
+    }
+
+    public Map<String, Integer> getMsgIdMap () {
+        return this.msgIdMap;
     }
 
     public ArrayList<User> getCurrentUserList () {
@@ -62,6 +78,9 @@ public class MyApplication extends Application {
     public ArrayList<QqFriendGroup> getQqFriendGroups () {
         return this.qqFriendGroups;
     }
+
+
+
 
     public static String getCurTime(){
 

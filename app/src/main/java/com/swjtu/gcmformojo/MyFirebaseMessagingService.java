@@ -613,8 +613,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         //通知暂停事件 by Mystery0
         Intent intentPause = new Intent(this, QqPausedNotificationReceiver.class);
         intentPause.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intentCancel.setAction("qq_notification_paused");
-        intentCancel.putExtras(msgNotifyBundle);
+        intentPause.setAction("qq_notification_paused");
+        intentPause.putExtras(msgNotifyBundle);
         PendingIntent pendingIntentPause = PendingIntent.getBroadcast(this, notifyId, intentPause, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //通知点击事件

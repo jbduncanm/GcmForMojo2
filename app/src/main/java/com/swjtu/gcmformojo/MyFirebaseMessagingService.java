@@ -130,6 +130,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             String senderType;
             String msgTitle;
             String msgBody;
+            String msgIsAt;
             int notifyId;
             int msgCount;
 
@@ -138,6 +139,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             msgBody = remoteMessage.getData().get("message");
             msgType = remoteMessage.getData().get("type");
             senderType = remoteMessage.getData().get("senderType");
+            msgIsAt = remoteMessage.getData().get("isAt");
 
             if (msgId == null) msgId = "0"; //处理特殊情况
             if (senderType == null) senderType = "1"; //处理特殊情况 默认为好友
@@ -266,6 +268,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 {
                     if (senderType.equals("2") || senderType.equals("3"))
                     {
+                        if(msgIsAt.equals("0")) //群消息且没有At则返回
                         return;
                     }
                 }
@@ -357,6 +360,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 {
                     if (senderType.equals("2") || senderType.equals("3"))
                     {
+                        if(msgIsAt.equals("0")) //群消息且没有At则返回
                         return;
                     }
                 }

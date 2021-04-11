@@ -1008,7 +1008,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         {
             MediaStore.Images.Media.insertImage(context.getContentResolver(),
                     file.getAbsolutePath(), fileNameTemp, null);
-            Log.i(MYTAG, file.getAbsolutePath() + fileNameTemp);
         } catch (FileNotFoundException e)
         {
             e.printStackTrace();

@@ -181,6 +181,11 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
                 if (!jsonObject.has("uid"))
                     jsonObject.put("uid", "0");
 
+                if(!jsonObject.has("name") || jsonObject.getString("name")==null || jsonObject.getString("name").length()==0 )
+                    jsonObject.put("name", "空");
+                if(!jsonObject.has("markname") || jsonObject.getString("markname")==null || jsonObject.getString("markname").length()==0 )
+                    jsonObject.put("markname", "空");
+
                 qqFriendArrayList.add(new QqFriend(jsonObject.getString("category"), jsonObject.getString("client_type"), jsonObject.getString("face"), jsonObject.getString("flag"), jsonObject.getString("id"), jsonObject.getString("is_vip"),
                         jsonObject.getString("markname"), jsonObject.getString("name"), jsonObject.getString("state"), jsonObject.getString("uid"), jsonObject.getString("vip_level")));
             }

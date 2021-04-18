@@ -46,7 +46,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -708,7 +707,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         notificationBuilder.addAction(0, "列表", pendingIntentDialog);
         notificationBuilder.addAction(0, "清除", pendingIntentCancel);
-        notificationBuilder.addAction(0, "暂停", pendingIntentPause);
+      //  notificationBuilder.addAction(0, "暂停", pendingIntentPause);
         //  }
 
         //开启应用界面还是QQ界面

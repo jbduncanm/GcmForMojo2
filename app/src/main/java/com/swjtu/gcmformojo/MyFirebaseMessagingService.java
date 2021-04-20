@@ -138,10 +138,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             msgBody = remoteMessage.getData().get("message");
             msgType = remoteMessage.getData().get("type");
             senderType = remoteMessage.getData().get("senderType");
-            msgIsAt = remoteMessage.getData().get("isAt");
 
             if (msgId == null) msgId = "0"; //处理特殊情况
             if (senderType == null) senderType = "1"; //处理特殊情况 默认为好友
+
+            if (remoteMessage.getData().get("isAt") != null )
+                msgIsAt = remoteMessage.getData().get("isAt");
+            else
+                msgIsAt = "0";
 
             //进行通知数据准备
             //利用msgId生成通知id存储到hashmap中全局使用
@@ -468,26 +472,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                     {
                         e.printStackTrace();
                     }
-                }
-
-                //清除会话列表
-                if (msgTitle.contains("登录"))
-                {
-                    if (msgId.equals("1"))
-                    {
-
-                    } else if (msgId.equals("2"))
-                    {
-                        for (int i = 0; i < currentUserList.size(); i++)
-                        {
-                            if (currentUserList.get(i).getUserType().equals(WEIXIN))
-                            {
-                                currentUserList.remove(i);
-                            }
-                        }
-                    }
-
-
                 }
 
                 //设置登录变量

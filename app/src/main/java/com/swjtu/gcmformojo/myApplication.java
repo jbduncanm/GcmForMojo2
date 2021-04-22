@@ -114,7 +114,7 @@ public class MyApplication extends Application {
      *
      */
 
-    public static Spanned toSpannedMessage(String message){
+    public  static Spanned toSpannedMessage(String message){
 
         Spanned tmpMsg;
 

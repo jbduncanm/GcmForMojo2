@@ -598,11 +598,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         PendingIntent pendingIntentCancel = PendingIntent.getBroadcast(this, notifyId, intentCancel, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //通知暂停事件 by Mystery0
-        Intent intentPause = new Intent(this, QqPausedNotificationReceiver.class);
-        intentPause.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intentPause.setAction("qq_notification_paused");
-        intentPause.putExtras(msgNotifyBundle);
-        PendingIntent pendingIntentPause = PendingIntent.getBroadcast(this, notifyId, intentPause, PendingIntent.FLAG_UPDATE_CURRENT);
+       // Intent intentPause = new Intent(this, QqPausedNotificationReceiver.class);
+       // intentPause.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+       // intentPause.setAction("qq_notification_paused");
+       // intentPause.putExtras(msgNotifyBundle);
+       // PendingIntent pendingIntentPause = PendingIntent.getBroadcast(this, notifyId, intentPause, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //通知点击事件
         //应用界面 需要传递最后一次消息内容 避免会话列表为空
@@ -1032,7 +1032,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         RecentUseComparator mRecentComp = new RecentUseComparator();
         UsageStatsManager mUsageStatsManager = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1)
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
         {
             mUsageStatsManager = (UsageStatsManager) context.getSystemService(USAGE_STATS_SERVICE);
         }
@@ -1080,7 +1080,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             ApplicationInfo applicationInfo = packageManager.getApplicationInfo(context.getPackageName(), 0);
             AppOpsManager appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
             int mode = 0;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             {
                 mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName);
             }

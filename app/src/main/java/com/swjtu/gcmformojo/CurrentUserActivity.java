@@ -74,6 +74,7 @@ public class CurrentUserActivity extends AppCompatActivity {
         currentUserListView.setAdapter(currentUserAdapter);
         currentUserListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
+
         currentUserListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override

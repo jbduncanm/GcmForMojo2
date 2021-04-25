@@ -40,7 +40,7 @@ public class NetUtil {
             return "";
         }
         Log.d(TAG,"request = " + request.toString() + " urlStr = " + urlStr);
-        int responseCode = 0;
+        int responseCode;
         String response = "";
         HttpURLConnection conn = null;
         OutputStream os = null;
@@ -93,7 +93,7 @@ public class NetUtil {
             return "";
         }
         Log.d(TAG,"request is " + request.toString() + " urlStr is"+ urlStr);
-        int responseCode = 0;
+        int responseCode;
         String response = "";
         HttpURLConnection conn = null;
         InputStream in = null;
@@ -135,7 +135,7 @@ public class NetUtil {
      * @throws IOException
      */
     private static HttpURLConnection getConnection(String path)throws IOException {
-        HttpURLConnection conn = null;
+        HttpURLConnection conn;
         URL url = new URL(path);
         conn = (HttpURLConnection) url.openConnection();
         conn.setConnectTimeout(CONNECT_TIME_OUT);
@@ -154,7 +154,7 @@ public class NetUtil {
         Iterator<Entry<String, String>> it = map.entrySet().iterator();
         final StringBuilder params = new StringBuilder();
         while (it.hasNext()) {
-            Entry<String, String> element = (Entry<String, String>) it.next();
+            Entry<String, String> element = it.next();
             // 字符用URLEncoder.encode处理
             params.append(URLEncoder.encode(element.getKey(), "UTF-8"));
             params.append("=");
@@ -174,7 +174,7 @@ public class NetUtil {
      * @throws IOException
      */
     private static String InputStream2String(InputStream in) throws IOException {
-        String temp = "";
+        String temp;
         StringBuilder buffer = new StringBuilder();
         BufferedReader br = new BufferedReader(new InputStreamReader(in,"UTF-8"));
         while ((temp = br.readLine()) != null) {

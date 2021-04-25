@@ -1,6 +1,7 @@
 package com.swjtu.gcmformojo;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import java.util.List;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
+import static com.swjtu.gcmformojo.MyApplication.QQ;
+import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
 
 /**
  * 消息列表适配器
@@ -37,8 +40,9 @@ public class UserAdapter extends ArrayAdapter<User> {
         return position;
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView ,ViewGroup parent ) {
+    public View getView(int position, View convertView , @NonNull ViewGroup parent ) {
 
         User user = getItem(position);
         View viewUser;
@@ -60,24 +64,28 @@ public class UserAdapter extends ArrayAdapter<User> {
 
 
         //获得自定义布局中每一个控件的对象。
-        if(user.getUserType().equals("Mojo-Webqq")) {
-            ViewHolder.itemType.setImageResource(R.mipmap.qq_ico);
-        }else if(user.getUserType().equals("Mojo-Weixin")){
-            ViewHolder.itemType.setImageResource(R.mipmap.weixin_ico);
-        }else {
-            switch (user.getUserId()) {
-                case "0":
-                    ViewHolder.itemType.setImageResource(R.mipmap.message);
-                    break;
-                case "1":
-                    ViewHolder.itemType.setImageResource(R.mipmap.qq_ico);
-                    break;
-                case "2":
-                    ViewHolder.itemType.setImageResource(R.mipmap.weixin_ico);
-                    break;
-                default:
-                    ViewHolder.itemType.setImageResource(R.mipmap.message);
-            }
+        assert user != null;
+        switch (user.getUserType()) {
+            case QQ:
+                ViewHolder.itemType.setImageResource(R.mipmap.qq_ico);
+                break;
+            case WEIXIN:
+                ViewHolder.itemType.setImageResource(R.mipmap.weixin_ico);
+                break;
+            default:
+                switch (user.getUserId()) {
+                    case "0":
+                        ViewHolder.itemType.setImageResource(R.mipmap.message);
+                        break;
+                    case "1":
+                        ViewHolder.itemType.setImageResource(R.mipmap.qq_ico);
+                        break;
+                    case "2":
+                        ViewHolder.itemType.setImageResource(R.mipmap.weixin_ico);
+                        break;
+                    default:
+                        ViewHolder.itemType.setImageResource(R.mipmap.message);
+                }
         }
 
         ViewHolder.itemName.setText(user.getUserName());

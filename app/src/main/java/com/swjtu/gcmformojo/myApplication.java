@@ -29,8 +29,8 @@ public class MyApplication extends Application {
     final public static String qqColor="#1296DB";
     final public static String wxColor="#62B900";
 
-    private  int isQqOnline = 1;
-    private  int isWxOnline = 1;
+    public static int isQqOnline = 1;
+    public static int isWxOnline = 1;
 
     private final Map<String, List<Spanned>> msgSave = new HashMap<>();
     private final Map<Integer, Integer> msgCountMap = new HashMap<>();
@@ -49,14 +49,6 @@ public class MyApplication extends Application {
 
     public Map<String, List<Spanned>> getMsgSave () {
         return this.msgSave;
-    }
-
-    public int getIsQqOnline () {
-        return this.isQqOnline;
-    }
-
-    public int getIsWxOnline () {
-        return this.isWxOnline;
     }
 
     public Map<Integer, Integer> getMsgCountMap () {
@@ -93,15 +85,15 @@ public class MyApplication extends Application {
 
         String    str    =    "";
         if(!isSend) {
-            if(messageType.equals("Mojo-Webqq")){
+            if(messageType.equals(QQ)){
                 str    =    "<font color='"+qqColor+"'><small>"+ getCurTime()+"</small></font><br>";
-            }else if(messageType.equals("Mojo-Weixin")){
+            }else if(messageType.equals(WEIXIN)){
                 str    =    "<font color='"+wxColor+"'><small>"+ getCurTime()+"</small></font><br>";
             }
         }else {
-            if(messageType.equals("Mojo-Webqq")){
+            if(messageType.equals(QQ)){
                 str    =    "<font color='"+wxColor+"'><small>"+ getCurTime()+"</small></font><br>";
-            }else if(messageType.equals("Mojo-Weixin")){
+            }else if(messageType.equals(WEIXIN)){
                 str    =    "<font color='"+qqColor+"'><small>"+ getCurTime()+"</small></font><br>";
             }
         }
@@ -121,6 +113,7 @@ public class MyApplication extends Application {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             tmpMsg= Html.fromHtml(message,FROM_HTML_MODE_COMPACT);
         } else {
+            //noinspection deprecation
             tmpMsg=Html.fromHtml(message);
         }
 
@@ -128,25 +121,27 @@ public class MyApplication extends Application {
 
     }
 
-    @Deprecated
-    public static String msgColor(String message,String messageType,Boolean isSend) {
-
-        String str = "";
-        if(!isSend) {
-            if (messageType.equals(QQ)) {
-                str = "<font color='"+qqColor+"'>" + message + "</font>";
-            } else if (messageType.equals(WEIXIN)) {
-                str = "<font color='"+wxColor+"'>" + message + "</font>";
-            }
-        }else {
-            if (messageType.equals(QQ)) {
-                str = "<font color='"+wxColor+"'>" + message + "</font>";
-            } else if (messageType.equals(WEIXIN)) {
-                str = "<font color='"+qqColor+"'>" + message + "</font>";
-            }
-        }
-        return str;
-    }
+// --Commented out by Inspection START (2017/2/27 19:24):
+//    @Deprecated
+//    public static String msgColor(String message,String messageType,Boolean isSend) {
+//
+//        String str = "";
+//        if(!isSend) {
+//            if (messageType.equals(QQ)) {
+//                str = "<font color='"+qqColor+"'>" + message + "</font>";
+//            } else if (messageType.equals(WEIXIN)) {
+//                str = "<font color='"+wxColor+"'>" + message + "</font>";
+//            }
+//        }else {
+//            if (messageType.equals(QQ)) {
+//                str = "<font color='"+wxColor+"'>" + message + "</font>";
+//            } else if (messageType.equals(WEIXIN)) {
+//                str = "<font color='"+qqColor+"'>" + message + "</font>";
+//            }
+//        }
+//        return str;
+//    }
+// --Commented out by Inspection STOP (2017/2/27 19:24)
 
     @Override
     public void onCreate() {

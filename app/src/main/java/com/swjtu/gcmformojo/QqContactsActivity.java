@@ -33,8 +33,6 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<QqFriend> qqFriendArrayList;
     private ArrayList<QqFriendGroup> qqFriendGroups;
 
-    private ExpandableListView qqFriendExpandListView;
-    private Button qqContactsUpdateButton;
     private QqFriendAdapter qqFriendAdapter;
 
     @Override
@@ -46,9 +44,8 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
         qqFriendArrayList = MyApplication.getInstance().getQqFriendArrayList();
         qqFriendGroups = MyApplication.getInstance().getQqFriendGroups();
 
-
-        qqFriendExpandListView = (ExpandableListView) findViewById(R.id.qq_friend_ExpandListView);
-        qqContactsUpdateButton = (Button) findViewById(R.id.qq_contacts_update);
+        ExpandableListView qqFriendExpandListView = (ExpandableListView) findViewById(R.id.qq_friend_ExpandListView);
+        Button qqContactsUpdateButton = (Button) findViewById(R.id.qq_contacts_update);
 
         qqFriendAdapter = new QqFriendAdapter(this, qqFriendGroups);
         qqFriendExpandListView.setAdapter(qqFriendAdapter);
@@ -104,8 +101,8 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
                 //获取好友数据存到list中
                 if (qqFriendArrayList.size() == 0)
                 {
-                    HashMap emptyMap = new HashMap<>();
-                    getQqFriendData(qqFriendUrl, emptyMap);
+                    //HashMap emptyMap = new HashMap<>();
+                    getQqFriendData(qqFriendUrl, new HashMap<String,String>());
                 }
                 //存储所有组名
 
@@ -147,7 +144,6 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
     {
 
         String getResultJson = "";
-        String getResult = "";
         ExecutorService threadPool = Executors.newSingleThreadExecutor();
         Future<String> future =
                 threadPool.submit(

@@ -1,6 +1,7 @@
 package com.swjtu.gcmformojo;
 
 /**
+ * QQ好友
  * Created by HeiPi on 2017/2/21.
  */
 

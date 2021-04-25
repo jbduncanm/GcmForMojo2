@@ -3,6 +3,7 @@ package com.swjtu.gcmformojo;
 import java.util.List;
 
 /**
+ * QQ好友分组
  * Created by HeiPi on 2017/2/21.
  */
 

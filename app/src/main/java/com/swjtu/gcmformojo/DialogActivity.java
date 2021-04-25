@@ -39,19 +39,17 @@ import static com.swjtu.gcmformojo.MyApplication.SYS;
 import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
 import static com.swjtu.gcmformojo.MyApplication.getColorMsgTime;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
+import static com.swjtu.gcmformojo.MyApplication.isQqOnline;
+import static com.swjtu.gcmformojo.MyApplication.isWxOnline;
 import static com.swjtu.gcmformojo.MyApplication.qqColor;
 import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 import static com.swjtu.gcmformojo.MyApplication.wxColor;
 
 public class DialogActivity extends Activity  implements View.OnClickListener {
 
-   // private MyApplication MyApplication;
     private ArrayList<User> currentUserList;
     private Map<String, List<Spanned>> msgSave;
     private Map<Integer, Integer> msgCountMap;
-
-    int isQqOnline = MyApplication.getInstance().getIsQqOnline();
-    int isWxOnline = MyApplication.getInstance().getIsWxOnline();
 
     private View line_view;
     private EditText editText_content;
@@ -111,9 +109,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         msgType =msgDialogBundle.getString("msgType");
         msgTime =msgDialogBundle.getString("msgTime");
         if(msgDialogBundle.containsKey("qqPackgeName")) qqPackgeName =msgDialogBundle.getString("qqPackgeName");
-       // if(msgDialogBundle.containsKey("qqReplyUrl"))  qqReplyUrl =msgDialogBundle.getString("qqReplyUrl");
         if(msgDialogBundle.containsKey("wxPackgeName"))  wxPackgeName =msgDialogBundle.getString("wxPackgeName");
-      //  if(msgDialogBundle.containsKey("wxReplyUrl"))  wxReplyUrl =msgDialogBundle.getString("wxReplyUrl");
 
         //重新计数并清除通知
         if(msgCountMap.get(notifyId)!=null)
@@ -122,8 +118,6 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
             NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(notifyId);
         }
-
-        //显示弹窗界面
 
         setContentView(R.layout.activity_dialog);
 
@@ -163,65 +157,72 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         }
 
         //弹窗图标和是否开启发送按钮
-        if(msgType.equals(QQ)) {
-            imgMsgType.setImageResource(R.mipmap.qq);
-            if(!qqIsReply) {
-                imageButton_send.setEnabled(false);
-                editText_content.setEnabled(false);
-                editText_content.setText("未开启回复功能");
-            }
-            if(isQqOnline==0) {
-                imageButton_send.setEnabled(false);
-                editText_content.setEnabled(false);
-                editText_content.setText("服务端未登录");
-            }
+        switch (msgType){
+            case QQ:
+                imgMsgType.setImageResource(R.mipmap.qq);
+                if(!qqIsReply) {
+                    imageButton_send.setEnabled(false);
+                    editText_content.setEnabled(false);
+                    editText_content.setText("未开启回复功能");
+                }
+                if(isQqOnline==0) {
+                    imageButton_send.setEnabled(false);
+                    editText_content.setEnabled(false);
+                    editText_content.setText("服务端未登录");
+                }
+                break;
+            case WEIXIN:
+                imgMsgType.setImageResource(R.mipmap.weixin);
+                if(!wxIsReply) {
+                    imageButton_send.setEnabled(false);
+                    editText_content.setEnabled(false);
+                    editText_content.setText("未开启回复功能");
+                }
+                if(isWxOnline==0) {
+                    imageButton_send.setEnabled(false);
+                    editText_content.setEnabled(false);
+                    editText_content.setText("服务端未登录");
+                }
+                break;
+            default:
+                //系统消息中的QQ和微信服务通知图标
+                switch (msgId) {
+                    case "0":
+                        imgMsgType.setImageResource(R.mipmap.pin);
+                        break;
+                    case "1":
+                        imgMsgType.setImageResource(R.mipmap.qq);
+                        break;
+                    case "2":
+                        imgMsgType.setImageResource(R.mipmap.weixin);
+                        break;
+                    default:
+                        imgMsgType.setImageResource(R.mipmap.pin);
+                }
 
-        }else if(msgType.equals(WEIXIN)){
-            imgMsgType.setImageResource(R.mipmap.weixin);
-            if(!wxIsReply) {
                 imageButton_send.setEnabled(false);
                 editText_content.setEnabled(false);
-                editText_content.setText("未开启回复功能");
-            }
-            if(isWxOnline==0) {
-                imageButton_send.setEnabled(false);
-                editText_content.setEnabled(false);
-                editText_content.setText("服务端未登录");
-            }
-        }else {
-            //系统消息中的QQ和微信服务通知图标
-            switch (msgId) {
-                case "0":
-                    imgMsgType.setImageResource(R.mipmap.pin);
-                    break;
-                case "1":
-                    imgMsgType.setImageResource(R.mipmap.qq);
-                    break;
-                case "2":
-                    imgMsgType.setImageResource(R.mipmap.weixin);
-                    break;
-                default:
-                    imgMsgType.setImageResource(R.mipmap.pin);
-            }
-
-            imageButton_send.setEnabled(false);
-            editText_content.setEnabled(false);
-            editText_content.setText("系统控制");
-
+                editText_content.setText("系统控制");
         }
+
 
         //应用杀掉后读取最后一条通知内容作为聊天记录
        if(msgSave.get(msgId)==null) {
 
            List<Spanned> msgList = new ArrayList<>();
            String    str    =    "";
-           if(msgType.equals(QQ)){
-               str    =    "<font color='"+qqColor+"'><small>"+ msgTime +"</small></font><br>";
-           }else if(msgType.equals(WEIXIN)){
-               str    =    "<font color='"+wxColor+"'><small>"+ msgTime +"</small></font><br>";
-           }else if(msgType.equals(SYS)){
-               str    =    "<small>"+ msgTime +"</small><br>";
+           switch (msgType) {
+               case QQ:
+                   str    =    "<font color='"+qqColor+"'><small>"+ msgTime +"</small></font><br>";
+                   break;
+               case WEIXIN:
+                   str    =    "<font color='"+wxColor+"'><small>"+ msgTime +"</small></font><br>";
+                   break;
+               case SYS:
+                   str    =    "<small>"+ msgTime +"</small><br>";
+                   break;
            }
+
            if(!msgBody.equals("主动聊天")) {
                msgList.add(toSpannedMessage(str + msgBody));
 
@@ -278,13 +279,17 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         if(editText_content.getText().toString().length()==0)
             return;
         String sendResult = sendMessage(editText_content.getText().toString(), msgId, senderType, msgType);
-        String isSucess = "";
-        if(sendResult.equals("发送成功")) {
-            isSucess = "";
-        }else if(sendResult.equals("success")) {
-            isSucess = "";
-        }else
-            isSucess = "[!"+sendResult+"] ";
+        String isSucess;
+        switch (sendResult) {
+            case "发送成功":
+                isSucess = "";
+                break;
+            case "success":
+                isSucess = "";
+                break;
+            default:
+                isSucess = "[!"+sendResult+"] ";
+        }
 
         //将发送信息加入聊天记录
         Spanned mySendMsg;
@@ -340,7 +345,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         String urlServer="";
         String urlType="";
         String urlQX="";
-        String urlSend="";
+        String urlSend;
 
         HashMap<String, String> msgSendRequest = new HashMap<>();
 
@@ -352,12 +357,16 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
             urlQX="openwx";
         }
 
-        if(senderType.equals("1")){
-            urlType="/"+urlQX+"/send_friend_message";
-        }else if(senderType.equals("2")){
-            urlType="/"+urlQX+"/send_group_message";
-        }else if(senderType.equals("3")){
-            urlType="/"+urlQX+"/send_discuss_message";
+        switch (senderType) {
+            case "1":
+                urlType="/"+urlQX+"/send_friend_message";
+                break;
+            case "2":
+                urlType="/"+urlQX+"/send_group_message";
+                break;
+            case "3":
+                urlType="/"+urlQX+"/send_discuss_message";
+                break;
         }
 
         urlSend=urlServer+urlType;
@@ -414,43 +423,39 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         switch (v.getId()){
             case R.id.title_relativeLayout:
                 //System.out.println("整个布局被点击");
-                if(msgType.equals(QQ)) {
-                    //打开QQ
-                    // 通过包名获取要跳转的app，创建intent对象
-                    Intent intentNewQq = this.getPackageManager().getLaunchIntentForPackage(qqPackgeName);
-
-                    if (intentNewQq != null) {
-                        this.startActivity(intentNewQq);
-                    }  else {
-                        // 没有安装要跳转的app应用进行提醒
-                        Toast.makeText(this.getApplicationContext(), "未检测到"+qqPackgeName, Toast.LENGTH_LONG).show();
-                    }
-
-                }else if(msgType.equals(WEIXIN)){
-                    //打开微信
-
-                    Intent intentNewWx = this.getPackageManager().getLaunchIntentForPackage(wxPackgeName);
-
-                    if (intentNewWx != null) {
-                        this.startActivity(intentNewWx);
-                    }  else {
-                        // 没有安装要跳转的app应用进行提醒
-                        Toast.makeText(this.getApplicationContext(), "未检测到"+wxPackgeName, Toast.LENGTH_LONG).show();
-                    }
-
-                }else if(msgType.equals(SYS)) {
-                    //打开主界面
-                    Intent intentNewSys = new Intent(this, CurrentUserActivity.class);
-                    this.startActivity(intentNewSys);
+                switch (msgType) {
+                    case QQ:
+                        //打开QQ
+                        Intent intentNewQq = this.getPackageManager().getLaunchIntentForPackage(qqPackgeName);
+                        if (intentNewQq != null) {
+                            this.startActivity(intentNewQq);
+                        }  else {
+                            Toast.makeText(this.getApplicationContext(), "未检测到"+qqPackgeName, Toast.LENGTH_LONG).show();
+                        }
+                        break;
+                    case WEIXIN:
+                        //打开微信
+                        Intent intentNewWx = this.getPackageManager().getLaunchIntentForPackage(wxPackgeName);
+                        if (intentNewWx != null) {
+                            this.startActivity(intentNewWx);
+                        }  else {
+                            Toast.makeText(this.getApplicationContext(), "未检测到"+wxPackgeName, Toast.LENGTH_LONG).show();
+                        }
+                    case SYS:
+                        //打开主界面
+                        Intent intentNewSys = new Intent(this, CurrentUserActivity.class);
+                        this.startActivity(intentNewSys);
+                        break;
                 }
-
                 break;
         }
     }
 
-    public Handler getHandler(){
-        return msgHandler;
-    }
+// --Commented out by Inspection START (2017/2/27 19:24):
+//    public Handler getHandler(){
+//        return msgHandler;
+//    }
+// --Commented out by Inspection STOP (2017/2/27 19:24)
 
     //子线程处理ui更新
     class userThread extends Thread {

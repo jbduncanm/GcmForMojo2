@@ -10,6 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 /**
+ * QQ好友数据显示
  * Created by HeiPi on 2017/2/21.
  */
 

@@ -46,7 +46,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -58,6 +57,8 @@ import static com.swjtu.gcmformojo.MyApplication.SYS;
 import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
 import static com.swjtu.gcmformojo.MyApplication.getColorMsgTime;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
+import static com.swjtu.gcmformojo.MyApplication.isQqOnline;
+import static com.swjtu.gcmformojo.MyApplication.isWxOnline;
 import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 
 
@@ -120,10 +121,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         if (remoteMessage.getData().size() > 0)
         {
-
-            int isQqOnline = MyApplication.getInstance().getIsQqOnline();
-            int isWxOnline = MyApplication.getInstance().getIsWxOnline();
-
             String msgId;
             String msgType;
             String senderType;
@@ -151,30 +148,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             //利用msgId生成通知id存储到hashmap中全局使用
             if (msgIdMap.get(msgId) == null)
             {
-                if (msgType.equals(QQ))
-                {
-                    if (msgId.length() > 9)
-                    {
-                        notifyId = Integer.parseInt(msgId.substring(0, 9));
-                    } else
-                    {
-                        notifyId = Integer.parseInt(msgId);
-                    }
-                } else if (msgType.equals(WEIXIN))
-                { //微信的ID用随机数字代替
-
-                    Random random = new Random();
-                    notifyId = random.nextInt(10000);
-
-                } else if (msgType.equals(SYS))
-                {
-
-                    notifyId = Integer.parseInt(msgId); //QQ通知为1，微信通知为2
-
-                } else
-                {
-                    notifyId = 0; //其它未知类型消息Id设置为0
+                switch (msgType) {
+                    case QQ:
+                        if (msgId.length() > 9) {
+                            notifyId = Integer.parseInt(msgId.substring(0, 9));
+                        } else {
+                            notifyId = Integer.parseInt(msgId);
+                        }
+                        break;
+                    case WEIXIN:
+                        //微信的ID用随机数字代替
+                        Random random = new Random();
+                        notifyId = random.nextInt(10000);
+                        break;
+                    case SYS:
+                        notifyId = Integer.parseInt(msgId); //QQ通知为1，微信通知为2
+                        break;
+                    default:
+                        notifyId = 0; //其它未知类型消息Id设置为0
                 }
+
                 msgIdMap.put(msgId, notifyId); //写入msgIdMap
             } else
             {
@@ -258,6 +251,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             {
                 long time = new Date().getTime();
                 long paused_time = getSharedPreferences("paused_time", MODE_PRIVATE).getLong("paused_time", 0);
+
                 if (!mySettings.getBoolean("check_box_preference_qq", false))
                 { //关闭推送
                     return;
@@ -278,73 +272,67 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
                 //判断接收方式
                 //QQ判断
-                if (qqReciveType.equals("1"))
-                {//不检测运行状态
-
-                    Log.d(MYTAG, "QQ不检测运行状态！");
-
-                } else if (qqReciveType.equals("2"))
-                { //前台时不推送
-
-                    Boolean isForeground;
-                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
-                    {
-
-                        isForeground = queryAppUsageStats(this, qqPackgeName);
-                        if (isForeground)
+                switch (qqReciveType) {
+                    case "1":
+                        Log.d(MYTAG, "QQ不检测运行状态！");
+                        break;
+                    case "2":
+                        Boolean isForeground;
+                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
                         {
-                            Log.d(MYTAG, "QQ前台不推送！");
+
+                            isForeground = queryAppUsageStats(this, qqPackgeName);
+                            if (isForeground)
+                            {
+                                Log.d(MYTAG, "QQ前台不推送！");
+                                return;
+                            }
+
+                        } else if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
+                        {
+
+                            isForeground = BackgroundUtil.getRunningTask(this, qqPackgeName);
+                            if (isForeground)
+                            {
+                                Log.d(MYTAG, "QQ前台不推送！");
+                                return;
+                            }
+
+                        } else
+                        { //对5.0 API 21 单独处理
+
+                            isForeground = BackgroundUtil.getLinuxCoreInfo(this, qqPackgeName);
+                            if (isForeground)
+                            {
+                                Log.d(MYTAG, "QQ前台不推送！");
+                                return;
+                            }
+
+                        }
+                        break;
+                    case "3":
+                        if (isServiceRunning(this, qqPackgeName))
+                        {
+                            Log.d(MYTAG, "QQ运行不推送！");
                             return;
                         }
-
-                    } else if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
-                    {
-
-                        isForeground = BackgroundUtil.getRunningTask(this, qqPackgeName);
-                        if (isForeground)
+                        break;
+                    case "4":
+                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                         {
-                            Log.d(MYTAG, "QQ前台不推送！");
-                            return;
-                        }
-
-                    } else
-                    { //对5.0 API 21 单独处理
-
-                        isForeground = BackgroundUtil.getLinuxCoreInfo(this, qqPackgeName);
-                        if (isForeground)
+                            UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
+                            if (!usageStatsManager.isAppInactive(qqPackgeName))
+                            {
+                                Log.d(MYTAG, "QQ启用不推送！");
+                                return;
+                            }
+                        } else
                         {
-                            Log.d(MYTAG, "QQ前台不推送！");
-                            return;
+                            Looper.prepare();
+                            Toast.makeText(getApplicationContext(), "您的系统不支持浅睡模式！", Toast.LENGTH_LONG).show();
+                            Looper.loop();
                         }
-
-                    }
-
-                } else if (qqReciveType.equals("3"))
-                { //运行时不推送
-
-                    if (isServiceRunning(this, qqPackgeName))
-                    {
-                        Log.d(MYTAG, "QQ运行不推送！");
-                        return;
-                    }
-
-                } else if (qqReciveType.equals("4"))
-                {//启用时不推送
-
-                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                    {
-                        UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
-                        if (!usageStatsManager.isAppInactive(qqPackgeName))
-                        {
-                            Log.d(MYTAG, "QQ启用不推送！");
-                            return;
-                        }
-                    } else
-                    {
-                        Looper.prepare();
-                        Toast.makeText(getApplicationContext(), "您的系统不支持浅睡模式！", Toast.LENGTH_LONG).show();
-                        Looper.loop();
-                    }
+                        break;
                 }
             }
 
@@ -368,206 +356,173 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                     }
                 }
 
-                if (wxReciveType.equals("1"))
-                {//不检测运行状态
-
-                    Log.d(MYTAG, "微信不检测运行状态！");
-
-                } else if (wxReciveType.equals("2"))
-                { //前台时不推送
-                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
-                    {
-
-                        Boolean isForeground = queryAppUsageStats(this, wxPackgeName);
-                        if (isForeground)
+                switch (wxReciveType) {
+                    case "1":
+                        Log.d(MYTAG, "微信不检测运行状态！");
+                        break;
+                    case "2":
+                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
                         {
-                            Log.d(MYTAG, "微信前台不推送！");
+
+                            Boolean isForeground = queryAppUsageStats(this, wxPackgeName);
+                            if (isForeground)
+                            {
+                                Log.d(MYTAG, "微信前台不推送！");
+                                return;
+                            }
+
+                        } else if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
+                        {
+
+                            Boolean isForeground = BackgroundUtil.getRunningTask(this, wxPackgeName);
+                            if (isForeground)
+                            {
+                                Log.d(MYTAG, "微信前台不推送！");
+                                return;
+                            }
+                        } else
+                        {
+
+                            Boolean isForeground = BackgroundUtil.getLinuxCoreInfo(this, wxPackgeName);
+                            if (isForeground)
+                            {
+                                Log.d(MYTAG, "微信前台不推送！");
+                                return;
+                            }
+                        }
+                        break;
+                    case "3":
+                        if (isServiceRunning(this, wxPackgeName))
+                        {
+                            Log.d(MYTAG, "微信运行不推送！");
                             return;
                         }
+                        break;
+                    case "4":
 
-                    } else if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
-                    {
-
-                        Boolean isForeground = BackgroundUtil.getRunningTask(this, wxPackgeName);
-                        if (isForeground)
+                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                         {
-                            Log.d(MYTAG, "微信前台不推送！");
-                            return;
-                        }
-                    } else
-                    {
+                            UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
 
-                        Boolean isForeground = BackgroundUtil.getLinuxCoreInfo(this, wxPackgeName);
-                        if (isForeground)
+                            if (!usageStatsManager.isAppInactive(wxPackgeName))
+                            {
+                                Log.d(MYTAG, "微信启用不推送！");
+                                return;
+                            }
+                        } else
                         {
-                            Log.d(MYTAG, "微信前台不推送！");
-                            return;
+                            Looper.prepare();
+                            Toast.makeText(getApplicationContext(), "您的系统不支持浅睡模式！", Toast.LENGTH_LONG).show();
+                            Looper.loop();
                         }
-                    }
-
-                } else if (wxReciveType.equals("3"))
-                { //运行时不推送
-
-                    if (isServiceRunning(this, wxPackgeName))
-                    {
-                        Log.d(MYTAG, "微信运行不推送！");
-                        return;
-                    }
-
-                } else if (wxReciveType.equals("4"))
-                {//启用时不推送
-
-                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                    {
-                        UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
-
-                        if (!usageStatsManager.isAppInactive(wxPackgeName))
-                        {
-                            Log.d(MYTAG, "微信启用不推送！");
-                            return;
-                        }
-                    } else
-                    {
-                        Looper.prepare();
-                        Toast.makeText(getApplicationContext(), "您的系统不支持浅睡模式！", Toast.LENGTH_LONG).show();
-                        Looper.loop();
-                    }
+                        break;
                 }
             }
 
 
             //弹出通知
-            if (msgType.equals(QQ))
-            {  //qq通知显示
-
-                if (!qqIsDetail)
-                {
-                    msgTitle = "联系人";
-                    msgBody = "你收到了消息！";
-                }
-
-                sendNotificationQq(msgTitle, msgBody, notifyId, msgCount, qqSound, qqVibrate, msgId, senderType, qqPackgeName);
-
-            } else if (msgType.equals(WEIXIN))
-            { //微信通知显示
-
-                if (!wxIsDetail)
-                {
-                    msgTitle = "联系人";
-                    msgBody = "你收到了消息！";
-                }
-
-                sendNotificationWx(msgTitle, msgBody, notifyId, msgCount, wxSound, wxVibrate, msgId, senderType, wxPackgeName);
-
-            } else if (msgType.equals(SYS))
-            { //系统通知显示
-                //自动下载二维码
-
-                if (msgTitle.contains("二维码事件"))
-                {
-                    try
+            switch (msgType) {
+                case QQ:
+                    if (!qqIsDetail)
                     {
-                        download(this, msgBody);
-                    } catch (Exception e)
-                    {
-                        e.printStackTrace();
+                        msgTitle = "联系人";
+                        msgBody = "你收到了消息！";
                     }
-                }
-
-                //设置登录变量
-                if (msgTitle.contains("扫描二维码事件"))
-                {
-
-                    if (msgId.equals("1"))
+                    sendNotificationQq(msgTitle, msgBody, notifyId, msgCount, qqSound, qqVibrate, msgId, senderType, qqPackgeName);
+                    break;
+                case WEIXIN:
+                    if (!wxIsDetail)
                     {
-                        isQqOnline = 0;
-                    } else if (msgId.equals("2"))
-                    {
-                        isWxOnline = 0;
+                        msgTitle = "联系人";
+                        msgBody = "你收到了消息！";
                     }
-
-                }
-
-                if (msgBody.contains("登录成功"))
-                {
-
-                    if (msgId.equals("1")) //QQ登录事件
+                    sendNotificationWx(msgTitle, msgBody, notifyId, msgCount, wxSound, wxVibrate, msgId, senderType, wxPackgeName);
+                    break;
+                case SYS:
+                    if (msgTitle.contains("二维码事件"))
                     {
-                        isQqOnline = 1;
-
-                        //清除会话列表
-                        for (int i = 0; i < currentUserList.size(); i++)
+                        try {
+                            download(this, msgBody);
+                        } catch (Exception e)
                         {
-                            if (currentUserList.get(i).getUserType().equals(QQ))
+                            e.printStackTrace();
+                        }
+                    }
+
+                    //设置登录变量
+                    if (msgTitle.contains("扫描二维码事件"))
+                    {
+                        if (msgId.equals("1"))
+                        {
+                            isQqOnline = 0;
+                        } else if (msgId.equals("2"))
+                        {
+                            isWxOnline = 0;
+                        }
+                    }
+
+                    if (msgBody.contains("登录成功"))
+                    {
+                        if (msgId.equals("1")) //QQ登录事件
+                        {
+                            isQqOnline = 1;
+                            //清除会话列表
+                            for (int i = 0; i < currentUserList.size(); i++)
                             {
-                                currentUserList.remove(i);
+                                if (currentUserList.get(i).getUserType().equals(QQ))
+                                {
+                                    currentUserList.remove(i);
+                                }
+                            }
+                            //清除好友列表
+                            MyApplication.getInstance().getQqFriendArrayList().clear();
+                            MyApplication.getInstance().getQqFriendGroups().clear();
+                            //清除聊天记录
+                            for (Object o : msgSave.entrySet()) {
+                                String key = o.toString();
+                                if (key.length() == 10)  //QQ的key使用msgId为10位
+                                    msgSave.remove(key);
+                            }
+                        } else if (msgId.equals("2")) //微信登录事件
+                        {
+                            isWxOnline = 1;
+                            //清除会话列表
+                            for (int i = 0; i < currentUserList.size(); i++)
+                            {
+                                if (currentUserList.get(i).getUserType().equals(WEIXIN))
+                                {
+                                    currentUserList.remove(i);
+                                }
+                            }
+                            //清除好友列表
+                            //清除聊天记录
+                            for (Object o : msgSave.entrySet()) {
+                                String key = o.toString();
+                                if (key.length() > 10)  //微信的key使用msgId大于10位
+                                    msgSave.remove(key);
                             }
                         }
-
-                        //清除好友列表
-                        MyApplication.getInstance().getQqFriendArrayList().clear();
-                        MyApplication.getInstance().getQqFriendGroups().clear();
-
-                        //清除聊天记录
-                        Iterator p = msgSave.entrySet().iterator();
-                        while (p.hasNext())
+                        //删除所有二维码
+                        Log.i(MYTAG, "onMessageReceived: 准备删除二维码");
+                        File file = new File(Environment.getExternalStorageDirectory() + "/GcmForMojo/");
+                        File[] childFiles = file.listFiles();
+                        for (File temp : childFiles)
                         {
-                            Object o = p.next();
-                            String key = o.toString();
-                            if (key.length() == 10)  //QQ的key使用msgId为10位
-                                msgSave.remove(key);
+                            Log.d(MYTAG, "onMessageReceived: delete: " + temp.getAbsolutePath());
+                            //noinspection ResultOfMethodCallIgnored
+                            temp.delete();
                         }
-
-
-                    } else if (msgId.equals("2")) //微信登录事件
-                    {
-                        isWxOnline = 1;
-
-                        //清除会话列表
-                        for (int i = 0; i < currentUserList.size(); i++)
-                        {
-                            if (currentUserList.get(i).getUserType().equals(WEIXIN))
-                            {
-                                currentUserList.remove(i);
-                            }
-                        }
-
-                        //清除好友列表
-
-                        //清除聊天记录
-                        Iterator p = msgSave.entrySet().iterator();
-                        while (p.hasNext())
-                        {
-                            Object o = p.next();
-                            String key = o.toString();
-                            if (key.length() > 10)  //微信的key使用msgId大于10位
-                                msgSave.remove(key);
-                        }
-
+                        //更新会话列表
+                        if (CurrentUserActivity.userHandler != null)
+                            new userThread().start();
+                        //更新聊天对话框
+                        if (DialogActivity.msgHandler != null)
+                            new MsgThread().start();
                     }
 
-                    //删除所有二维码
-                    Log.i(MYTAG, "onMessageReceived: 准备删除二维码");
-                    File file = new File(Environment.getExternalStorageDirectory() + "/GcmForMojo/");
-                    File[] childFiles = file.listFiles();
-                    for (File temp : childFiles)
-                    {
-                        Log.d(MYTAG, "onMessageReceived: delete: " + temp.getAbsolutePath());
-                        temp.delete();
-                    }
-
-                    //更新会话列表
-                    if (CurrentUserActivity.userHandler != null)
-                        new userThread().start();
-                    //更新聊天对话框
-                    if (DialogActivity.msgHandler != null)
-                        new MsgThread().start();
-
-                }
-
-
-                //发出系统通知
-                sendNotificationSys(msgTitle, msgBody, msgId, notifyId, msgCount);
+                    //发出系统通知
+                    sendNotificationSys(msgTitle, msgBody, msgId, notifyId, msgCount);
+                    break;
             }
         }
 
@@ -599,16 +554,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         //通知暂停事件 by Mystery0
        // Intent intentPause = new Intent(this, QqPausedNotificationReceiver.class);
-       // intentPause.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
        // intentPause.setAction("qq_notification_paused");
        // intentPause.putExtras(msgNotifyBundle);
        // PendingIntent pendingIntentPause = PendingIntent.getBroadcast(this, notifyId, intentPause, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        //通知点击事件
-        //应用界面 需要传递最后一次消息内容 避免会话列表为空
+        //应用界面 传递最后一次消息内容，避免会话列表为空
         Intent intentList = new Intent(this, CurrentUserActivity.class);
         intentList.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         Bundle msgListBundle = new Bundle();
         msgListBundle.putString("userName", msgTitle);
         msgListBundle.putString("userId", msgId);
@@ -619,7 +571,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         msgListBundle.putInt("notifyId", notifyId);
         msgListBundle.putString("msgCount", String.valueOf(msgCount));
         intentList.putExtras(msgListBundle);
-
         PendingIntent pendingIntentList = PendingIntent.getActivity(this, notifyId, intentList, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //qq界面(接收器)
@@ -627,6 +578,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         intentQq.setAction("qq_notification_clicked");
         intentQq.putExtras(msgNotifyBundle);
         PendingIntent pendingIntentQq = PendingIntent.getBroadcast(this, notifyId, intentQq, PendingIntent.FLAG_ONE_SHOT);
+
+       //回复窗口
+        Intent intentDialog = new Intent(this, DialogActivity.class);
+        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Bundle msgDialogBundle = new Bundle();
+        msgDialogBundle.putString("msgId", msgId);
+        msgDialogBundle.putString("senderType", senderType);
+        msgDialogBundle.putString("msgType", QQ);
+        msgDialogBundle.putString("msgTitle", msgTitle);
+        msgDialogBundle.putString("msgBody", msgBody);
+        msgDialogBundle.putInt("notifyId", notifyId);
+        msgDialogBundle.putString("msgTime", getCurTime());
+        msgDialogBundle.putString("qqPackgeName", qqPackgeName);
+        intentDialog.putExtras(msgDialogBundle);
+        PendingIntent pendingIntentDialog = PendingIntent.getActivity(this, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
 
         StringBuffer ticker = new StringBuffer();
         ticker.append(msgTitle);
@@ -659,40 +625,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
 
         //振动参数
-        if (qqVibrate.equals("1"))
-        {
-            notificationBuilder.setVibrate(new long[]{0});
-        } else if (qqVibrate.equals("2"))
-        {
-            notificationBuilder.setVibrate(new long[]{0, 100, 300, 100});
-        } else if (qqVibrate.equals("3"))
-        {
-            notificationBuilder.setVibrate(new long[]{0, 500, 300, 500});
-        } else
-        {
-            notificationBuilder.setVibrate(new long[]{0});
+        switch (qqVibrate) {
+            case "1":
+                notificationBuilder.setVibrate(new long[]{0});
+                break;
+            case "2":
+                notificationBuilder.setVibrate(new long[]{0, 100, 300, 100});
+                break;
+            case "3":
+                notificationBuilder.setVibrate(new long[]{0, 500, 300, 500});
+                break;
+            default:
+                notificationBuilder.setVibrate(new long[]{0});
         }
 
-        Intent intentDialog = new Intent(this, DialogActivity.class);
-        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        Bundle msgDialogBundle = new Bundle();
-        msgDialogBundle.putString("msgId", msgId);
-        msgDialogBundle.putString("senderType", senderType);
-        msgDialogBundle.putString("msgType", QQ);
-        msgDialogBundle.putString("msgTitle", msgTitle);
-        msgDialogBundle.putString("msgBody", msgBody);
-        msgDialogBundle.putInt("notifyId", notifyId);
-        msgDialogBundle.putString("msgTime", getCurTime());
-        msgDialogBundle.putString("qqPackgeName", qqPackgeName);
-        intentDialog.putExtras(msgDialogBundle);
-
-        PendingIntent pendingIntentDialog = PendingIntent.getActivity(this, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        notificationBuilder.addAction(0, "列表", pendingIntentDialog);
+        notificationBuilder.addAction(0, "列表", pendingIntentList);
         notificationBuilder.addAction(0, "清除", pendingIntentCancel);
-      //  notificationBuilder.addAction(0, "暂停", pendingIntentPause);
-        //  }
+      // notificationBuilder.addAction(0, "暂停", pendingIntentPause);
+
 
         //开启应用界面还是QQ界面
         if (isOpenQq)
@@ -700,9 +651,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         else
             notificationBuilder.setContentIntent(pendingIntentDialog);
 
-
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
         notificationManager.notify(notifyId, notificationBuilder.build());
 
     }
@@ -723,8 +672,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         intentCancel.putExtras(msgNotifyBundle);
         PendingIntent pendingIntentCancel = PendingIntent.getBroadcast(this, notifyId, intentCancel, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        //通知点击事件
-        //应用界面
+        //应用界面 传递最后一次消息内容，避免会话列表为空
         Intent intentList = new Intent(this, CurrentUserActivity.class);
         intentList.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Bundle msgListBundle = new Bundle();
@@ -739,11 +687,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         intentList.putExtras(msgListBundle);
         PendingIntent pendingIntentList = PendingIntent.getActivity(this, notifyId, intentList, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        //微信界面
+        //微信界面（接收器）
         Intent intentWx = new Intent(this, WeixinNotificationBroadcastReceiver.class);
         intentWx.setAction("weixin_notification_clicked");
         intentWx.putExtras(msgNotifyBundle);
         PendingIntent pendingIntentWx = PendingIntent.getBroadcast(this, notifyId, intentWx, PendingIntent.FLAG_ONE_SHOT);
+
+        //回复窗口
+        Intent intentDialog = new Intent(this, DialogActivity.class);
+        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Bundle msgDialogBundle = new Bundle();
+        msgDialogBundle.putString("msgId", msgId);
+        msgDialogBundle.putString("senderType", senderType);
+        msgDialogBundle.putString("msgType", WEIXIN);
+        msgDialogBundle.putString("msgTitle", msgTitle);
+        msgDialogBundle.putString("msgBody", msgBody);
+        msgDialogBundle.putInt("notifyId", notifyId);
+        msgDialogBundle.putString("msgTime", getCurTime());
+        msgDialogBundle.putString("wxPackgeName", wxPackgeName);
+        intentDialog.putExtras(msgDialogBundle);
+        PendingIntent pendingIntentDialog = PendingIntent.getActivity(this, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
 
         StringBuffer tickerWx = new StringBuffer();
         tickerWx.append(msgTitle);
@@ -776,50 +739,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
 
         //振动方式
-        if (wxVibrate.equals("1"))
-        {
-            notificationBuilder.setVibrate(new long[]{0});
-        } else if (wxVibrate.equals("2"))
-        {
-            notificationBuilder.setVibrate(new long[]{0, 100, 300, 100});
-        } else if (wxVibrate.equals("3"))
-        {
-            notificationBuilder.setVibrate(new long[]{0, 500, 300, 500});
-        } else
-        {
-            notificationBuilder.setVibrate(new long[]{0});
+        switch (wxVibrate) {
+            case "1":
+                notificationBuilder.setVibrate(new long[]{0});
+                break;
+            case "2":
+                notificationBuilder.setVibrate(new long[]{0, 100, 300, 100});
+                break;
+            case "3":
+                notificationBuilder.setVibrate(new long[]{0, 500, 300, 500});
+                break;
+            default:
+                notificationBuilder.setVibrate(new long[]{0});
         }
 
-        //通知按钮
-
-        Intent intentDialog = new Intent(this, DialogActivity.class);
-        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        Bundle msgDialogBundle = new Bundle();
-        msgDialogBundle.putString("msgId", msgId);
-        // msgDialogBundle.putString("wxReplyUrl",wxReplyUrl);
-        msgDialogBundle.putString("senderType", senderType);
-        msgDialogBundle.putString("msgType", WEIXIN);
-        msgDialogBundle.putString("msgTitle", msgTitle);
-        msgDialogBundle.putString("msgBody", msgBody);
-        msgDialogBundle.putInt("notifyId", notifyId);
-        msgDialogBundle.putString("msgTime", getCurTime());
-        msgDialogBundle.putString("wxPackgeName", wxPackgeName);
-        intentDialog.putExtras(msgDialogBundle);
-
-        PendingIntent pendingIntentDialog = PendingIntent.getActivity(this, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
 
         notificationBuilder.addAction(0, "列表", pendingIntentList);
         notificationBuilder.addAction(0, "清除", pendingIntentCancel);
 
 
+        //开启回复还是微信
         if (isOpenWx)
             notificationBuilder.setContentIntent(pendingIntentWx);
         else
             notificationBuilder.setContentIntent(pendingIntentDialog);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
         notificationManager.notify(notifyId, notificationBuilder.build());
     }
 
@@ -864,18 +809,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         int smallIcon;
         Bitmap largeIcon;
 
-        if (msgId.equals("1"))
-        {
-            smallIcon = R.drawable.qq_notification;
-            largeIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.qq);
-        } else if (msgId.equals("2"))
-        {
-            smallIcon = R.drawable.weixin_notification;
-            largeIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.weixin);
-        } else
-        {
-            smallIcon = R.drawable.sys_notification;
-            largeIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.sys);
+        switch (msgId) {
+            case "1":
+                smallIcon = R.drawable.qq_notification;
+                largeIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.qq);
+                break;
+            case "2":
+                smallIcon = R.drawable.weixin_notification;
+                largeIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.weixin);
+                break;
+            default:
+                smallIcon = R.drawable.sys_notification;
+                largeIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.sys);
         }
 
         int defaults = 0;
@@ -898,14 +843,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         notificationBuilder.setPriority(Notification.PRIORITY_HIGH); //自动弹出通知
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
         notificationManager.notify(notifyId, notificationBuilder.build());
     }
 
     /**
      * 判断应用是否已经启动
      *
-     * @param context          一个context
+     * @param context  一个context
      * @param serviceClassName 要判断应用的包名
      * @return boolean
      */
@@ -932,6 +876,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         File f = new File(dirName);
         if (!f.exists())
         {      //判断文件夹是否存在
+            //noinspection ResultOfMethodCallIgnored
             f.mkdir();        //如果不存在、则创建一个新的文件夹
         }
         //准备拼接新的文件名
@@ -942,6 +887,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         File file = new File(fileName);
         if (file.exists())
         {    //如果目标文件已经存在
+            //noinspection ResultOfMethodCallIgnored
             file.delete();    //则删除旧文件
         }
         //1K的数据缓冲
@@ -1042,6 +988,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         calendar.add(Calendar.YEAR, -1);
         long startTime = calendar.getTimeInMillis();
 
+        assert mUsageStatsManager != null;
         List<UsageStats> usageStats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime);
         if (usageStats == null || usageStats.size() == 0)
         {
@@ -1050,13 +997,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
-
                 //   Looper.prepare();
                 //   Toast.makeText(context, "权限不够\n请打开手机设置，点击安全-高级，在有权查看使用情况的应用中，为这个App打上勾", Toast.LENGTH_SHORT).show();
                 //   Looper.loop();
-
             }
-
             return false;
         }
         Collections.sort(usageStats, mRecentComp);

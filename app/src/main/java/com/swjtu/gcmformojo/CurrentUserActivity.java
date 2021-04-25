@@ -206,9 +206,11 @@ public class CurrentUserActivity extends AppCompatActivity {
         }
     }
 
-    public Handler getHandler(){
-        return userHandler;
-    }
+// --Commented out by Inspection START (2017/2/27 19:24):
+//    public Handler getHandler(){
+//        return userHandler;
+//    }
+// --Commented out by Inspection STOP (2017/2/27 19:24)
 
     @Override
     protected void onResume() {

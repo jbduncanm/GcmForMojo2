@@ -90,7 +90,7 @@
         <activity
             android:name=".DialogActivity"
             android:theme="@style/MyDialog"
-            android:windowSoftInputMode="stateVisible|adjustPan"/>
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".HelpActivity"/>
         <activity
             android:name=".TokenActivity"

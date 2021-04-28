@@ -11,8 +11,10 @@ import android.os.Message;
 import android.text.Spanned;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -79,7 +81,6 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE); //hide activity title
         setFinishOnTouchOutside(true);//
 
-        //MyApplication = (MyApplication) getApplication();
         msgSave = MyApplication.getInstance().getMsgSave();
         currentUserList = MyApplication.getInstance().getCurrentUserList();
         msgCountMap = MyApplication.getInstance().getMsgCountMap();
@@ -147,16 +148,19 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
         //纯系统消息选择屏蔽Listview消息记录，单独显示Textview
         if(msgId.equals("0")) {
-
             msgListLinearLayout.setVisibility(View.GONE);
             imageButton_send.setVisibility(View.GONE);
             line_view.setVisibility(View.GONE);
             sysTextView.setVisibility(View.VISIBLE);
+            editText_content.clearFocus();
             sysTextView.setText("\t\t首次使用,请点击右上角选项获取设备码(卸载重装以及清除数据需要重新获取)，更多请阅读使用帮助并参考酷安发布的教程！");
-
         }
 
         //弹窗图标和是否开启发送按钮
+        editText_content.setFocusable(true);
+        editText_content.setFocusableInTouchMode(true);
+       // InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+
         switch (msgType){
             case QQ:
                 imgMsgType.setImageResource(R.mipmap.qq);
@@ -164,12 +168,24 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                     imageButton_send.setEnabled(false);
                     editText_content.setEnabled(false);
                     editText_content.setText("未开启回复功能");
+                    editText_content.clearFocus();
+                    break;
                 }
                 if(isQqOnline==0) {
                     imageButton_send.setEnabled(false);
                     editText_content.setEnabled(false);
                     editText_content.setText("服务端未登录");
+                    editText_content.clearFocus();
+                    break;
                 }
+                editText_content.requestFocus();
+                editText_content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(editText_content, 0);
+                    }
+                });
                 break;
             case WEIXIN:
                 imgMsgType.setImageResource(R.mipmap.weixin);
@@ -177,12 +193,24 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                     imageButton_send.setEnabled(false);
                     editText_content.setEnabled(false);
                     editText_content.setText("未开启回复功能");
+                    editText_content.clearFocus();
+                    break;
                 }
                 if(isWxOnline==0) {
                     imageButton_send.setEnabled(false);
                     editText_content.setEnabled(false);
                     editText_content.setText("服务端未登录");
+                    editText_content.clearFocus();
+                    break;
                 }
+                editText_content.requestFocus();
+                editText_content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(editText_content, 0);
+                    }
+                });
                 break;
             default:
                 //系统消息中的QQ和微信服务通知图标
@@ -199,10 +227,10 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                     default:
                         imgMsgType.setImageResource(R.mipmap.pin);
                 }
-
                 imageButton_send.setEnabled(false);
                 editText_content.setEnabled(false);
                 editText_content.setText("系统控制");
+                editText_content.clearFocus();
         }
 
 
@@ -236,14 +264,12 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         msgAdapter = new ArrayAdapter<>(DialogActivity.this,R.layout.dialog_msglist_item,R.id.text_message_item,msgSave.get(msgId));
         msgListView.setAdapter(msgAdapter);
 
-        editText_content.setFocusable(true);
-        editText_content.setFocusableInTouchMode(true);
+
         editText_content.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId,
                                           KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    //imageButton_send.setOnClickListener(this);
                     sendMsgAction();
                 }
 

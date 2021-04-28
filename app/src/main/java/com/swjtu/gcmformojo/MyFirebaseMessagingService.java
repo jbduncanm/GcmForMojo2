@@ -581,7 +581,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
        //回复窗口
         Intent intentDialog = new Intent(this, DialogActivity.class);
-        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Bundle msgDialogBundle = new Bundle();
         msgDialogBundle.putString("msgId", msgId);
         msgDialogBundle.putString("senderType", senderType);
@@ -639,8 +639,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 notificationBuilder.setVibrate(new long[]{0});
         }
 
+        Boolean qqIsReply=mySettings.getBoolean("check_box_preference_qq_reply",false);
 
-        notificationBuilder.addAction(0, "列表", pendingIntentList);
+        if(qqIsReply)
+            notificationBuilder.addAction(0, "回复", pendingIntentDialog);
+        else
+            notificationBuilder.addAction(0, "列表", pendingIntentList);
         notificationBuilder.addAction(0, "清除", pendingIntentCancel);
       // notificationBuilder.addAction(0, "暂停", pendingIntentPause);
 
@@ -649,7 +653,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         if (isOpenQq)
             notificationBuilder.setContentIntent(pendingIntentQq);
         else
-            notificationBuilder.setContentIntent(pendingIntentDialog);
+            notificationBuilder.setContentIntent(pendingIntentList);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(notifyId, notificationBuilder.build());
@@ -695,7 +699,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         //回复窗口
         Intent intentDialog = new Intent(this, DialogActivity.class);
-        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Bundle msgDialogBundle = new Bundle();
         msgDialogBundle.putString("msgId", msgId);
         msgDialogBundle.putString("senderType", senderType);
@@ -754,7 +758,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         }
 
 
-        notificationBuilder.addAction(0, "列表", pendingIntentList);
+        Boolean wxIsReply=mySettings.getBoolean("check_box_preference_wx_reply",false);
+        if(wxIsReply)
+            notificationBuilder.addAction(0, "回复", pendingIntentDialog);
+        else
+            notificationBuilder.addAction(0, "列表", pendingIntentList);
         notificationBuilder.addAction(0, "清除", pendingIntentCancel);
 
 
@@ -762,7 +770,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         if (isOpenWx)
             notificationBuilder.setContentIntent(pendingIntentWx);
         else
-            notificationBuilder.setContentIntent(pendingIntentDialog);
+            notificationBuilder.setContentIntent(pendingIntentList);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(notifyId, notificationBuilder.build());

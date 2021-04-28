@@ -99,8 +99,10 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:maxLines="1"
             android:textColor="@android:color/black"
-            android:background="@null">
-            <requestFocus />
+            android:background="@null"
+            android:focusable="true"
+            android:focusableInTouchMode="true" >
+            <requestFocus/>
   </EditText>
 
         <LinearLayout

@@ -28,7 +28,7 @@
             android:defaultValue="true"
             android:title="通知行为"
             android:summaryOn="点击通知打开QQ"
-            android:summaryOff="点击通知弹出回复框"
+            android:summaryOff="点击通知进入应用"
             android:key="check_box_preference_qq_isOpenQq" />
 
         <EditTextPreference
@@ -107,7 +107,7 @@
             android:defaultValue="true"
             android:title="通知行为"
             android:summaryOn="点击通知打开微信"
-            android:summaryOff="点击通知弹出回复框"
+            android:summaryOff="点击通知进入应用"
             android:key="check_box_preference_wx_isOpenWx" />
 
         <EditTextPreference

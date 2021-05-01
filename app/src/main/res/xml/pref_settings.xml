@@ -5,63 +5,66 @@
 
    <CheckBoxPreference
             android:defaultValue="true"
-            android:title="开启QQ推送"
+            android:title="QQ推送开关"
             android:summaryOn="开启推送"
             android:summaryOff="关闭推送"
             android:key="check_box_preference_qq" />
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:title="显示消息详情"
-            android:summaryOn="使用详细信息"
-            android:summaryOff="使用简略信息"
+            android:title="消息内容"
+            android:summaryOn="显示详细信息"
+            android:summaryOff="显示简略信息"
             android:key="check_box_preference_qq_detail" />
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:title="显示群消息"
+            android:title="群消息"
             android:summaryOn="显示群消息"
-            android:summaryOff="屏蔽群消息"
+            android:summaryOff="屏蔽群消息(@消息无视该选项)"
             android:key="check_box_preference_qq_isReciveGroup" />
 
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:title="通知行为"
-            android:summaryOn="点击通知打开QQ"
-            android:summaryOff="点击通知进入应用"
-            android:key="check_box_preference_qq_isOpenQq" />
-
-        <EditTextPreference
-            android:defaultValue="com.tencent.mobileqq"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title=""
-            android:key="edit_text_preference_qq_packgename"
-            android:summary="输入QQ包名便于点击触发及检测运行状态（默认com.tencent.mobileqq）" />
+        <ListPreference
+            android:defaultValue="1"
+            android:title="选择通知点击行为"
+            android:summary="{v}"
+            android:entries="@array/qq_notify_click"
+            android:entryValues="@array/qq_notify_click_values"
+            android:key="qq_notify_click" />
 
         <RingtonePreference
             android:defaultValue=""
-            android:title="提醒声音"
+            android:title="选择提醒声音"
             android:key="ringtone_preference_qq"
             android:ringtoneType="notification" />
 
         <ListPreference
             android:defaultValue="1"
-            android:title="振动方式"
+            android:title="选择振动方式"
+            android:summary="{v}"
             android:entries="@array/qq_list_preference_vibrate_entries"
             android:entryValues="@array/qq_list_preference_vibrate_entry_values"
             android:key="qq_list_preference_vibrate" />
 
         <ListPreference
             android:defaultValue="1"
-            android:title="选择接收方式（默认第一种）"
+            android:title="选择接收方式"
+            android:summary="{v}"
             android:entries="@array/qq_list_preference_entries"
             android:entryValues="@array/qq_list_preference_entry_values"
             android:key="qq_list_preference_1" />
 
+        <EditTextPreference
+            android:defaultValue="com.tencent.mobileqq"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="输入QQ包名(用于点击触发及检测运行状)"
+            android:key="edit_text_preference_qq_packgename"
+            android:summary="{v}" />
+
         <CheckBoxPreference
             android:defaultValue="false"
-            android:title="开启回复功能"
+            android:title="回复功能"
             android:key="check_box_preference_qq_reply"
             android:summary="需要开启openqq插件并具有公网地址" />
 
@@ -69,78 +72,77 @@
             android:defaultValue="http://1.1.1.1:5000"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title=""
+            android:title="输入服务端地址"
             android:key="edit_text_preference_qq_replyurl"
-            android:summary="输入用于回复消息的公网URL地址" />
-
-
-
+            android:summary="{v}" />
 
     </PreferenceCategory>
 
     <PreferenceCategory android:title="微信设置选项">
 
 
-
         <CheckBoxPreference
             android:defaultValue="true"
-            android:title="开启微信推送"
+            android:title="微信推送开关"
             android:summaryOn="开启推送"
             android:summaryOff="关闭推送"
             android:key="check_box_preference_wx" />
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:title="显示消息详情"
-            android:summaryOn="使用详细信息"
-            android:summaryOff="使用简略信息"
+            android:title="消息内容"
+            android:summaryOn="显示详细信息"
+            android:summaryOff="显示简略信息"
             android:key="check_box_preference_wx_detail" />
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:title="显示群消息"
+            android:title="群消息"
             android:summaryOn="显示群消息"
-            android:summaryOff="屏蔽群消息"
+            android:summaryOff="屏蔽群消息(@消息无视该选项)"
             android:key="check_box_preference_wx_isReciveGroup" />
 
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:title="通知行为"
-            android:summaryOn="点击通知打开微信"
-            android:summaryOff="点击通知进入应用"
-            android:key="check_box_preference_wx_isOpenWx" />
-
-        <EditTextPreference
-            android:defaultValue="com.tencent.mm"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title=""
-            android:key="edit_text_preference_wx_packgename"
-            android:summary="输入微信包名便于点击触发及检测运行状态（默认com.tencent.mm）" />
+        <ListPreference
+            android:defaultValue="1"
+            android:title="选择通知点击行为"
+            android:summary="{v}"
+            android:entries="@array/wx_notify_click"
+            android:entryValues="@array/wx_notify_click_values"
+            android:key="wx_notify_click" />
 
         <RingtonePreference
             android:defaultValue=""
-            android:title="提醒声音"
+            android:title="选择提醒声音"
             android:key="ringtone_preference_wx"
             android:ringtoneType="notification" />
 
         <ListPreference
             android:defaultValue="1"
-            android:title="振动方式"
+            android:title="选择振动方式"
+            android:summary="{v}"
             android:entries="@array/wx_list_preference_vibrate_entries"
             android:entryValues="@array/wx_list_preference_vibrate_entry_values"
             android:key="wx_list_preference_vibrate" />
 
         <ListPreference
             android:defaultValue="1"
-            android:title="选择接收方式（默认第一种）"
+            android:title="选择接收方式"
+            android:summary="{v}"
             android:entries="@array/wx_list_preference_entries"
             android:entryValues="@array/wx_list_preference_entry_values"
             android:key="wx_list_preference_1" />
 
+        <EditTextPreference
+            android:defaultValue="com.tencent.mm"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="输入微信包名(用于点击触发及检测运行状态)"
+            android:key="edit_text_preference_wx_packgename"
+            android:summary="{v}" />
+
         <CheckBoxPreference
             android:defaultValue="false"
-            android:title="开启回复功能"
+            android:title="回复功能"
             android:key="check_box_preference_wx_reply"
             android:summary="需要开启openwx插件并具有公网地址"/>
 
@@ -148,12 +150,9 @@
             android:defaultValue="http://1.1.1.1:3000"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title=""
+            android:title="输入服务端地址"
             android:key="edit_text_preference_wx_replyurl"
-            android:summary="输入用于回复消息的公网URL地址" />
-
-
-
+            android:summary="{v}" />
 
 
     </PreferenceCategory>

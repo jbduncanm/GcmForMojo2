@@ -11,7 +11,6 @@ import android.os.Message;
 import android.text.Spanned;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -31,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -179,13 +180,16 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                     break;
                 }
                 editText_content.requestFocus();
-                editText_content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          /*      editText_content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.showSoftInput(editText_content, 0);
+                        editText_content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 });
+                */
+                showInputMethod(getApplicationContext(),editText_content,1000);
                 break;
             case WEIXIN:
                 imgMsgType.setImageResource(R.mipmap.weixin);
@@ -204,13 +208,16 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                     break;
                 }
                 editText_content.requestFocus();
-                editText_content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+               /* editText_content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.showSoftInput(editText_content, 0);
+                        editText_content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 });
+                */
+                showInputMethod(getApplicationContext(),editText_content,1000);
                 break;
             default:
                 //系统消息中的QQ和微信服务通知图标
@@ -492,6 +499,19 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
             CurrentUserActivity.userHandler.sendMessage(msg);
             super.run();
         }
+    }
+
+
+    //输入框延时弹出
+    private void showInputMethod(final Context context, final View view, final long delay) {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+            }
+        }, delay); // 如果这里的时间太短，可能出现输入法弹不出来的情况。
     }
 
 }

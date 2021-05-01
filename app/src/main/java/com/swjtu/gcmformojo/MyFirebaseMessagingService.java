@@ -540,7 +540,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                                     String senderType, String qqPackgeName)
     {
 
-        Boolean isOpenQq = mySettings.getBoolean("check_box_preference_qq_isOpenQq", true);
+        String qqNotifyClick = mySettings.getString("qq_notify_click","1");
 
         Bundle msgNotifyBundle = new Bundle();
         msgNotifyBundle.putInt("notifyId", notifyId);
@@ -640,7 +640,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         }
 
         Boolean qqIsReply=mySettings.getBoolean("check_box_preference_qq_reply",false);
-
         if(qqIsReply)
             notificationBuilder.addAction(0, "回复", pendingIntentDialog);
         else
@@ -648,12 +647,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         notificationBuilder.addAction(0, "清除", pendingIntentCancel);
       // notificationBuilder.addAction(0, "暂停", pendingIntentPause);
 
-
-        //开启应用界面还是QQ界面
-        if (isOpenQq)
-            notificationBuilder.setContentIntent(pendingIntentQq);
-        else
-            notificationBuilder.setContentIntent(pendingIntentList);
+        //通知点击行为
+        switch (qqNotifyClick) {
+            case "1":
+                notificationBuilder.setContentIntent(pendingIntentList);
+                break;
+            case "2":
+                notificationBuilder.setContentIntent(pendingIntentDialog);
+                break;
+            case "3":
+                notificationBuilder.setContentIntent(pendingIntentQq);
+                break;
+        }
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(notifyId, notificationBuilder.build());
@@ -664,7 +669,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     private void sendNotificationWx(String msgTitle, String msgBody, int notifyId, int msgCount, String wxSound, String wxVibrate, String msgId,
                                     String senderType, String wxPackgeName)
     {
-        Boolean isOpenWx = mySettings.getBoolean("check_box_preference_wx_isOpenWx", true);
+        String wxNotifyClick = mySettings.getString("wx_notify_click", "1");
 
         Bundle msgNotifyBundle = new Bundle();
         msgNotifyBundle.putInt("notifyId", notifyId);
@@ -765,12 +770,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             notificationBuilder.addAction(0, "列表", pendingIntentList);
         notificationBuilder.addAction(0, "清除", pendingIntentCancel);
 
-
-        //开启回复还是微信
-        if (isOpenWx)
-            notificationBuilder.setContentIntent(pendingIntentWx);
-        else
-            notificationBuilder.setContentIntent(pendingIntentList);
+        //通知点击行为
+        switch (wxNotifyClick) {
+            case "1":
+                notificationBuilder.setContentIntent(pendingIntentList);
+                break;
+            case "2":
+                notificationBuilder.setContentIntent(pendingIntentDialog);
+                break;
+            case "3":
+                notificationBuilder.setContentIntent(pendingIntentWx);
+                break;
+        }
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(notifyId, notificationBuilder.build());

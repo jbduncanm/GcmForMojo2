@@ -25,6 +25,18 @@
     <string name="action_done">确定</string>
     <string name="action_cancel">取消</string>
 
+    <string-array name="qq_notify_click">
+        <item>打开会话列表</item>
+        <item>弹出回复窗口</item>
+        <item>进入QQ主界面</item>
+    </string-array>
+
+    <string-array name="qq_notify_click_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
     <string-array name="qq_list_preference_entries">
         <item>不检测运行状态</item>
         <item>前台时不通知</item>
@@ -37,6 +49,18 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
+    </string-array>
+
+    <string-array name="wx_notify_click">
+        <item>打开会话列表</item>
+        <item>弹出回复窗口</item>
+        <item>进入微信界面</item>
+    </string-array>
+
+    <string-array name="wx_notify_click_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
 
     <string-array name="wx_list_preference_entries">

@@ -32,7 +32,6 @@ public class FragmentPreferences extends Activity {
                 Preference preference = findPreference(key);
                 format = preference.getSummary().toString();
 
-
                 if (EditTextPreference.class.isInstance(preference)) {
                     // EditText
                     EditTextPreference etp = (EditTextPreference) preference;
@@ -40,7 +39,7 @@ public class FragmentPreferences extends Activity {
                 } else if (ListPreference.class.isInstance(preference)) {
                     // List
                     ListPreference lp = (ListPreference) preference;
-                    onPreferenceChange(preference, lp.getEntry().toString());
+                    onPreferenceChange(preference, lp.getEntry());
                 } else {
                     Log.e("GcmForMojoSetting", "不支持的Preference类型");
                 }
@@ -60,22 +59,15 @@ public class FragmentPreferences extends Activity {
             this.addPreferencesFromResource(R.xml.pref_settings);
 
             //监听QQ设置
-            new PrefListener("qq_notify_click"); //通知点击
-            new PrefListener("qq_list_preference_vibrate"); //振动方式
-            new PrefListener("qq_list_preference_1"); //接收方式
             new PrefListener("edit_text_preference_qq_packgename"); //包名
             new PrefListener("edit_text_preference_qq_replyurl"); //服务端地址
 
             //监听微信设置
-            new PrefListener("wx_notify_click"); //通知点击
-            new PrefListener("wx_list_preference_vibrate"); //振动方式
-            new PrefListener("wx_list_preference_1"); //接收方式
             new PrefListener("edit_text_preference_wx_packgename"); //包名
             new PrefListener("edit_text_preference_wx_replyurl"); //服务端地址
-
-
-
         }
+
     }
+
 }
 

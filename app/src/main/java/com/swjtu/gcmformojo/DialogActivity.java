@@ -113,6 +113,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         if(msgDialogBundle.containsKey("qqPackgeName")) qqPackgeName =msgDialogBundle.getString("qqPackgeName");
         if(msgDialogBundle.containsKey("wxPackgeName"))  wxPackgeName =msgDialogBundle.getString("wxPackgeName");
 
+
         //重新计数并清除通知
         if(msgCountMap.get(notifyId)!=null)
         msgCountMap.put(notifyId, 0);
@@ -180,16 +181,13 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                     break;
                 }
                 editText_content.requestFocus();
-          /*      editText_content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                editText_content.postDelayed(new Runnable() {
                     @Override
-                    public void onGlobalLayout() {
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.showSoftInput(editText_content, 0);
-                        editText_content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    public void run() {
+                        InputMethodManager imm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(editText_content, InputMethodManager.SHOW_IMPLICIT);
                     }
-                });
-                */
-                showInputMethod(getApplicationContext(),editText_content,1000);
+                },300);
                 break;
             case WEIXIN:
                 imgMsgType.setImageResource(R.mipmap.weixin);
@@ -208,16 +206,13 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                     break;
                 }
                 editText_content.requestFocus();
-               /* editText_content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                editText_content.postDelayed(new Runnable() {
                     @Override
-                    public void onGlobalLayout() {
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.showSoftInput(editText_content, 0);
-                        editText_content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    public void run() {
+                        InputMethodManager imm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(editText_content, InputMethodManager.SHOW_IMPLICIT);
                     }
-                });
-                */
-                showInputMethod(getApplicationContext(),editText_content,1000);
+                },300);
                 break;
             default:
                 //系统消息中的QQ和微信服务通知图标
@@ -278,6 +273,8 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                                           KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     sendMsgAction();
+                    editText_content.requestFocus();
+                    return true;
                 }
 
                 return false;

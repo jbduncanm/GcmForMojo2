@@ -27,7 +27,7 @@
         <ListPreference
             android:defaultValue="1"
             android:title="选择通知点击行为"
-            android:summary="{v}"
+            android:summary="%s"
             android:entries="@array/qq_notify_click"
             android:entryValues="@array/qq_notify_click_values"
             android:key="qq_notify_click" />
@@ -41,7 +41,7 @@
         <ListPreference
             android:defaultValue="1"
             android:title="选择振动方式"
-            android:summary="{v}"
+            android:summary="%s"
             android:entries="@array/qq_list_preference_vibrate_entries"
             android:entryValues="@array/qq_list_preference_vibrate_entry_values"
             android:key="qq_list_preference_vibrate" />
@@ -49,7 +49,7 @@
         <ListPreference
             android:defaultValue="1"
             android:title="选择接收方式"
-            android:summary="{v}"
+            android:summary="%s"
             android:entries="@array/qq_list_preference_entries"
             android:entryValues="@array/qq_list_preference_entry_values"
             android:key="qq_list_preference_1" />
@@ -105,7 +105,7 @@
         <ListPreference
             android:defaultValue="1"
             android:title="选择通知点击行为"
-            android:summary="{v}"
+            android:summary="%s"
             android:entries="@array/wx_notify_click"
             android:entryValues="@array/wx_notify_click_values"
             android:key="wx_notify_click" />
@@ -119,7 +119,7 @@
         <ListPreference
             android:defaultValue="1"
             android:title="选择振动方式"
-            android:summary="{v}"
+            android:summary="%s"
             android:entries="@array/wx_list_preference_vibrate_entries"
             android:entryValues="@array/wx_list_preference_vibrate_entry_values"
             android:key="wx_list_preference_vibrate" />
@@ -127,7 +127,7 @@
         <ListPreference
             android:defaultValue="1"
             android:title="选择接收方式"
-            android:summary="{v}"
+            android:summary="%s"
             android:entries="@array/wx_list_preference_entries"
             android:entryValues="@array/wx_list_preference_entry_values"
             android:key="wx_list_preference_1" />

@@ -591,6 +591,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         msgDialogBundle.putInt("notifyId", notifyId);
         msgDialogBundle.putString("msgTime", getCurTime());
         msgDialogBundle.putString("qqPackgeName", qqPackgeName);
+        msgDialogBundle.putString("fromNotify", "1");
         intentDialog.putExtras(msgDialogBundle);
         PendingIntent pendingIntentDialog = PendingIntent.getActivity(this, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -642,8 +643,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         Boolean qqIsReply=mySettings.getBoolean("check_box_preference_qq_reply",false);
         if(qqIsReply)
             notificationBuilder.addAction(0, "回复", pendingIntentDialog);
-        else
-            notificationBuilder.addAction(0, "列表", pendingIntentList);
+        notificationBuilder.addAction(0, "列表", pendingIntentList);
         notificationBuilder.addAction(0, "清除", pendingIntentCancel);
       // notificationBuilder.addAction(0, "暂停", pendingIntentPause);
 
@@ -714,6 +714,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         msgDialogBundle.putInt("notifyId", notifyId);
         msgDialogBundle.putString("msgTime", getCurTime());
         msgDialogBundle.putString("wxPackgeName", wxPackgeName);
+        msgDialogBundle.putString("fromNotify", "1");
         intentDialog.putExtras(msgDialogBundle);
         PendingIntent pendingIntentDialog = PendingIntent.getActivity(this, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -766,8 +767,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         Boolean wxIsReply=mySettings.getBoolean("check_box_preference_wx_reply",false);
         if(wxIsReply)
             notificationBuilder.addAction(0, "回复", pendingIntentDialog);
-        else
-            notificationBuilder.addAction(0, "列表", pendingIntentList);
+        notificationBuilder.addAction(0, "列表", pendingIntentList);
         notificationBuilder.addAction(0, "清除", pendingIntentCancel);
 
         //通知点击行为

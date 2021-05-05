@@ -7,10 +7,12 @@ android {
         applicationId "com.swjtu.gcmformojo"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 22
-        versionName '1.6.12'
+        versionCode 23
+        versionName '1.6.13'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+    }
+    productFlavors {
     }
 }
 

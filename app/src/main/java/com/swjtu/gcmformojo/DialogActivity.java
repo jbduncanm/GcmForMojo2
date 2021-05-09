@@ -174,11 +174,11 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                     break;
                 }
                 if(isQqOnline==0) {
-                    imageButton_send.setEnabled(false);
-                    editText_content.setEnabled(false);
-                    editText_content.setText("服务端未登录");
-                    editText_content.clearFocus();
-                    break;
+                //   imageButton_send.setEnabled(false);
+                //   editText_content.setEnabled(false);
+                   editText_content.setText("[注意]未检测到登陆成功事件！");
+                //   editText_content.clearFocus();
+                //   break;
                 }
                 editText_content.requestFocus();
                 editText_content.postDelayed(new Runnable() {
@@ -200,10 +200,10 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 }
                 if(isWxOnline==0) {
                     imageButton_send.setEnabled(false);
-                    editText_content.setEnabled(false);
-                    editText_content.setText("服务端未登录");
-                    editText_content.clearFocus();
-                    break;
+                   // editText_content.setEnabled(false);
+                    editText_content.setText("[注意]未检测到登陆成功事件！");
+                  //  editText_content.clearFocus();
+                  //  break;
                 }
                 editText_content.requestFocus();
                 editText_content.postDelayed(new Runnable() {

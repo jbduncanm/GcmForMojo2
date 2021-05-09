@@ -144,6 +144,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             else
                 msgIsAt = "0";
 
+            if(msgType.equals(QQ) ) { //如果能收到QQ或者微信的非系统消息，则表明在线
+                isQqOnline=1;
+            } else if ( msgType.equals(WEIXIN)) {
+                isWxOnline = 1;
+            }
+
             //进行通知数据准备
             //利用msgId生成通知id存储到hashmap中全局使用
             if (msgIdMap.get(msgId) == null)

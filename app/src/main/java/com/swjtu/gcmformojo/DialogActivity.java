@@ -379,12 +379,23 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
         HashMap<String, String> msgSendRequest = new HashMap<>();
 
+        Boolean validationRequired=false;
+        String validationSalt="";
+        
         if(msgType.equals(QQ)){
             urlServer=Settings.getString("edit_text_preference_qq_replyurl","");
             urlQX="openqq";
+            if(Settings.getBoolean("check_box_preference_qq_validation",false)) {
+                validationRequired = true;
+                validationSalt=Settings.getString("edit_text_preference_qq_salt","");
+            }
         }else if(msgType.equals(WEIXIN)){
             urlServer=Settings.getString("edit_text_preference_wx_replyurl","");
             urlQX="openwx";
+            if(Settings.getBoolean("check_box_preference_wx_validation",false)) {
+                validationRequired = true;
+                validationSalt=Settings.getString("edit_text_preference_wx_salt","");
+            }
         }
 
         switch (senderType) {
@@ -402,11 +413,27 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         urlSend=urlServer+urlType;
         msgSendRequest.put("id",msgId);
         msgSendRequest.put("content",msgSend);
-
+        if(validationRequired) {
+            String sign="";
+            try{
+                sign=getMD5(msgId+msgSend+validationSalt);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            msgSendRequest.put("sign",sign);
+        }
         return doGetRequestResutl(urlSend,msgSendRequest);
 
     }
 
+    private static String getMD5(String val) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+        digest.update(val.getBytes("UTF-8"));
+        byte[] magnitude = digest.digest();
+        BigInteger bi = new BigInteger(1, magnitude);
+        return String.format("%0" + (magnitude.length << 1) + "x", bi);
+    }
+    
     //子线程处理发送消息
     private String  doGetRequestResutl(final String URL, final HashMap<String, String> data){
 

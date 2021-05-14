@@ -75,6 +75,20 @@
             android:title="输入服务端地址"
             android:key="edit_text_preference_qq_replyurl"
             android:summary="{v}" />
+        
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:title="开启回复校验"
+                android:key="check_box_preference_qq_validation"
+                android:summary="供高级用户及对消息安全有洁癖的人启用" />
+
+        <EditTextPreference
+                android:defaultValue=""
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="输入盐值"
+                android:key="edit_text_preference_qq_salt"
+                android:summary="用于服务端验证请求" />
 
     </PreferenceCategory>
 
@@ -154,6 +168,19 @@
             android:key="edit_text_preference_wx_replyurl"
             android:summary="{v}" />
 
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:title="开启回复校验"
+                android:key="check_box_preference_wx_validation"
+                android:summary="供高级用户及对消息安全有洁癖的人启用" />
+
+        <EditTextPreference
+                android:defaultValue=""
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="输入盐值"
+                android:key="edit_text_preference_wx_salt"
+                android:summary="用于服务端验证请求" />
 
     </PreferenceCategory>
 

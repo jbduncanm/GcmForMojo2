@@ -92,9 +92,17 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
         {
             case R.id.qq_contacts_update:
                 String qqServer, qqFriendUrl;
+                HashMap<String, String> msgSendRequest = new HashMap<>();
                 SharedPreferences Settings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
                 qqServer = Settings.getString("edit_text_preference_qq_replyurl", "");
                 qqFriendUrl = qqServer + "/openqq/get_friend_info";
+                if(Settings.getBoolean("check_box_preference_wx_validation",false)) {
+                    try {
+                        msgSendRequest.put("sign", DialogActivity.getMD5(Settings.getString("edit_text_preference_qq_salt", "")));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 qqFriendGroups.clear();
                 qqFriendArrayList.clear();
 
@@ -102,7 +110,7 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
                 if (qqFriendArrayList.size() == 0)
                 {
                     //HashMap emptyMap = new HashMap<>();
-                    getQqFriendData(qqFriendUrl, new HashMap<String,String>());
+                    getQqFriendData(qqFriendUrl, msgSendRequest);
                 }
                 //存储所有组名
 

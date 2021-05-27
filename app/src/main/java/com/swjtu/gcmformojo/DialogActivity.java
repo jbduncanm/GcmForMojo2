@@ -416,7 +416,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         if(validationRequired) {
             String sign="";
             try{
-                sign=getMD5(msgId+msgSend+validationSalt);
+                sign=getMD5(msgSend+msgId+validationSalt);
             }catch(Exception e){
                 e.printStackTrace();
             }

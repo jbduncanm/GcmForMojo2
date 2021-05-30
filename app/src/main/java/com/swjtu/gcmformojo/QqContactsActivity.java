@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 
@@ -93,7 +94,7 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
             case R.id.qq_contacts_update:
                 String qqServer, qqFriendUrl;
                 HashMap<String, String> msgSendRequest = new HashMap<>();
-                SharedPreferences Settings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
+                SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
                 qqServer = Settings.getString("edit_text_preference_qq_replyurl", "");
                 qqFriendUrl = qqServer + "/openqq/get_friend_info";
                 if(Settings.getBoolean("check_box_preference_wx_validation",false)) {

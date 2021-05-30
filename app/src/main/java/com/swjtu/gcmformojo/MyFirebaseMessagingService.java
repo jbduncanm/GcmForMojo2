@@ -52,6 +52,7 @@ import java.util.Random;
 
 import static android.app.Notification.DEFAULT_LIGHTS;
 import static com.swjtu.gcmformojo.MyApplication.MYTAG;
+import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.SYS;
 import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
@@ -100,7 +101,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         msgCountMap = MyApplication.getInstance().getMsgCountMap();
         msgIdMap = MyApplication.getInstance().getMsgIdMap();
         currentUserList = MyApplication.getInstance().getCurrentUserList();
-        mySettings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
+        mySettings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
 
 
         Log.d(MYTAG, "From: " + remoteMessage.getFrom());

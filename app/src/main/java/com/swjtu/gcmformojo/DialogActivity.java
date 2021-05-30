@@ -26,6 +26,10 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +41,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.SYS;
 import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
@@ -135,7 +140,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         }
 
         //如果未开启回复功能，则屏蔽发送按钮
-        SharedPreferences Settings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
+        SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
         Boolean qqIsReply=Settings.getBoolean("check_box_preference_qq_reply",false);
         Boolean wxIsReply=Settings.getBoolean("check_box_preference_wx_reply",false);
 
@@ -371,7 +376,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
     private String sendMessage(String msgSend, String msgId ,String senderType,String msgType) {
 
-        SharedPreferences Settings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
+        SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
         String urlServer="";
         String urlType="";
         String urlQX="";

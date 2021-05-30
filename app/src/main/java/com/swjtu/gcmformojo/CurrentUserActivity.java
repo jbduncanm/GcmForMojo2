@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.SYS;
 import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
@@ -60,7 +61,7 @@ public class CurrentUserActivity extends AppCompatActivity {
             }
         };
 
-        SharedPreferences Settings = getSharedPreferences("com.swjtu.gcmformojo_preferences", Context.MODE_PRIVATE);
+        SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
         final String qqReplyUrl=Settings.getString("edit_text_preference_qq_replyurl","");
         final String wxReplyUrl=Settings.getString("edit_text_preference_wx_replyurl","");
         final  String qqPackgeName=Settings.getString("edit_text_preference_qq_packgename","com.tencent.mobileqq");
@@ -221,7 +222,7 @@ public class CurrentUserActivity extends AppCompatActivity {
         if (!isHaveMsg(currentUserList,"1"))
             currentUserList.add(new User("QQ机器人(未开放)", "1", QQ, "用于控制服务端。", getCurTime(), "1", 1, "0"));
         if (!isHaveMsg(currentUserList,"0"))
-            currentUserList.add(new User("欢迎使用GcmForMojo", "0", SYS, "请点击右上角选项获取设备码。", getCurTime(), "1", 0, "0"));
+            currentUserList.add(new User("欢迎使用!", "0", SYS, "请点击右上角选项获取设备码。", getCurTime(), "1", 0, "0"));
 
     }
 

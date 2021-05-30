@@ -23,6 +23,7 @@ import static android.text.Html.FROM_HTML_MODE_COMPACT;
 public class MyApplication extends Application {
 
     final public static  String MYTAG = "GcmForMojo";
+    final public static String PREF = "com.swjtu.hwpushformojo_preferences";
     final public static String QQ="Mojo-Webqq";
     final public static String WEIXIN="Mojo-Weixin";
     final public static String SYS="Mojo-Sys";

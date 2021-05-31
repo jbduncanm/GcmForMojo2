@@ -431,7 +431,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
     }
 
-    private static String getMD5(String val) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String getMD5(String val) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest digest = MessageDigest.getInstance("MD5");
         digest.update(val.getBytes("UTF-8"));
         byte[] magnitude = digest.digest();

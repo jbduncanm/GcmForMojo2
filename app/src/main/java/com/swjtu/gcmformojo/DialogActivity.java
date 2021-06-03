@@ -356,7 +356,10 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
 
         msgAdapter.notifyDataSetChanged();
         msgListView.setSelection(msgSave.get(msgId).size());
-        editText_content.setText("");
+
+        //发送失败，不请空输入框
+        if(isSucess.equals(""))
+            editText_content.setText("");
         //    DialogActivity.this.finish();
     }
 

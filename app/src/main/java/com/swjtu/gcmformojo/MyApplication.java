@@ -1,9 +1,15 @@
 package com.swjtu.gcmformojo;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
+
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.huawei.android.pushagent.api.PushManager;
+import com.xiaomi.mipush.sdk.MiPushClient;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,12 +29,16 @@ import static android.text.Html.FROM_HTML_MODE_COMPACT;
 public class MyApplication extends Application {
 
     final public static  String MYTAG = "GcmForMojo";
-    final public static String PREF = "com.swjtu.hwpushformojo_preferences";
+    final public static String PREF = "com.swjtu.gcmformojo_preferences";
     final public static String QQ="Mojo-Webqq";
     final public static String WEIXIN="Mojo-Weixin";
     final public static String SYS="Mojo-Sys";
     final public static String qqColor="#1296DB";
     final public static String wxColor="#62B900";
+
+    public static String deviceGcmToken;
+    public static String deviceMiToken;
+    public static String deviceHwToken;
 
     public static int isQqOnline = 1;
     public static int isWxOnline = 1;
@@ -122,27 +132,35 @@ public class MyApplication extends Application {
 
     }
 
-// --Commented out by Inspection START (2017/2/27 19:24):
-//    @Deprecated
-//    public static String msgColor(String message,String messageType,Boolean isSend) {
-//
-//        String str = "";
-//        if(!isSend) {
-//            if (messageType.equals(QQ)) {
-//                str = "<font color='"+qqColor+"'>" + message + "</font>";
-//            } else if (messageType.equals(WEIXIN)) {
-//                str = "<font color='"+wxColor+"'>" + message + "</font>";
-//            }
-//        }else {
-//            if (messageType.equals(QQ)) {
-//                str = "<font color='"+wxColor+"'>" + message + "</font>";
-//            } else if (messageType.equals(WEIXIN)) {
-//                str = "<font color='"+qqColor+"'>" + message + "</font>";
-//            }
-//        }
-//        return str;
-//    }
-// --Commented out by Inspection STOP (2017/2/27 19:24)
+
+    private   void getMyToken() {
+
+        SharedPreferences Settings =   getSharedPreferences(PREF, Context.MODE_PRIVATE);
+
+        String mi_APP_ID = "2882303761517557334";
+        String mi_APP_KEY = "5631755784334";
+
+        //获取并显示最新注册码
+        String pushType=Settings.getString("push_type","GCM");
+
+        switch (pushType) {
+            case "GCM":
+                deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
+                break;
+            case "MiPush":
+                //接收器中更新deviceToken
+                MiPushClient.registerPush(this, mi_APP_ID, mi_APP_KEY);
+                break;
+            case "HwPush":
+                //接收器中获得deviceToke
+                PushManager.requestToken(this);
+                break;
+            default:
+                deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
+        }
+
+
+    }
 
     @Override
     public void onCreate() {
@@ -150,6 +168,13 @@ public class MyApplication extends Application {
         super.onCreate();
         //初始化全局变量
         myApp = this;
+
+        //设置推送通道并注册token
+
+        getMyToken();
+
+
+
     }
 
 }

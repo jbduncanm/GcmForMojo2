@@ -102,4 +102,17 @@
         <item>3</item>
     </string-array>
 
+
+    <string-array name="push_type">
+        <item>谷歌推送</item>
+        <item>小米推送</item>
+        <item>华为推送</item>
+    </string-array>
+
+    <string-array name="push_type_value">
+        <item>GCM</item>
+        <item>MiPush</item>
+        <item>HwPush</item>
+    </string-array>
+
 </resources>

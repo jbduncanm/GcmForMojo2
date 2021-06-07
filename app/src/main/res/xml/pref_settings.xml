@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+
+    <PreferenceCategory android:title="系统设置选项">
+
+        <ListPreference
+            android:defaultValue="GCM"
+            android:title="选择推送通道"
+            android:summary="%s"
+            android:entries="@array/push_type"
+            android:entryValues="@array/push_type_value"
+            android:key="push_type" />
+
+    </PreferenceCategory>
+
+
     <PreferenceCategory android:title="QQ设置选项">
 
    <CheckBoxPreference

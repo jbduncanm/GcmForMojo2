@@ -166,7 +166,6 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         //弹窗图标和是否开启发送按钮
         editText_content.setFocusable(true);
         editText_content.setFocusableInTouchMode(true);
-       // InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
         switch (msgType){
             case QQ:

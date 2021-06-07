@@ -1,5 +1,6 @@
 package com.swjtu.gcmformojo;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -33,6 +34,11 @@ public class MyApplication extends Application {
     final public static String QQ="Mojo-Webqq";
     final public static String WEIXIN="Mojo-Weixin";
     final public static String SYS="Mojo-Sys";
+
+
+    final public static String mi_APP_ID = "2882303761517557334";
+    final public static String mi_APP_KEY = "5631755784334";
+
     final public static String qqColor="#1296DB";
     final public static String wxColor="#62B900";
 
@@ -136,31 +142,51 @@ public class MyApplication extends Application {
     private   void getMyToken() {
 
         SharedPreferences Settings =   getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        //FirebaseApp.initializeApp(this);
 
-        String mi_APP_ID = "2882303761517557334";
-        String mi_APP_KEY = "5631755784334";
-
-        //获取并显示最新注册码
+        //注册推送服务获取regId
         String pushType=Settings.getString("push_type","GCM");
 
         switch (pushType) {
             case "GCM":
                 deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
+              //  MiPushClient.disablePush(getApplicationContext());
                 break;
             case "MiPush":
                 //接收器中更新deviceToken
-                MiPushClient.registerPush(this, mi_APP_ID, mi_APP_KEY);
+                if(shouldInit()) {
+                    MiPushClient.registerPush(this, mi_APP_ID, mi_APP_KEY);
+                }
+                MiPushClient.enablePush(getInstance().getApplicationContext());
                 break;
             case "HwPush":
                 //接收器中获得deviceToke
                 PushManager.requestToken(this);
+              //  MiPushClient.disablePush(getApplicationContext());
                 break;
             default:
                 deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
+             //   MiPushClient.disablePush(getApplicationContext());
+                break;
         }
 
 
     }
+
+    private boolean shouldInit() {
+        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
+        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+        String mainProcessName = getPackageName();
+        int myPid = android.os.Process.myPid();
+        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
+            if (info.pid == myPid && mainProcessName.equals(info.processName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     @Override
     public void onCreate() {
@@ -171,7 +197,7 @@ public class MyApplication extends Application {
 
         //设置推送通道并注册token
 
-        getMyToken();
+       // getMyToken();
 
 
 

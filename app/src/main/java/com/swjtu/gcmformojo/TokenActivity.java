@@ -7,9 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.huawei.android.pushagent.api.PushManager;
-
 import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.deviceGcmToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceHwToken;
@@ -53,7 +50,6 @@ public class TokenActivity extends Activity {
 
         switch (tokenSender) {
             case "GCM":
-                deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
                 if(deviceGcmToken !=null)
                     myToken.setText(deviceGcmToken);
                 else {
@@ -67,7 +63,6 @@ public class TokenActivity extends Activity {
                     myToken.setText(tokenNo);
                 break;
             case "HwPush":
-                PushManager.requestToken(this);
                 if(deviceHwToken!=null)
                     myToken.setText(deviceHwToken);
                 else {

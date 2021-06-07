@@ -53,18 +53,21 @@ public class MiPushReceiver extends PushMessageReceiver {
     public void onReceivePassThroughMessage(Context context, MiPushMessage message) {
 
         String remoteMessageOrign = message.toString();
-        Log.d(MYTAG, remoteMessageOrign);
+     //   Log.d(MYTAG, remoteMessageOrign);
 
         try
         {
             JSONObject remoteMessage = new JSONObject(message.getContent());
 
-            Log.d(MYTAG, "小米推送原始消息："+remoteMessageOrign);
+
 
             SharedPreferences Settings =        context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
             String tokenSender = Settings.getString("push_type","GCM");
-            if(tokenSender.equals("MiPush"))
-            MessageUtil.MessageUtilDo(context,remoteMessage.getString("msgId"),remoteMessage.getString("type"),remoteMessage.getString("senderType"),remoteMessage.getString("title"),remoteMessage.getString("message"),remoteMessage.getString("isAt"));
+            if(tokenSender.equals("MiPush")) {
+                Log.d(MYTAG, "小米推送："+remoteMessageOrign);
+                MessageUtil.MessageUtilDo(context,remoteMessage.getString("msgId"),remoteMessage.getString("type"),remoteMessage.getString("senderType"),remoteMessage.getString("title"),remoteMessage.getString("message"),remoteMessage.getString("isAt"));
+
+            }
 
         }
         catch (JSONException e)

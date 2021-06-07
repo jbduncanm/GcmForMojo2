@@ -34,14 +34,16 @@ public class HwPushReceiver extends PushEventReceiver {
 
         try {
             String remoteMessageOrign = new String(msg, "UTF-8");
-            Log.d(MYTAG,remoteMessageOrign);
+            //Log.d(MYTAG,remoteMessageOrign);
             JSONObject remoteMessage = new JSONObject(remoteMessageOrign);
-            Log.d(MYTAG, "华为推送原始消息："+remoteMessageOrign);
+
 
             SharedPreferences Settings =        context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
             String tokenSender = Settings.getString("push_type","GCM");
-            if(tokenSender.equals("HwPush"))
-            MessageUtil.MessageUtilDo(context,remoteMessage.getString("msgId"),remoteMessage.getString("type"),remoteMessage.getString("senderType"),remoteMessage.getString("title"),remoteMessage.getString("message"),remoteMessage.getString("isAt"));
+            if(tokenSender.equals("HwPush")) {
+                Log.d(MYTAG, "华为推送："+remoteMessageOrign);
+                MessageUtil.MessageUtilDo(context,remoteMessage.getString("msgId"),remoteMessage.getString("type"),remoteMessage.getString("senderType"),remoteMessage.getString("title"),remoteMessage.getString("message"),remoteMessage.getString("isAt"));
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

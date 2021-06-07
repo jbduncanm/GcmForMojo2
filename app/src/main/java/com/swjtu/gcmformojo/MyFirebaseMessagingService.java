@@ -93,14 +93,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         mySettings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
 
 */
-        Log.d(MYTAG, "From: " + remoteMessage.getFrom());
 
-        // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0)
-        {
-            Log.d(MYTAG, "GCM原始信息: " + remoteMessage.getData());
-
-        }
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null)
@@ -113,8 +106,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         {
             SharedPreferences Settings =        getSharedPreferences(PREF, Context.MODE_PRIVATE);
             String tokenSender = Settings.getString("push_type","GCM");
-            if(tokenSender.equals("GCM"))
-            MessageUtil.MessageUtilDo(getApplicationContext(),remoteMessage.getData().get("msgId"),remoteMessage.getData().get("type"),remoteMessage.getData().get("senderType"),remoteMessage.getData().get("title"),remoteMessage.getData().get("message"),remoteMessage.getData().get("isAt"));
+            if(tokenSender.equals("GCM")) {
+                Log.d(MYTAG, "谷歌推送: " + remoteMessage.getData());
+                MessageUtil.MessageUtilDo(getApplicationContext(),remoteMessage.getData().get("msgId"),remoteMessage.getData().get("type"),remoteMessage.getData().get("senderType"),remoteMessage.getData().get("title"),remoteMessage.getData().get("message"),remoteMessage.getData().get("isAt"));
+            }
 
 
          /*   String msgId;

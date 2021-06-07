@@ -1,12 +1,18 @@
 package com.swjtu.gcmformojo;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
+
+import java.util.List;
+
+import static com.swjtu.gcmformojo.MyApplication.getInstance;
 
 /**
  * Created by HeiPi on 2017/2/1.
@@ -37,7 +43,7 @@ public class FragmentPreferences extends Activity {
                     EditTextPreference etp = (EditTextPreference) preference;
                     onPreferenceChange(preference, etp.getText());
                 } else if (ListPreference.class.isInstance(preference)) {
-                    // List
+                    // List 切换推送通道 注册及关闭Miui和华为推送
                     ListPreference lp = (ListPreference) preference;
                     onPreferenceChange(preference, lp.getEntry());
                 } else {
@@ -51,6 +57,21 @@ public class FragmentPreferences extends Activity {
                 preference.setSummary(format.replace("{v}", newValue==null?"null":newValue.toString()));
                 return true;
             }
+
+
+        }
+
+        private boolean shouldInit() {
+            ActivityManager am = ((ActivityManager) getInstance().getSystemService(Context.ACTIVITY_SERVICE));
+            List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+            String mainProcessName = getInstance().getPackageName();
+            int myPid = android.os.Process.myPid();
+            for (ActivityManager.RunningAppProcessInfo info : processInfos) {
+                if (info.pid == myPid && mainProcessName.equals(info.processName)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override

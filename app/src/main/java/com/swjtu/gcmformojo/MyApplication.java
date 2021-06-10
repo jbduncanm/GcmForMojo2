@@ -1,16 +1,9 @@
 package com.swjtu.gcmformojo;
 
-import android.app.ActivityManager;
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
-
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.huawei.android.pushagent.api.PushManager;
-import com.xiaomi.mipush.sdk.MiPushClient;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -89,8 +82,6 @@ public class MyApplication extends Application {
     }
 
 
-
-
     public static String getCurTime(){
 
         SimpleDateFormat formatter    =   new    SimpleDateFormat    ("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
@@ -139,68 +130,12 @@ public class MyApplication extends Application {
     }
 
 
-    private   void getMyToken() {
-
-        SharedPreferences Settings =   getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        //FirebaseApp.initializeApp(this);
-
-        //注册推送服务获取regId
-        String pushType=Settings.getString("push_type","GCM");
-
-        switch (pushType) {
-            case "GCM":
-                deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
-              //  MiPushClient.disablePush(getApplicationContext());
-                break;
-            case "MiPush":
-                //接收器中更新deviceToken
-                if(shouldInit()) {
-                    MiPushClient.registerPush(this, mi_APP_ID, mi_APP_KEY);
-                }
-                MiPushClient.enablePush(getInstance().getApplicationContext());
-                break;
-            case "HwPush":
-                //接收器中获得deviceToke
-                PushManager.requestToken(this);
-              //  MiPushClient.disablePush(getApplicationContext());
-                break;
-            default:
-                deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
-             //   MiPushClient.disablePush(getApplicationContext());
-                break;
-        }
-
-
-    }
-
-    private boolean shouldInit() {
-        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
-        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
-        String mainProcessName = getPackageName();
-        int myPid = android.os.Process.myPid();
-        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
-            if (info.pid == myPid && mainProcessName.equals(info.processName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-
     @Override
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
         //初始化全局变量
         myApp = this;
-
-        //设置推送通道并注册token
-
-       // getMyToken();
-
-
-
     }
 
 }

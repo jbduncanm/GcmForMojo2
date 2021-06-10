@@ -1,7 +1,6 @@
 package com.swjtu.gcmformojo;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -12,34 +11,19 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.huawei.android.pushagent.api.PushManager;
-import com.xiaomi.mipush.sdk.MiPushClient;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 
-import static com.swjtu.gcmformojo.MyApplication.MYTAG;
 import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.SYS;
 import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
-import static com.swjtu.gcmformojo.MyApplication.deviceGcmToken;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
-import static com.swjtu.gcmformojo.MyApplication.getInstance;
-import static com.swjtu.gcmformojo.MyApplication.mi_APP_ID;
-import static com.swjtu.gcmformojo.MyApplication.mi_APP_KEY;
 
 public class CurrentUserActivity extends AppCompatActivity {
 
@@ -234,34 +218,7 @@ public class CurrentUserActivity extends AppCompatActivity {
 
         super.onResume();
 
-        //选择推送通道
-        SharedPreferences Settings =   getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        String pushType=Settings.getString("push_type","GCM");
-        switch (pushType){
-            case "GCM":
-                deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
-                stopMiPush();
-                Log.e(MYTAG, "使用GCM推送");
-                break;
-            case "MiPush":
-                if(shouldInit()) {
-                   MiPushClient.registerPush(this, mi_APP_ID, mi_APP_KEY);
-                }
-               // MiPushClient.enablePush(getInstance().getApplicationContext());
-                Log.e(MYTAG, "使用MiPush推送");
-                break;
-            case "HwPush":
-                PushManager.requestToken(getInstance());
-                stopMiPush();
-                Log.e(MYTAG, "使用HwPush推送");
-                break;
-            default:
-                deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
-                stopMiPush();
-                Log.e(MYTAG, "默认DefaultGCM推送");
-                break;
 
-        }
 
 
         if (!isHaveMsg(currentUserList,"2"))
@@ -303,52 +260,6 @@ public class CurrentUserActivity extends AppCompatActivity {
         return false;
     }
 
-    private void stopMiPush () {
-        if(!isMiUi()) {
-        Intent intent = new Intent("com.xiaomi.push.service.XMPushService");
-        intent.setPackage(getPackageName());
-        stopService(intent);
-        }
-    }
 
-    private boolean shouldInit() {
-        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
-        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
-        String mainProcessName = getPackageName();
-        int myPid = android.os.Process.myPid();
-        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
-            if (info.pid == myPid && mainProcessName.equals(info.processName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    public static boolean isMiUi() {
-        return !TextUtils.isEmpty(getSystemProperty("ro.miui.ui.version.name"));
-    }
-
-    public static String getSystemProperty(String propName) {
-        String line;
-        BufferedReader input = null;
-        try {
-            java.lang.Process p = Runtime.getRuntime().exec("getprop " + propName);
-            input = new BufferedReader(new InputStreamReader(p.getInputStream()), 1024);
-            line = input.readLine();
-            input.close();
-        } catch (IOException ex) {
-            return null;
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return line;
-    }
 
 }

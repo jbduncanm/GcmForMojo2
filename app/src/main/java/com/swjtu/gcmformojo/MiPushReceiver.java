@@ -59,6 +59,8 @@ public class MiPushReceiver extends PushMessageReceiver {
         {
             JSONObject remoteMessage = new JSONObject(message.getContent());
 
+            if(!remoteMessage.has("isAt")) remoteMessage.put("isAt","0");
+            if(!remoteMessage.has("senderType")) remoteMessage.put("senderType","1");
 
 
             SharedPreferences Settings =        context.getSharedPreferences(PREF, Context.MODE_PRIVATE);

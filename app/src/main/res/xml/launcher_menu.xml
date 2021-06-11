@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launcher_menu xmlns:android="http://schemas.android.com/apk/res/android">
+        <menu android:title="@string/forcetouch1"   data="flyme_3dtouch://com.swjtu.gcmformojo/Setting" icon="&#xe093;" />
+        <menu android:title="@string/forcetouch2" data="flyme_3dtouch://com.swjtu.gcmformojo/Token"  icon="&#xe006;" />
+
+</launcher_menu>

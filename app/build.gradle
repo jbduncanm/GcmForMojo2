@@ -30,6 +30,7 @@ dependencies {
     compile 'com.android.support:design:25.0.1'
     compile 'com.google.firebase:firebase-messaging:10.0.1'
     compile 'com.github.wenmingvs:AndroidProcess:-SNAPSHOT'
+    compile 'com.meizu.flyme.internet:push-internal-publish:3.3.+@aar'
     compile files('libs/HwPush_SDK_V2705.jar')
     compile files('libs/MiPush_SDK_Client_3_2_2.jar')
     testCompile 'junit:junit:4.12'

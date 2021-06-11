@@ -44,6 +44,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
         if (remoteMessage.getData().size() > 0)
         {
+            if(!remoteMessage.getData().containsKey("isAt")) remoteMessage.getData().put("isAt","0");
+            if(!remoteMessage.getData().containsKey("senderType")) remoteMessage.getData().put("senderType","1");
+
             SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
             String tokenSender = Settings.getString("push_type","GCM");
             if(tokenSender.equals("GCM")) {

@@ -27,7 +27,17 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-
+    <!-- 兼容 flyme5.0 以下版本，魅族内部集成 pushSDK 必填，不然无法收到消息-->
+    <uses-permission
+        android:name="com.meizu.flyme.push.permission.RECEIVE"/>
+    <permission android:name="com.swjtu.gcmformojo.push.permission.MESSAGE"
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="com.swjtu.gcmformojo.push.permission.MESSAGE"/>
+    <!-- 兼容 flyme3.0 配置权限-->
+    <uses-permission android:name="com.meizu.c2dm.permission.RECEIVE" />
+    <permission android:name="com.swjtu.gcmformojo.permission.C2D_MESSAGE"
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="com.swjtu.gcmformojo.permission.C2D_MESSAGE"/>
 
 
     <application
@@ -39,6 +49,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:name">
+
+        <meta-data
+            android:name="android.3dtouch.launcher_menu"
+            android:resource="@xml/launcher_menu" />
+
 
         <activity
             android:name=".CurrentUserActivity"
@@ -54,7 +69,20 @@
 
         <activity
             android:name=".FragmentPreferences"
-            android:label="Settings" />
+            android:label="Settings" >
+
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+
+            <data
+                android:host="com.swjtu.gcmformojo"
+                android:path="/Setting"
+                android:scheme="flyme_3dtouch" />
+        </intent-filter>
+
+        </activity>
 
         <activity
             android:name=".DialogActivity"
@@ -65,7 +93,20 @@
 
         <activity
             android:name=".TokenActivity"
-            android:theme="@style/MyDialog"/>
+            android:theme="@style/MyDialog">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="com.swjtu.gcmformojo"
+                    android:path="/Token"
+                    android:scheme="flyme_3dtouch" />
+            </intent-filter>
+
+        </activity>
 
         <activity android:name=".QqContactsActivity"/>
 
@@ -224,6 +265,25 @@
         <service
             android:name="com.huawei.android.pushagent.PushService">
         </service>
+
+        <!-- 魅族推送服务 -->
+        <!-- push 应用定义消息 receiver 声明 -->
+        <receiver android:name="com.swjtu.gcmformojo.FmPushReceiver">
+            <intent-filter>
+                <!-- 接收 push 消息 -->
+                <action android:name="com.meizu.flyme.push.intent.MESSAGE" />
+                <!-- 接收 register 消息 -->
+                <action
+                    android:name="com.meizu.flyme.push.intent.REGISTER.FEEDBACK" />
+                <!-- 接收 unregister 消息-->
+                <action
+                    android:name="com.meizu.flyme.push.intent.UNREGISTER.FEEDBACK"/>
+                <!-- 兼容低版本 Flyme3 推送服务配置 -->
+                <action android:name="com.meizu.c2dm.intent.REGISTRATION" />
+                <action android:name="com.meizu.c2dm.intent.RECEIVE" />
+                <category android:name="com.swjtu.gcmformojo"></category>
+            </intent-filter>
+        </receiver>
 
 
 

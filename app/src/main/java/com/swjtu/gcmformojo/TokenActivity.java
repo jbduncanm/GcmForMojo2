@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import static com.swjtu.gcmformojo.MyApplication.PREF;
+import static com.swjtu.gcmformojo.MyApplication.deviceFmToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceGcmToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceHwToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceMiToken;
@@ -27,7 +28,6 @@ public class TokenActivity extends Activity {
         myTokenSender = (TextView) findViewById(R.id.textView_sender);
         myToken = (TextView) findViewById(R.id.myToken);
 
-
     }
 
     @Override
@@ -41,10 +41,6 @@ public class TokenActivity extends Activity {
 
         SharedPreferences miSettings =        getSharedPreferences("mipush", Context.MODE_PRIVATE);
         deviceMiToken = miSettings.getString("regId",deviceMiToken);
-
-       // getMyToken();
-
-
 
         myTokenSender.setText(tokenSender);
 
@@ -65,6 +61,13 @@ public class TokenActivity extends Activity {
             case "HwPush":
                 if(deviceHwToken!=null)
                     myToken.setText(deviceHwToken);
+                else {
+                    myToken.setText(tokenNo);
+                }
+                break;
+            case "FmPush":
+                if(deviceFmToken!=null)
+                    myToken.setText(deviceFmToken);
                 else {
                     myToken.setText(tokenNo);
                 }

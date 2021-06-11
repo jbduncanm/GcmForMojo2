@@ -92,6 +92,7 @@ public class MessageUtil {
 
             if (msgId == null) msgId = "0"; //处理特殊情况
             if (senderType == null) senderType = "1"; //处理特殊情况 默认为好友
+            if(msgIsAt == null) msgIsAt = "0"; //处理部分服务端未加@标志
 
             if(msgType.equals(QQ) ) { //如果能收到QQ或者微信的非系统消息，则表明在线
                 isQqOnline=1;

@@ -32,12 +32,16 @@ public class MyApplication extends Application {
     final public static String mi_APP_ID = "2882303761517557334";
     final public static String mi_APP_KEY = "5631755784334";
 
+    final public static String fm_APP_ID = "110370";
+    final public static String fm_APP_KEY = "38b8c46a27c84d3881a41adf8aceb6f8";
+
     final public static String qqColor="#1296DB";
     final public static String wxColor="#62B900";
 
     public static String deviceGcmToken;
     public static String deviceMiToken;
     public static String deviceHwToken;
+    public static String deviceFmToken;
 
     public static int isQqOnline = 1;
     public static int isWxOnline = 1;

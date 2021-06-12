@@ -1,7 +1,6 @@
 package com.swjtu.gcmformojo;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.meizu.cloud.pushinternal.DebugLogger;
@@ -15,8 +14,8 @@ import com.meizu.cloud.pushsdk.platform.message.UnRegisterStatus;
 import org.json.JSONObject;
 
 import static com.swjtu.gcmformojo.MyApplication.MYTAG;
-import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.deviceFmToken;
+import static com.swjtu.gcmformojo.MyApplication.mySettings;
 
 /**
  * Created by HeiPi on 2017/3/16.
@@ -34,8 +33,8 @@ public class FmPushReceiver extends MzPushMessageReceiver {
             if(!remoteMessage.has("isAt")) remoteMessage.put("isAt","0");
             if(!remoteMessage.has("senderType")) remoteMessage.put("senderType","1");
 
-            SharedPreferences Settings =        context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
-            String tokenSender = Settings.getString("push_type","GCM");
+           // SharedPreferences Settings =        context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+            String tokenSender = mySettings.getString("push_type","GCM");
             if(tokenSender.equals("FmPush")) {
                 Log.d(MYTAG, "魅族推送："+s);
                 MessageUtil.MessageUtilDo(context,remoteMessage.getString("msgId"),remoteMessage.getString("type"),remoteMessage.getString("senderType"),remoteMessage.getString("title"),remoteMessage.getString("message"),remoteMessage.getString("isAt"));

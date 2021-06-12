@@ -1,10 +1,10 @@
 package com.swjtu.gcmformojo;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,13 +17,25 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.ArrayList;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.xiaomi.mipush.sdk.MiPushClient;
 
-import static com.swjtu.gcmformojo.MyApplication.PREF;
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.SYS;
 import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
+import static com.swjtu.gcmformojo.MyApplication.deviceGcmToken;
+import static com.swjtu.gcmformojo.MyApplication.deviceMiToken;
+import static com.swjtu.gcmformojo.MyApplication.fm_APP_ID;
+import static com.swjtu.gcmformojo.MyApplication.fm_APP_KEY;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
+import static com.swjtu.gcmformojo.MyApplication.getInstance;
+import static com.swjtu.gcmformojo.MyApplication.miSettings;
+import static com.swjtu.gcmformojo.MyApplication.mi_APP_ID;
+import static com.swjtu.gcmformojo.MyApplication.mi_APP_KEY;
+import static com.swjtu.gcmformojo.MyApplication.mySettings;
 
 public class CurrentUserActivity extends AppCompatActivity {
 
@@ -61,11 +73,44 @@ public class CurrentUserActivity extends AppCompatActivity {
             }
         };
 
-        SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        final String qqReplyUrl=Settings.getString("edit_text_preference_qq_replyurl","");
-        final String wxReplyUrl=Settings.getString("edit_text_preference_wx_replyurl","");
-        final  String qqPackgeName=Settings.getString("edit_text_preference_qq_packgename","com.tencent.mobileqq");
-        final  String wxPackgeName=Settings.getString("edit_text_preference_wx_packgename","com.tencent.mm");
+        //SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        final String qqReplyUrl=mySettings.getString("edit_text_preference_qq_replyurl","");
+        final String wxReplyUrl=mySettings.getString("edit_text_preference_wx_replyurl","");
+        final  String qqPackgeName=mySettings.getString("edit_text_preference_qq_packgename","com.tencent.mobileqq");
+        final  String wxPackgeName=mySettings.getString("edit_text_preference_wx_packgename","com.tencent.mm");
+
+        String pushType=mySettings.getString("push_type","GCM");
+        switch (pushType){
+            case "GCM":
+                deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
+                //stopMiPush();
+               // Log.e(MYTAG, "使用GCM推送");
+                break;
+            case "MiPush":
+                if(shouldInit()) {
+                    MiPushClient.registerPush(this, mi_APP_ID, mi_APP_KEY);
+                }
+                //SharedPreferences miSettings =        getSharedPreferences("mipush", Context.MODE_PRIVATE);
+                deviceMiToken = miSettings.getString("regId",deviceMiToken);
+               // Log.e(MYTAG, "使用MiPush推送");
+                break;
+            case "HwPush":
+                com.huawei.android.pushagent.api.PushManager.requestToken(getInstance());
+                //stopMiPush();
+              //  Log.e(MYTAG, "使用HwPush推送");
+                break;
+            case "FmPush":
+                com.meizu.cloud.pushsdk.PushManager.register(this, fm_APP_ID, fm_APP_KEY);
+                //stopMiPush();
+              //  Log.e(MYTAG, "使用FmPush推送");
+                break;
+            default:
+                deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
+                //stopMiPush();
+              //  Log.e(MYTAG, "默认DefaultGCM推送");
+                break;
+
+        }
 
         currentUserListView = (ListView) findViewById(R.id.current_user_list_view);
 
@@ -117,6 +162,19 @@ public class CurrentUserActivity extends AppCompatActivity {
                 //return false;//当返回false时,会触发短按事件
             }
         });
+    }
+
+    private boolean shouldInit() {
+        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
+        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+        String mainProcessName = getPackageName();
+        int myPid = android.os.Process.myPid();
+        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
+            if (info.pid == myPid && mainProcessName.equals(info.processName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addNotfiyContent() {

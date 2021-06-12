@@ -1,14 +1,12 @@
 package com.swjtu.gcmformojo;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import static com.swjtu.gcmformojo.MyApplication.MYTAG;
-import static com.swjtu.gcmformojo.MyApplication.PREF;
+import static com.swjtu.gcmformojo.MyApplication.mySettings;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService
@@ -47,8 +45,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             if(!remoteMessage.getData().containsKey("isAt")) remoteMessage.getData().put("isAt","0");
             if(!remoteMessage.getData().containsKey("senderType")) remoteMessage.getData().put("senderType","1");
 
-            SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-            String tokenSender = Settings.getString("push_type","GCM");
+            //SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+            String tokenSender = mySettings.getString("push_type","GCM");
             if(tokenSender.equals("GCM")) {
                 Log.d(MYTAG, "谷歌推送: " + remoteMessage.getData());
                 MessageUtil.MessageUtilDo(getApplicationContext(),remoteMessage.getData().get("msgId"),remoteMessage.getData().get("type"),remoteMessage.getData().get("senderType"),remoteMessage.getData().get("title"),remoteMessage.getData().get("message"),remoteMessage.getData().get("isAt"));

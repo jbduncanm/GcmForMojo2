@@ -60,6 +60,7 @@ import static com.swjtu.gcmformojo.MyApplication.getColorMsgTime;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 import static com.swjtu.gcmformojo.MyApplication.isQqOnline;
 import static com.swjtu.gcmformojo.MyApplication.isWxOnline;
+import static com.swjtu.gcmformojo.MyApplication.mySettings;
 import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 
 /**
@@ -83,7 +84,7 @@ public class MessageUtil {
         msgCountMap = MyApplication.getInstance().getMsgCountMap();
         msgIdMap = MyApplication.getInstance().getMsgIdMap();
         currentUserList = MyApplication.getInstance().getCurrentUserList();
-        SharedPreferences mySettings = context.getSharedPreferences(PREF, MODE_PRIVATE);
+        //SharedPreferences mySettings = context.getSharedPreferences(PREF, MODE_PRIVATE);
 
 
             int notifyId;

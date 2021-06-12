@@ -1,17 +1,21 @@
 package com.swjtu.gcmformojo;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import static com.swjtu.gcmformojo.MyApplication.PREF;
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import static com.swjtu.gcmformojo.MyApplication.deviceFmToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceGcmToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceHwToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceMiToken;
+import static com.swjtu.gcmformojo.MyApplication.fm_APP_ID;
+import static com.swjtu.gcmformojo.MyApplication.fm_APP_KEY;
+import static com.swjtu.gcmformojo.MyApplication.getInstance;
+import static com.swjtu.gcmformojo.MyApplication.miSettings;
+import static com.swjtu.gcmformojo.MyApplication.mySettings;
 
 
 public class TokenActivity extends Activity {
@@ -36,16 +40,13 @@ public class TokenActivity extends Activity {
         super.onResume();
         String tokenNo = "尚未注册成功，稍后再试！";
 
-        SharedPreferences Settings =        getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        String tokenSender = Settings.getString("push_type","GCM");
+       //SharedPreferences Settings =        getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        String pushType = mySettings.getString("push_type","GCM");
+        myTokenSender.setText(pushType);
 
-        SharedPreferences miSettings =        getSharedPreferences("mipush", Context.MODE_PRIVATE);
-        deviceMiToken = miSettings.getString("regId",deviceMiToken);
-
-        myTokenSender.setText(tokenSender);
-
-        switch (tokenSender) {
+        switch (pushType) {
             case "GCM":
+                deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
                 if(deviceGcmToken !=null)
                     myToken.setText(deviceGcmToken);
                 else {
@@ -53,12 +54,15 @@ public class TokenActivity extends Activity {
                 }
                 break;
             case "MiPush":
+                //SharedPreferences miSettings =        getSharedPreferences("mipush", Context.MODE_PRIVATE);
+                deviceMiToken = miSettings.getString("regId",deviceMiToken);
                 if(deviceMiToken!=null)
                     myToken.setText(deviceMiToken);
                 else
                     myToken.setText(tokenNo);
                 break;
             case "HwPush":
+                com.huawei.android.pushagent.api.PushManager.requestToken(getInstance());
                 if(deviceHwToken!=null)
                     myToken.setText(deviceHwToken);
                 else {
@@ -66,6 +70,7 @@ public class TokenActivity extends Activity {
                 }
                 break;
             case "FmPush":
+                com.meizu.cloud.pushsdk.PushManager.register(this, fm_APP_ID, fm_APP_KEY);
                 if(deviceFmToken!=null)
                     myToken.setText(deviceFmToken);
                 else {

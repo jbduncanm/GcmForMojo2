@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,6 +47,7 @@ import static com.swjtu.gcmformojo.MyApplication.getColorMsgTime;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 import static com.swjtu.gcmformojo.MyApplication.isQqOnline;
 import static com.swjtu.gcmformojo.MyApplication.isWxOnline;
+import static com.swjtu.gcmformojo.MyApplication.mySettings;
 import static com.swjtu.gcmformojo.MyApplication.qqColor;
 import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 import static com.swjtu.gcmformojo.MyApplication.wxColor;
@@ -140,9 +139,9 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         }
 
         //如果未开启回复功能，则屏蔽发送按钮
-        SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        Boolean qqIsReply=Settings.getBoolean("check_box_preference_qq_reply",false);
-        Boolean wxIsReply=Settings.getBoolean("check_box_preference_wx_reply",false);
+        //SharedPreferences Settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        Boolean qqIsReply=mySettings.getBoolean("check_box_preference_qq_reply",false);
+        Boolean wxIsReply=mySettings.getBoolean("check_box_preference_wx_reply",false);
 
         textView_sender = (TextView) findViewById(R.id.textView_sender);
         msgListView = (ListView) findViewById(R.id.msg_list_view);
@@ -531,18 +530,4 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
             super.run();
         }
     }
-
-
-    //输入框延时弹出
-    private void showInputMethod(final Context context, final View view, final long delay) {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-            }
-        }, delay); // 如果这里的时间太短，可能出现输入法弹不出来的情况。
-    }
-
 }

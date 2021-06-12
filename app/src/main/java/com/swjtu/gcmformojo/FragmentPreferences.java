@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -27,8 +26,10 @@ import static com.swjtu.gcmformojo.MyApplication.deviceGcmToken;
 import static com.swjtu.gcmformojo.MyApplication.fm_APP_ID;
 import static com.swjtu.gcmformojo.MyApplication.fm_APP_KEY;
 import static com.swjtu.gcmformojo.MyApplication.getInstance;
+import static com.swjtu.gcmformojo.MyApplication.miSettings;
 import static com.swjtu.gcmformojo.MyApplication.mi_APP_ID;
 import static com.swjtu.gcmformojo.MyApplication.mi_APP_KEY;
+import static com.swjtu.gcmformojo.MyApplication.mySettings;
 
 /**
  * Created by HeiPi on 2017/2/1.
@@ -46,8 +47,8 @@ public class FragmentPreferences extends Activity {
     protected void onStop() {
         super.onStop();
         //激活推送通道
-        SharedPreferences Settings =   getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        String pushType=Settings.getString("push_type","GCM");
+        mySettings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        String pushType=mySettings.getString("push_type","GCM");
         switch (pushType){
             case "GCM":
                 deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
@@ -58,6 +59,7 @@ public class FragmentPreferences extends Activity {
                 if(shouldInit()) {
                     MiPushClient.registerPush(this, mi_APP_ID, mi_APP_KEY);
                 }
+                miSettings = getSharedPreferences("mipush", Context.MODE_PRIVATE);
                 // MiPushClient.enablePush(getInstance().getApplicationContext());
                 Log.e(MYTAG, "使用MiPush推送");
                 break;

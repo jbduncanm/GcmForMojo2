@@ -1,6 +1,8 @@
 package com.swjtu.gcmformojo;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
@@ -37,6 +39,9 @@ public class MyApplication extends Application {
 
     final public static String qqColor="#1296DB";
     final public static String wxColor="#62B900";
+
+    public static SharedPreferences mySettings;
+    public static SharedPreferences miSettings;
 
     public static String deviceGcmToken;
     public static String deviceMiToken;
@@ -140,6 +145,9 @@ public class MyApplication extends Application {
         super.onCreate();
         //初始化全局变量
         myApp = this;
+        miSettings = getSharedPreferences("mipush", Context.MODE_PRIVATE);
+        mySettings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+
     }
 
 }

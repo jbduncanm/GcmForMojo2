@@ -53,6 +53,7 @@ public class FragmentPreferences extends Activity {
             case "GCM":
                 deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
                 stopMiPush();
+                stopHwPush();
                 Log.e(MYTAG, "使用GCM推送");
                 break;
             case "MiPush":
@@ -60,6 +61,7 @@ public class FragmentPreferences extends Activity {
                     MiPushClient.registerPush(this, mi_APP_ID, mi_APP_KEY);
                 }
                 miSettings = getSharedPreferences("mipush", Context.MODE_PRIVATE);
+                stopHwPush();
                 // MiPushClient.enablePush(getInstance().getApplicationContext());
                 Log.e(MYTAG, "使用MiPush推送");
                 break;
@@ -71,11 +73,13 @@ public class FragmentPreferences extends Activity {
             case "FmPush":
                 com.meizu.cloud.pushsdk.PushManager.register(this, fm_APP_ID, fm_APP_KEY);
                 stopMiPush();
+                stopHwPush();
                 Log.e(MYTAG, "使用FmPush推送");
                 break;
             default:
                 deviceGcmToken = FirebaseInstanceId.getInstance().getToken();
                 stopMiPush();
+                stopHwPush();
                 Log.e(MYTAG, "默认DefaultGCM推送");
                 break;
 
@@ -85,6 +89,14 @@ public class FragmentPreferences extends Activity {
     private void stopMiPush () {
         if(!isMiUi()) {
             Intent intent = new Intent("com.xiaomi.push.service.XMPushService");
+            intent.setPackage(getPackageName());
+            stopService(intent);
+        }
+    }
+
+    private void stopHwPush () {
+        if(!isMiUi()) {
+            Intent intent = new Intent("com.huawei.android.pushagent.PushService");
             intent.setPackage(getPackageName());
             stopService(intent);
         }

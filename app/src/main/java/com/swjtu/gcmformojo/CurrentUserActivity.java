@@ -276,7 +276,9 @@ public class CurrentUserActivity extends AppCompatActivity {
 
         super.onResume();
 
-
+        //进入界面清除通知
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
 
 
         if (!isHaveMsg(currentUserList,"2"))

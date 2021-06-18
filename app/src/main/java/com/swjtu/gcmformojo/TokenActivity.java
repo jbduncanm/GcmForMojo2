@@ -6,6 +6,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.huawei.android.hms.agent.HMSAgent;
+import com.huawei.android.hms.agent.common.handler.ConnectHandler;
+import com.huawei.android.hms.agent.push.handler.GetTokenHandler;
+import com.huawei.hms.support.api.push.TokenResult;
 
 import static com.swjtu.gcmformojo.MyApplication.deviceFmToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceGcmToken;
@@ -38,7 +42,7 @@ public class TokenActivity extends Activity {
     protected void onResume() {
 
         super.onResume();
-        String tokenNo = "尚未注册成功，稍后再试！";
+        String tokenNo = getString(R.string.text_token_no);
 
        //SharedPreferences Settings =        getSharedPreferences(PREF, Context.MODE_PRIVATE);
         String pushType = mySettings.getString("push_type","GCM");
@@ -62,7 +66,17 @@ public class TokenActivity extends Activity {
                     myToken.setText(tokenNo);
                 break;
             case "HwPush":
-                com.huawei.android.pushagent.api.PushManager.requestToken(getInstance());
+                HMSAgent.connect(this, new ConnectHandler() {
+                    @Override
+                    public void onConnect(int rst) {
+                        //Log.e("HMS connect end:" + rst);
+                    }
+                });
+                HMSAgent.Push.getToken(new GetTokenHandler() {
+                    public void onResult(int rtnCode, TokenResult tokenResult) {
+                        //Log.e("get token: end" + rtnCode);
+                    }
+                });
                 if(deviceHwToken!=null)
                     myToken.setText(deviceHwToken);
                 else {

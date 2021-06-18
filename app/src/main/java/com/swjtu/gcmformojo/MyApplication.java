@@ -1,11 +1,19 @@
 package com.swjtu.gcmformojo;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ShortcutManager;
+import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.text.Html;
 import android.text.Spanned;
+import android.support.multidex.MultiDex;
+
+import com.huawei.android.hms.agent.HMSAgent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,11 +32,12 @@ import static android.text.Html.FROM_HTML_MODE_COMPACT;
 
 public class MyApplication extends Application {
 
-    final public static  String MYTAG = "GcmForMojo";
+    final public static String MYTAG = "GcmForMojo";
     final public static String PREF = "com.swjtu.gcmformojo_preferences";
     final public static String QQ="Mojo-Webqq";
     final public static String WEIXIN="Mojo-Weixin";
     final public static String SYS="Mojo-Sys";
+    final public static String KEY_TEXT_REPLY="key_text_reply";
 
 
     final public static String mi_APP_ID = "2882303761517557334";
@@ -59,6 +68,9 @@ public class MyApplication extends Application {
     private final ArrayList<QqFriend> qqFriendArrayList = new ArrayList<>();
     private final ArrayList<QqFriendGroup> qqFriendGroups= new ArrayList<>();
 
+    private final ArrayList<WechatFriend> WechatFriendArrayList = new ArrayList<>();
+    private final ArrayList<WechatFriendGroup> WechatFriendGroups= new ArrayList<>();
+
     private static MyApplication myApp;
 
     public static MyApplication getInstance() {
@@ -88,6 +100,14 @@ public class MyApplication extends Application {
 
     public ArrayList<QqFriendGroup> getQqFriendGroups () {
         return this.qqFriendGroups;
+    }
+
+    public ArrayList<WechatFriend> getWechatFriendArrayList () {
+        return this.WechatFriendArrayList;
+    }
+
+    public ArrayList<WechatFriendGroup> getWechatFriendGroups () {
+        return this.WechatFriendGroups;
     }
 
 
@@ -148,6 +168,43 @@ public class MyApplication extends Application {
         miSettings = getSharedPreferences("mipush", Context.MODE_PRIVATE);
         mySettings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
 
+        //华为推送初始化
+        String pushType=mySettings.getString("push_type","GCM");
+        if(pushType.equals("HwPush")){
+            HMSAgent.init(this);
+        }
+
+    }
+
+    // 提取微信UID中的数字并进行字符数量削减，以兼容notifyID
+    // created by Alex Wang at 20180205
+    public static int WechatUIDConvert(String UID) {
+        String str = UID;
+        str=str.trim();
+        String str2="";
+        if(str != null && !"".equals(str)){
+            for(int i=0;i<str.length();i++) {
+                if (str.charAt(i) >= 48 && str.charAt(i) <= 57) {
+                    str2 += str.charAt(i);
+                }
+            }
+        }
+        //针对系统账号进行优化，以防闪退
+        switch (str) {
+            case "newsapp":
+                str2 = "639727700";
+                break;
+            case "filehelper":
+                str2 = "345343573";
+                break;
+        }
+        return Integer.parseInt(str2.substring(0,9));
+    }
+
+    //为Kitkat及更低版本启用multidex支持
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
 }

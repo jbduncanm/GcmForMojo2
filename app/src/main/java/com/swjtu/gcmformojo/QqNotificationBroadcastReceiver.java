@@ -61,7 +61,7 @@ public class QqNotificationBroadcastReceiver extends BroadcastReceiver {
                     context.startActivity(intentNewQq);
                 } else {
                     // 没有安装要跳转的app应用进行提醒
-                    Toast.makeText(context.getApplicationContext(), "未检测到" + qqPackgeName, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context.getApplicationContext(), R.string.toast_check_package_fail + qqPackgeName, Toast.LENGTH_LONG).show();
                 }
 
         }

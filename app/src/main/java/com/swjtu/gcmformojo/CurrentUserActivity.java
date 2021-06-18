@@ -2,24 +2,35 @@ package com.swjtu.gcmformojo;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.huawei.android.hms.agent.HMSAgent;
+import com.huawei.android.hms.agent.common.handler.ConnectHandler;
+import com.huawei.android.hms.agent.push.handler.GetTokenHandler;
+import com.huawei.hms.support.api.push.TokenResult;
+import com.meizu.cloud.pushsdk.PushManager;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,13 +42,12 @@ import static com.swjtu.gcmformojo.MyApplication.deviceMiToken;
 import static com.swjtu.gcmformojo.MyApplication.fm_APP_ID;
 import static com.swjtu.gcmformojo.MyApplication.fm_APP_KEY;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
-import static com.swjtu.gcmformojo.MyApplication.getInstance;
 import static com.swjtu.gcmformojo.MyApplication.miSettings;
 import static com.swjtu.gcmformojo.MyApplication.mi_APP_ID;
 import static com.swjtu.gcmformojo.MyApplication.mi_APP_KEY;
 import static com.swjtu.gcmformojo.MyApplication.mySettings;
 
-public class CurrentUserActivity extends AppCompatActivity {
+public class CurrentUserActivity extends Activity {
 
     private ArrayList<User> currentUserList;
     public static Handler userHandler;
@@ -55,6 +65,24 @@ public class CurrentUserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_current_user);
+        getOverflowMenu();
+
+        //初始化通知分组（android O）及通知渠道
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationChannelInit(R.string.notification_channel_sys_id,R.string.notification_channel_sys_name,R.string.notification_channel_sys_description,NotificationManager.IMPORTANCE_DEFAULT,Color.YELLOW);
+            notificationChannelInit(R.string.notification_channel_qq_at_id,R.string.notification_channel_qq_at_name,R.string.notification_channel_qq_at_description,NotificationManager.IMPORTANCE_HIGH,Color.BLUE);
+            notificationChannelInit(R.string.notification_channel_qq_discuss_id,R.string.notification_channel_qq_discuss_name,R.string.notification_channel_qq_discuss_descrption,NotificationManager.IMPORTANCE_DEFAULT,Color.BLUE);
+            notificationChannelInit(R.string.notification_channel_qq_contact_id,R.string.notification_channel_qq_contact_name,R.string.notification_channel_qq_contact_descrption,NotificationManager.IMPORTANCE_HIGH,Color.BLUE);
+            notificationChannelInit(R.string.notification_channel_qq_group_id,R.string.notification_channel_qq_group_name,R.string.notification_channel_qq_group_descrption,NotificationManager.IMPORTANCE_DEFAULT,Color.BLUE);
+            notificationChannelInit(R.string.notification_channel_wechat_at_id,R.string.notification_channel_wechat_at_name,R.string.notification_channel_wechat_at_description,NotificationManager.IMPORTANCE_HIGH,Color.GREEN);
+            notificationChannelInit(R.string.notification_channel_wechat_discuss_id,R.string.notification_channel_wechat_discuss_name,R.string.notification_channel_wechat_discuss_descrption,NotificationManager.IMPORTANCE_DEFAULT,Color.GREEN);
+            notificationChannelInit(R.string.notification_channel_wechat_contact_id,R.string.notification_channel_wechat_contact_name,R.string.notification_channel_wechat_contact_descrption,NotificationManager.IMPORTANCE_HIGH,Color.GREEN);
+            notificationChannelInit(R.string.notification_channel_wechat_group_id,R.string.notification_channel_wechat_group_name,R.string.notification_channel_wechat_group_descrption,NotificationManager.IMPORTANCE_DEFAULT,Color.GREEN);
+            notificationGroupInit(R.string.notification_group_qq_id,R.string.notification_group_qq_name);
+            notificationGroupInit(R.string.notification_group_wechat_id,R.string.notification_group_wechat_name);
+            notificationGroupInit(R.string.notification_group_sys_id,R.string.notification_group_sys_name);
+        }
+
 
         currentUserList = MyApplication.getInstance().getCurrentUserList();
 
@@ -95,12 +123,24 @@ public class CurrentUserActivity extends AppCompatActivity {
                // Log.e(MYTAG, "使用MiPush推送");
                 break;
             case "HwPush":
-                com.huawei.android.pushagent.api.PushManager.requestToken(getInstance());
+                //调用connect方法前需要init，已在MyApplication中作相应处理
+                HMSAgent.connect(this, new ConnectHandler() {
+                    @Override
+                    public void onConnect(int rst) {
+                    }
+                });
+                //getToken只有在服务端开启push服务后才会返回成功
+                //deviceHwToken将会以广播方式返回，已在HuaweiPushRevicer中作相应处理
+                HMSAgent.Push.getToken(new GetTokenHandler() {
+                    public void onResult(int rtnCode, TokenResult tokenResult) {
+                        //Log.e("get token: end" + rtnCode);
+                    }
+                });
                 //stopMiPush();
-              //  Log.e(MYTAG, "使用HwPush推送");
+                //  Log.e(MYTAG, "使用HwPush推送");
                 break;
             case "FmPush":
-                com.meizu.cloud.pushsdk.PushManager.register(this, fm_APP_ID, fm_APP_KEY);
+                PushManager.register(this, fm_APP_ID, fm_APP_KEY);
                 //stopMiPush();
               //  Log.e(MYTAG, "使用FmPush推送");
                 break;
@@ -232,6 +272,10 @@ public class CurrentUserActivity extends AppCompatActivity {
                 Intent intentFriend = new Intent(this,QqContactsActivity.class);
                 startActivity(intentFriend);
                 break;
+            case R.id.action_wechat_contacts:
+                Intent intentWechatFriend = new Intent(this,WechatContactsActivity.class);
+                startActivity(intentWechatFriend);
+                break;
             case R.id.action_settings:
                 Intent intentSettings = new Intent(this, FragmentPreferences.class);
                 startActivity(intentSettings);
@@ -282,11 +326,11 @@ public class CurrentUserActivity extends AppCompatActivity {
 
 
         if (!isHaveMsg(currentUserList,"2"))
-            currentUserList.add(new User("微信机器人(未开放)", "2", WEIXIN, "用于控制服务端。", getCurTime(), "1", 2, "0"));
+            currentUserList.add(new User(getString(R.string.user_bot_wechat_name), "2", WEIXIN, getString(R.string.user_bot_msg), getCurTime(), "1", 2, "0"));
         if (!isHaveMsg(currentUserList,"1"))
-            currentUserList.add(new User("QQ机器人(未开放)", "1", QQ, "用于控制服务端。", getCurTime(), "1", 1, "0"));
+            currentUserList.add(new User(getString(R.string.user_bot_qq_name), "1", QQ, getString(R.string.user_bot_msg), getCurTime(), "1", 1, "0"));
         if (!isHaveMsg(currentUserList,"0"))
-            currentUserList.add(new User("欢迎使用!", "0", SYS, "请点击右上角选项获取设备码。", getCurTime(), "1", 0, "0"));
+            currentUserList.add(new User(getString(R.string.user_welcome_name), "0", SYS, getString(R.string.user_welcome_msg), getCurTime(), "1", 0, "0"));
 
     }
 
@@ -320,6 +364,54 @@ public class CurrentUserActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * force to show overflow menu in action bar (phone) by
+     * http://blog.csdn.net/jdsjlzx/article/details/36433441
+     */
+    public void getOverflowMenu() {
+        try {
+            ViewConfiguration config = ViewConfiguration.get(this);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            if (menuKeyField != null) {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    //首次运行时的通知渠道初始化
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void notificationChannelInit(int id_input, int name_input, int description_input, int importance_input,int color_input) {
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // 通知渠道的id
+        String id = getString(id_input);
+        // 用户可以看到的通知渠道的名字.
+        CharSequence name = getString(name_input);
+        // 用户可以看到的通知渠道的描述
+        String description = getString(description_input);
+        int importance = importance_input;
+        NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+        // 配置通知渠道的属性
+        mChannel.setDescription(description);
+        // 设置通知出现时的闪灯（如果 android 设备支持的话）
+        mChannel.enableLights(true);
+        mChannel.setLightColor(color_input);
+        mNotificationManager.createNotificationChannel(mChannel);
+    }
+
+    //通知分组初始化
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void notificationGroupInit(int group_id, int group_name) {
+        // 通知渠道组的id.
+        String group = getString(group_id);
+        // 用户可见的通知渠道组名称.
+        CharSequence name = getString(group_name);
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.createNotificationChannelGroup(new NotificationChannelGroup(group, name));
+
+
+    }
 
 }

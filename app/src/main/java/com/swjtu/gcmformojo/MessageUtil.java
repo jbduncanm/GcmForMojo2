@@ -25,6 +25,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 import android.text.Spanned;
 import android.util.Log;
 import android.widget.Toast;
@@ -46,16 +47,17 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import static android.app.Notification.DEFAULT_LIGHTS;
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.USAGE_STATS_SERVICE;
+import static com.swjtu.gcmformojo.MyApplication.KEY_TEXT_REPLY;
 import static com.swjtu.gcmformojo.MyApplication.MYTAG;
 import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.SYS;
 import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
+import static com.swjtu.gcmformojo.MyApplication.WechatUIDConvert;
 import static com.swjtu.gcmformojo.MyApplication.getColorMsgTime;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 import static com.swjtu.gcmformojo.MyApplication.isQqOnline;
@@ -114,9 +116,7 @@ public class MessageUtil {
                         }
                         break;
                     case WEIXIN:
-                        //微信的ID用随机数字代替
-                        Random random = new Random();
-                        notifyId = random.nextInt(10000);
+                        notifyId = WechatUIDConvert(msgId);
                         break;
                     case SYS:
                         notifyId = Integer.parseInt(msgId); //QQ通知为1，微信通知为2
@@ -223,7 +223,7 @@ public class MessageUtil {
                     if (senderType.equals("2") || senderType.equals("3"))
                     {
                         if(msgIsAt.equals("0")) //群消息且没有At则返回
-                            return;
+                        return;
                     }
                 }
 
@@ -286,7 +286,7 @@ public class MessageUtil {
                         } else
                         {
                             Looper.prepare();
-                            Toast.makeText(context.getApplicationContext(), "您的系统不支持浅睡模式！", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context.getApplicationContext(), R.string.toast_check_doze_fail, Toast.LENGTH_LONG).show();
                             Looper.loop();
                         }
                         break;
@@ -369,7 +369,7 @@ public class MessageUtil {
                         } else
                         {
                             Looper.prepare();
-                            Toast.makeText(context.getApplicationContext(), "您的系统不支持浅睡模式！", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context.getApplicationContext(), R.string.toast_check_doze_fail, Toast.LENGTH_LONG).show();
                             Looper.loop();
                         }
                         break;
@@ -382,21 +382,21 @@ public class MessageUtil {
                 case QQ:
                     if (!qqIsDetail)
                     {
-                        msgTitle = "联系人";
-                        msgBody = "你收到了消息！";
+                        msgTitle = context.getString(R.string.notification_title_default);
+                        msgBody = context.getString(R.string.notification_detail_default);
                     }
-                    sendNotificationQq(context, msgTitle, msgBody, notifyId, msgCount, qqSound, qqVibrate, msgId, senderType, qqPackgeName);
+                    sendNotificationQq(context, msgTitle, msgBody, notifyId, msgCount, qqSound, qqVibrate, msgId, senderType, qqPackgeName, msgIsAt);
                     break;
                 case WEIXIN:
                     if (!wxIsDetail)
                     {
-                        msgTitle = "联系人";
-                        msgBody = "你收到了消息！";
+                        msgTitle = context.getString(R.string.notification_title_default);
+                        msgBody = context.getString(R.string.notification_detail_default);
                     }
-                    sendNotificationWx(context, msgTitle, msgBody, notifyId, msgCount, wxSound, wxVibrate, msgId, senderType, wxPackgeName);
+                    sendNotificationWx(context, msgTitle, msgBody, notifyId, msgCount, wxSound, wxVibrate, msgId, senderType, wxPackgeName, msgIsAt);
                     break;
                 case SYS:
-                    if (msgTitle.contains("二维码事件"))
+                    if (msgTitle.contains(context.getString(R.string.text_login_qrcode)))
                     {
                         try {
                             download(context, msgBody);
@@ -407,7 +407,7 @@ public class MessageUtil {
                     }
 
                     //设置登录变量
-                    if (msgTitle.contains("扫描二维码事件"))
+                    if (msgTitle.contains(context.getString(R.string.text_login_qrcode_scan)))
                     {
                         if (msgId.equals("1"))
                         {
@@ -418,7 +418,7 @@ public class MessageUtil {
                         }
                     }
 
-                    if (msgBody.contains("登录成功"))
+                    if (msgBody.contains(context.getString(R.string.text_login_success)))
                     {
                         if (msgId.equals("1")) //QQ登录事件
                         {
@@ -485,8 +485,8 @@ public class MessageUtil {
     }
 
     //qq通知方法
-    private static void sendNotificationQq(Context context,String msgTitle, String msgBody, int notifyId, int msgCount, String qqSound, String qqVibrate, String msgId,
-                                    String senderType, String qqPackgeName)
+    private static void sendNotificationQq(Context context, String msgTitle, String msgBody, int notifyId, int msgCount, String qqSound, String qqVibrate, String msgId,
+                                           String senderType, String qqPackgeName, String msgIsAt)
     {
         SharedPreferences mySettings = context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
 
@@ -529,9 +529,16 @@ public class MessageUtil {
         intentQq.putExtras(msgNotifyBundle);
         PendingIntent pendingIntentQq = PendingIntent.getBroadcast(context, notifyId, intentQq, PendingIntent.FLAG_ONE_SHOT);
 
-        //回复窗口
-        Intent intentDialog = new Intent(context, DialogActivity.class);
-        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        //回复动作
+        Intent intentDialog;
+        PendingIntent pendingIntentDialog;
+        //根据系统版本判断可否直接回复
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            intentDialog = new Intent(context, ReplyService.class);
+        } else {
+            intentDialog = new Intent(context, DialogActivity.class);
+            intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         Bundle msgDialogBundle = new Bundle();
         msgDialogBundle.putString("msgId", msgId);
         msgDialogBundle.putString("senderType", senderType);
@@ -543,8 +550,11 @@ public class MessageUtil {
         msgDialogBundle.putString("qqPackgeName", qqPackgeName);
         msgDialogBundle.putString("fromNotify", "1");
         intentDialog.putExtras(msgDialogBundle);
-        PendingIntent pendingIntentDialog = PendingIntent.getActivity(context, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            pendingIntentDialog = PendingIntent.getService(context, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
+        } else {
+            pendingIntentDialog = PendingIntent.getActivity(context, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         StringBuffer ticker = new StringBuffer();
         ticker.append(msgTitle);
         ticker.append("\r\n");
@@ -552,12 +562,14 @@ public class MessageUtil {
 
         if (msgCount != 1)
         {
-            msgTitle = msgTitle + "(" + msgCount + "条新消息)";
+            msgTitle = msgTitle + "(" + msgCount +context.getString(R.string.notify_title_msgcount_new) +")";
         }
 
         Uri defaultSoundUri = Uri.parse(qqSound);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+        NotificationCompat.Builder notificationBuilder = null;
+        //判断API版本，并设置通知图标颜色
+        notificationBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.qq_notification)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.qq))
                 .setTicker(ticker)
@@ -565,11 +577,41 @@ public class MessageUtil {
                 .setContentText(msgBody)
                 .setStyle(new NotificationCompat.BigTextStyle() // 设置通知样式为大型文本样式
                         .bigText(msgBody))
+                .setSubText(context.getString(R.string.notification_group_qq_name))
                 .setAutoCancel(true)
                 .setNumber(msgCount)
                 .setSound(defaultSoundUri)
                 .setDefaults(DEFAULT_LIGHTS)
                 .setDeleteIntent(pendingIntentCancel);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notificationBuilder.setColor(context.getResources().getColor(R.color.colorNotification_qq));
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            notificationBuilder.setGroup(context.getString(R.string.notification_group_qq_id));
+            notificationBuilder.setGroupSummary(true);
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            //根据发送者类别区分通知渠道
+            switch(senderType) {
+                case "1":
+                    notificationBuilder.setChannelId(context.getString(R.string.notification_channel_qq_contact_id));
+                    break;
+                case "2":
+                    if(msgIsAt.equals("1")){
+                        notificationBuilder.setChannelId(context.getString(R.string.notification_channel_qq_at_id));
+                    } else {
+                        notificationBuilder.setChannelId(context.getString(R.string.notification_channel_qq_group_id));
+                    }
+                    break;
+                case "3":
+                    if(msgIsAt.equals("1")){
+                        notificationBuilder.setChannelId(context.getString(R.string.notification_channel_qq_at_id));
+                    } else {
+                        notificationBuilder.setChannelId(context.getString(R.string.notification_channel_qq_discuss_id));
+                    }
+                    break;
+            }
+        }
 
 
         //自动弹出
@@ -592,9 +634,22 @@ public class MessageUtil {
 
         Boolean qqIsReply=mySettings.getBoolean("check_box_preference_qq_reply",false);
         if(qqIsReply)
-            notificationBuilder.addAction(0, "回复", pendingIntentDialog);
-        notificationBuilder.addAction(0, "列表", pendingIntentList);
-        notificationBuilder.addAction(0, "清除", pendingIntentCancel);
+            //针对安卓7.0及以上进行优化，直接进行通知栏回复
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                String replyLabel = context.getString(R.string.notification_action_reply);
+                RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
+                        .setLabel(replyLabel)
+                        .build();
+                NotificationCompat.Action reply_N = new NotificationCompat.Action.Builder(0, replyLabel, pendingIntentDialog)
+                        .addRemoteInput(remoteInput)
+                        .setAllowGeneratedReplies(true)
+                        .build();
+                notificationBuilder.addAction(reply_N);
+            } else {
+                notificationBuilder.addAction(0, context.getString(R.string.notification_action_reply), pendingIntentDialog);
+            }
+            notificationBuilder.addAction(0, context.getString(R.string.notification_action_list), pendingIntentList);
+            notificationBuilder.addAction(0, context.getString(R.string.notification_action_clear), pendingIntentCancel);
         // notificationBuilder.addAction(0, "暂停", pendingIntentPause);
 
         //通知点击行为
@@ -617,7 +672,7 @@ public class MessageUtil {
 
     //微信通知方法
     private static void sendNotificationWx(Context context ,String msgTitle, String msgBody, int notifyId, int msgCount, String wxSound, String wxVibrate, String msgId,
-                                    String senderType, String wxPackgeName)
+                                    String senderType, String wxPackgeName, String msgIsAt)
     {
         SharedPreferences mySettings = context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
         String wxNotifyClick = mySettings.getString("wx_notify_click", "1");
@@ -653,9 +708,16 @@ public class MessageUtil {
         intentWx.putExtras(msgNotifyBundle);
         PendingIntent pendingIntentWx = PendingIntent.getBroadcast(context, notifyId, intentWx, PendingIntent.FLAG_ONE_SHOT);
 
-        //回复窗口
-        Intent intentDialog = new Intent(context, DialogActivity.class);
-        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        //回复动作
+        Intent intentDialog;
+        PendingIntent pendingIntentDialog;
+        //根据系统版本判断可否直接回复
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            intentDialog = new Intent(context, ReplyService.class);
+        } else {
+            intentDialog = new Intent(context, DialogActivity.class);
+            intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         Bundle msgDialogBundle = new Bundle();
         msgDialogBundle.putString("msgId", msgId);
         msgDialogBundle.putString("senderType", senderType);
@@ -667,7 +729,11 @@ public class MessageUtil {
         msgDialogBundle.putString("wxPackgeName", wxPackgeName);
         msgDialogBundle.putString("fromNotify", "1");
         intentDialog.putExtras(msgDialogBundle);
-        PendingIntent pendingIntentDialog = PendingIntent.getActivity(context, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            pendingIntentDialog = PendingIntent.getService(context, 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+        } else {
+            pendingIntentDialog = PendingIntent.getActivity(context, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         StringBuffer tickerWx = new StringBuffer();
         tickerWx.append(msgTitle);
@@ -676,12 +742,20 @@ public class MessageUtil {
 
         if (msgCount != 1)
         {
-            msgTitle = msgTitle + "(" + msgCount + "条新消息)";
+            msgTitle = msgTitle + "(" + msgCount + context.getString(R.string.notify_title_msgcount_new) +")";
         }
 
         Uri defaultSoundUri = Uri.parse(wxSound);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+        NotificationCompat.Builder notificationBuilder = null;
+        /**
+         * Recommended usage for Android O:
+         * NotificationCompat.Builder(Context context, String channelId);
+         *
+         * commented by Alex Wang
+         * at 20180205
+         */
+        notificationBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.weixin_notification)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.weixin))
                 .setTicker(tickerWx)
@@ -689,12 +763,40 @@ public class MessageUtil {
                 .setStyle(new NotificationCompat.BigTextStyle() // 设置通知样式为大型文本样式
                         .bigText(msgBody))
                 .setContentText(msgBody)
+                .setSubText(context.getString(R.string.notification_group_wechat_name))
                 .setAutoCancel(true)
                 .setNumber(msgCount)
                 .setSound(defaultSoundUri)
                 .setDefaults(DEFAULT_LIGHTS)
                 .setDeleteIntent(pendingIntentCancel);
-
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notificationBuilder.setColor(context.getResources().getColor(R.color.colorNotification_wechat));
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            notificationBuilder.setGroup(context.getString(R.string.notification_group_wechat_id));
+            notificationBuilder.setGroupSummary(true);
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            switch(senderType) {
+                case "1":
+                    notificationBuilder.setChannelId(context.getString(R.string.notification_channel_wechat_contact_id));
+                    break;
+                case "2":
+                    if(msgIsAt.equals("1")){
+                        notificationBuilder.setChannelId(context.getString(R.string.notification_channel_wechat_at_id));
+                    } else {
+                        notificationBuilder.setChannelId(context.getString(R.string.notification_channel_wechat_group_id));
+                    }
+                    break;
+                case "3":
+                    if(msgIsAt.equals("1")){
+                        notificationBuilder.setChannelId(context.getString(R.string.notification_channel_wechat_at_id));
+                    } else {
+                        notificationBuilder.setChannelId(context.getString(R.string.notification_channel_wechat_discuss_id));
+                    }
+                    break;
+            }
+        }
 
         //自动弹出
         notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
@@ -717,9 +819,22 @@ public class MessageUtil {
 
         Boolean wxIsReply=mySettings.getBoolean("check_box_preference_wx_reply",false);
         if(wxIsReply)
-            notificationBuilder.addAction(0, "回复", pendingIntentDialog);
-        notificationBuilder.addAction(0, "列表", pendingIntentList);
-        notificationBuilder.addAction(0, "清除", pendingIntentCancel);
+            //针对安卓7.0及以上进行优化，直接进行通知栏回复
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                String replyLabel = context.getString(R.string.notification_action_reply);
+                RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
+                        .setLabel(replyLabel)
+                        .build();
+                NotificationCompat.Action reply_N = new NotificationCompat.Action.Builder(0, replyLabel, pendingIntentDialog)
+                        .addRemoteInput(remoteInput)
+                        .setAllowGeneratedReplies(true)
+                        .build();
+                notificationBuilder.addAction(reply_N);
+            } else {
+                notificationBuilder.addAction(0, context.getString(R.string.notification_action_reply), pendingIntentDialog);
+            }
+            notificationBuilder.addAction(0, context.getString(R.string.notification_action_list), pendingIntentList);
+            notificationBuilder.addAction(0, context.getString(R.string.notification_action_clear), pendingIntentCancel);
 
         //通知点击行为
         switch (wxNotifyClick) {
@@ -805,12 +920,19 @@ public class MessageUtil {
                 .setStyle(new NotificationCompat.BigTextStyle() // 设置通知样式为大型文本样式
                         .bigText(msgBody))
                 .setContentText(msgBody)
+                .setSubText(context.getString(R.string.notification_group_sys_name))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setDefaults(defaults)
                 .setContentIntent(pendingIntent)
                 .setDeleteIntent(pendingIntentCancel);
         notificationBuilder.setPriority(Notification.PRIORITY_HIGH); //自动弹出通知
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notificationBuilder.setColor(context.getResources().getColor(R.color.colorPrimary));
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            notificationBuilder.setChannelId(context.getString(R.string.notification_channel_sys_id));
+        }
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(notifyId, notificationBuilder.build());

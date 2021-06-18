@@ -13,6 +13,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.huawei.android.hms.agent.HMSAgent;
+import com.huawei.android.hms.agent.common.handler.ConnectHandler;
+import com.huawei.android.hms.agent.push.handler.GetTokenHandler;
+import com.huawei.hms.support.api.push.TokenResult;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 import java.io.BufferedReader;
@@ -66,7 +70,18 @@ public class FragmentPreferences extends Activity {
                 Log.e(MYTAG, "使用MiPush推送");
                 break;
             case "HwPush":
-                com.huawei.android.pushagent.api.PushManager.requestToken(getInstance());
+                HMSAgent.init(this);
+                HMSAgent.connect(this, new ConnectHandler() {
+                    @Override
+                    public void onConnect(int rst) {
+                        //Log.e("HMS connect end:" + rst);
+                    }
+                });
+                HMSAgent.Push.getToken(new GetTokenHandler() {
+                    public void onResult(int rtnCode, TokenResult tokenResult) {
+                        //Log.e("get token: end" + rtnCode);
+                    }
+                });
                 stopMiPush();
                 Log.e(MYTAG, "使用HwPush推送");
                 break;

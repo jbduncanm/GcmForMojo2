@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="static_qq_contacts"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_qq"
+        android:shortcutDisabledMessage="@string/shortcut_static_unavailable"
+        android:shortcutShortLabel="@string/shortcut_shortlabel_qq_contacts">
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="com.swjtu.gcmformojo"
+            android:targetClass="com.swjtu.gcmformojo.CurrentUserActivity"/>
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="com.swjtu.gcmformojo"
+            android:targetClass="com.swjtu.gcmformojo.QqContactsActivity"/>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="static_wechat_contacts"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_wechat"
+        android:shortcutDisabledMessage="@string/shortcut_static_unavailable"
+        android:shortcutShortLabel="@string/shortcut_shortlabel_wechat_contacts">
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="com.swjtu.gcmformojo"
+            android:targetClass="com.swjtu.gcmformojo.CurrentUserActivity"/>
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="com.swjtu.gcmformojo"
+            android:targetClass="com.swjtu.gcmformojo.WechatContactsActivity"/>
+    </shortcut>
+</shortcuts>

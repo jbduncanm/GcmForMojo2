@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 定义仅在Android N及以上版本中使用的字符串 -->
+    <string name="notification_send_fail_title">发送失败</string>
+    <string name="notification_send_fail_content">点击通知查看详情</string>
+</resources>

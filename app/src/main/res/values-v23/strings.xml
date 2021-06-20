@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 定义仅在Android M及以上版本使用的字符串 -->
+    <string name="notification_group_qq_id">group_qq</string>
+    <string name="notification_group_wechat_id">group_wechat</string>
+    <string name="notification_group_sys_id">group_sys</string>
+</resources>

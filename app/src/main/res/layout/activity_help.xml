@@ -24,7 +24,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textVesion"
+        android:id="@+id/textVersion"
         android:layout_centerHorizontal="true"
         android:text="@null"
         android:layout_below="@+id/textView6"/>
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/textView7"
         android:text="@string/About_GcmForMojo_detail"
-        android:layout_below="@+id/textVesion"
+        android:layout_below="@+id/textVersion"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="10dp" />

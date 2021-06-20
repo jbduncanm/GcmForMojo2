@@ -3,4 +3,6 @@
     <color name="colorPrimary">#3f51b5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorNotification_qq">#1296DB</color>
+    <color name="colorNotification_wechat">#62B900</color>
 </resources>

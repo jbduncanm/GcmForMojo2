@@ -1,14 +1,10 @@
 <resources>
-    <string name="app_name">GcmForMojo</string>
-    <string name="action_settings">设置</string>
-    <string name="action_help">帮助</string>
-    <string name="action_token">设备码</string>
-    <string name="action_qq_contacts">QQ联系人</string>
+
 
     <string name="About_GcmForMojo">什么是GcmForMojo？</string>
     <string name="can_not_find_version_name">版本错误 </string>
 
-    <string name="About_GcmForMojo_detail">\t\t这是一个GCM/MiPush/HwPush消息接收程序，需要将令牌（设备Id）写入服务器端配合Mojo-WebQQ以及MoJo-WeiXin一起使用，将QQ和微信的消息推送至手机！
+    <string name="About_GcmForMojo_detail">\t\t这是一个GCM/MiPush/HwPush/FmPush消息接收程序，需要将令牌（设备Id）写入服务器端配合Mojo-WebQQ以及MoJo-WeiXin一起使用，将QQ和微信的消息推送至手机！
         感谢绿色守护作者Oasis Feng、Mojo-WebQQ作者灰灰、leobin（界面设计）、BurgerTown、Markuss（图标设计）以及群里各位朋友的帮助！QQ群:611537356</string>
 
     <string name="Update_GcmForMojo">\t\t主要功能：\n\t\t1、集成谷歌、小米、华为、魅族推送服务，并可回复（需服务端支持）！
@@ -17,15 +13,8 @@
         \n\t\t4、建议初次打开应用时使用VPN（不要休眠、阻止运行谷歌服务、华为移动服务），以便程序自动注册获取到正确的令牌。一旦获取到令牌后，不需要VPN也能正常接受推送消息。应用卸载后重新安装或者清除数据后会注册新的令牌，需要修改服务端配置。
         非华为手机使用华为推送需要安装华为移动服务(6.0以上需要将华为移动服务放入电池优化白名单)，可与其他华为推送应用共享服务通道。非MIUI系统使用MiPush会启动小米推送服务且不能与其他应用共享通道，所以不建议非MIUI系统选择MiPush。魅族推送仅限魅族Flyme使用。</string>
 
-    <string name="notification_paused_dialog_title">请选择消息暂停通知时间</string>
-    <string name="paused_one_hour">1小时</string>
-    <string name="paused_two_hour">2小时</string>
-    <string name="paused_six_hour">6小时</string>
-    <string name="paused_one_day">1天</string>
-    <string name="paused_oneself">自定义</string>
-    <string name="paused_oneself_hint">请输入自定义时长（分）：</string>
-    <string name="paused_oneself_error">时间太长了！</string>
-    <string name="paused_oneself_null">时间不能为空！</string>
+    <string name="text_user_welcome_msg">\t\t首次使用,请点击右上角选项获取设备码(卸载重装以及清除数据需要重新获取)，更多请阅读使用帮助并参考酷安发布的教程！</string>
+
     <string name="action_done">确定</string>
     <string name="action_cancel">取消</string>
 
@@ -123,5 +112,82 @@
         <item>HwPush</item>
         <item>FmPush</item>
     </string-array>
+
+    <string name="action_settings">设置</string>
+    <string name="action_help">帮助</string>
+    <string name="action_token">设备码</string>
+    <string name="action_qq_contacts">QQ联系人</string>
+    <string name="action_wechat_contacts">微信联系人</string>
+    <string name="app_name">GcmForMojo</string>
+    <string name="btn_contacts_update">更新</string>
+    <string name="title_activity_settings">设置</string>
+    <string name="notify_title_msgcount_new">条新消息</string>
+    <string name="notification_action_reply">回复</string>
+    <string name="notification_action_list">列表</string>
+    <string name="notification_action_clear">清除</string>
+    <string name="notification_group_qq_name">QQ</string>
+    <string name="notification_group_wechat_name">微信</string>
+    <string name="notification_group_sys_name">系统通知</string>
+    <string name="notification_title_default">联系人</string>
+    <string name="notification_detail_default">你收到了新消息</string>
+    <string name="notification_paused_dialog_title">请选择消息暂停通知时间</string>
+    <string name="paused_one_hour">1小时</string>
+    <string name="paused_two_hour">2小时</string>
+    <string name="paused_six_hour">6小时</string>
+    <string name="paused_one_day">1天</string>
+    <string name="paused_oneself">自定义</string>
+    <string name="paused_oneself_hint">请输入自定义时长（分）：</string>
+    <string name="paused_oneself_error">时间太长了！</string>
+    <string name="paused_oneself_null">时间不能为空！</string>
+    <string name="settings_category_global">全局设置选项</string>
+    <string name="settings_category_qq">QQ设置选项</string>
+    <string name="settings_category_wechat">微信设置选项</string>
+    <string name="settings_title_push_channel">推送通道</string>
+    <string name="settings_title_qq_push_switch">QQ推送开关</string>
+    <string name="settings_title_wechat_push_switch">微信推送开关</string>
+    <string name="settings_title_message_detail">消息内容</string>
+    <string name="settings_title_group_message">群消息</string>
+    <string name="settings_title_notification_click_action">通知点击行为</string>
+    <string name="settings_title_notification_sound">通知铃声</string>
+    <string name="settings_title_notification_vibration">振动方式</string>
+    <string name="settings_title_notification_receive_method">接收方式</string>
+    <string name="settings_title_qq_package">QQ包名（用于点击触发及检测运行状态）</string>
+    <string name="settings_title_wechat_package">微信包名（用于点击触发及检测运行状态）</string>
+    <string name="settings_title_reply">回复功能</string>
+    <string name="settings_title_reply_url">服务端地址</string>
+    <string name="settings_title_reply_validation">回复校验</string>
+    <string name="settings_title_reply_salt">回复校验盐值</string>
+    <string name="settings_summary_on_push_switch">开启推送</string>
+    <string name="settings_summary_off_push_switch">关闭推送</string>
+    <string name="settings_summary_on_message_detail">显示详细信息</string>
+    <string name="settings_summary_off_message_detail">显示简略信息</string>
+    <string name="settings_summary_on_group_message">显示群消息</string>
+    <string name="settings_summary_off_group_message">屏蔽群消息(@消息无视该选项)</string>
+    <string name="settings_summary_reply_qq">需要开启Openqq插件并具有公网地址</string>
+    <string name="settings_summary_reply_wechat">需要开启Openwx插件并具有公网地址</string>
+    <string name="settings_summary_reply_validation">供高级用户及对消息安全有洁癖的人启用</string>
+    <string name="settings_summary_reply_salt">用于服务端验证请求</string>
+    <string name="text_empty">空</string>
+    <string name="text_login_qrcode">二维码事件</string>
+    <string name="text_login_qrcode_scan">扫描二维码事件</string>
+    <string name="text_login_success">登录成功</string>
+    <string name="text_wechat_contacts_newsapp">腾讯新闻</string>
+    <string name="text_wechat_contacts_unable_to_send_msg">（无法发送信息）</string>
+    <string name="text_reply_disabled">未开启回复功能</string>
+    <string name="text_check_login_failed">[注意]未检测到登录成功事件</string>
+    <string name="text_system_control">系统控制</string>
+    <string name="text_chat_initiative">主动聊天</string>
+    <string name="text_token_no">尚未注册成功，稍后再试</string>
+    <string name="title_activity_wechat_contacts">微信联系人</string>
+    <string name="title_activity_qq_contacts">QQ联系人</string>
+    <string name="title_activity_help">帮助</string>
+    <string name="toast_check_package_fail">未检测到</string>
+    <string name="toast_check_doze_fail">您的系统不支持浅睡模式</string>
+    <string name="test">测试发送通知</string>
+    <string name="user_bot_qq_name">QQ机器人（未开放）</string>
+    <string name="user_bot_wechat_name">微信机器人（未开放）</string>
+    <string name="user_bot_msg">用于控制服务器端</string>
+    <string name="user_welcome_name">欢迎使用</string>
+    <string name="user_welcome_msg">请点击右上角选项获取设备码</string>
 
 </resources>

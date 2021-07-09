@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 定义仅在Android N(API 25)及以上版本中使用的字符串 -->
+    <string name="shortcut_static_unavailable">该Shortcut目前不可用</string>
+    <string name="shortcut_shortlabel_qq_contacts">@string/title_activity_qq_contacts</string>
+    <string name="shortcut_shortlabel_wechat_contacts">@string/title_activity_wechat_contacts</string>
+</resources>

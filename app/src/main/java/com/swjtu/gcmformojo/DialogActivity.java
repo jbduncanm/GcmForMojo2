@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -52,7 +53,7 @@ import static com.swjtu.gcmformojo.MyApplication.qqColor;
 import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 import static com.swjtu.gcmformojo.MyApplication.wxColor;
 
-public class DialogActivity extends Activity  implements View.OnClickListener {
+public class DialogActivity extends Activity implements View.OnClickListener {
 
     private ArrayList<User> currentUserList;
     private Map<String, List<Spanned>> msgSave;
@@ -159,7 +160,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
             line_view.setVisibility(View.GONE);
             sysTextView.setVisibility(View.VISIBLE);
             editText_content.clearFocus();
-            sysTextView.setText("\t\t首次使用,请点击右上角选项获取设备码(卸载重装以及清除数据需要重新获取)，更多请阅读使用帮助并参考酷安发布的教程！");
+            sysTextView.setText(getString(R.string.text_user_welcome_msg));
         }
 
         //弹窗图标和是否开启发送按钮
@@ -172,14 +173,14 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 if(!qqIsReply) {
                     imageButton_send.setEnabled(false);
                     editText_content.setEnabled(false);
-                    editText_content.setText("未开启回复功能");
+                    editText_content.setText(getString(R.string.text_reply_disabled));
                     editText_content.clearFocus();
                     break;
                 }
                 if(isQqOnline==0) {
                 //   imageButton_send.setEnabled(false);
                 //   editText_content.setEnabled(false);
-                   editText_content.setText("[注意]未检测到登陆成功事件！");
+                   editText_content.setText(getString(R.string.text_check_login_failed));
                 //   editText_content.clearFocus();
                 //   break;
                 }
@@ -197,14 +198,14 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 if(!wxIsReply) {
                     imageButton_send.setEnabled(false);
                     editText_content.setEnabled(false);
-                    editText_content.setText("未开启回复功能");
+                    editText_content.setText(getString(R.string.text_reply_disabled));
                     editText_content.clearFocus();
                     break;
                 }
                 if(isWxOnline==0) {
                     imageButton_send.setEnabled(false);
                    // editText_content.setEnabled(false);
-                    editText_content.setText("[注意]未检测到登陆成功事件！");
+                    editText_content.setText(getString(R.string.text_check_login_failed));
                   //  editText_content.clearFocus();
                   //  break;
                 }
@@ -234,7 +235,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 }
                 imageButton_send.setEnabled(false);
                 editText_content.setEnabled(false);
-                editText_content.setText("系统控制");
+                editText_content.setText(getString(R.string.text_system_control));
                 editText_content.clearFocus();
         }
 
@@ -256,7 +257,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                    break;
            }
 
-           if(!msgBody.equals("主动聊天")) {
+           if(!msgBody.equals(getString(R.string.text_chat_initiative))) {
                msgList.add(toSpannedMessage(str + msgBody));
 
            }else {
@@ -322,6 +323,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
                 break;
             default:
                 isSucess = "[!"+sendResult+"] ";
+                break;
         }
 
         //将发送信息加入聊天记录
@@ -355,7 +357,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         msgAdapter.notifyDataSetChanged();
         msgListView.setSelection(msgSave.get(msgId).size());
 
-        //发送失败，不请空输入框
+        //发送失败，不清空输入框
         if(isSucess.equals(""))
             editText_content.setText("");
         //    DialogActivity.this.finish();
@@ -441,7 +443,8 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
     }
     
     //子线程处理发送消息
-    private String  doGetRequestResutl(final String URL, final HashMap<String, String> data){
+    //修改为public static以供ReplyService调用
+    public static String  doGetRequestResutl(final String URL, final HashMap<String, String> data){
 
         String sendResultJson="";
         String sendResult="";
@@ -465,6 +468,7 @@ public class DialogActivity extends Activity  implements View.OnClickListener {
         {
             JSONObject jsonObject = new JSONObject(sendResultJson);
             sendResult = jsonObject.getString("status");
+            Log.e("doReuqestUrl",sendResult);
         }
         catch (JSONException e)
         {

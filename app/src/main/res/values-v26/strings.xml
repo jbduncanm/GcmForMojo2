@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 定义仅在Android O及以上版本中使用的字符串 -->
+    <string name="notification_channel_sys_description">用于推送系统消息，例如扫描二维码通知</string>
+    <string name="notification_channel_sys_id">channel_system</string>
+    <string name="notification_channel_sys_name">系统通知</string>
+
+    <string name="notification_channel_qq_contact_descrption">用于QQ联系人消息推送</string>
+    <string name="notification_channel_qq_contact_id">channel_qq_contact</string>
+    <string name="notification_channel_qq_contact_name">QQ-联系人消息</string>
+    <string name="notification_channel_qq_discuss_descrption">用于QQ讨论组消息推送</string>
+    <string name="notification_channel_qq_discuss_id">channel_qq_discuss</string>
+    <string name="notification_channel_qq_discuss_name">QQ-讨论组消息</string>
+    <string name="notification_channel_qq_group_descrption">用于QQ群消息推送</string>
+    <string name="notification_channel_qq_group_id">channel_qq_group</string>
+    <string name="notification_channel_qq_group_name">QQ-群消息</string>
+    <string name="notification_channel_qq_at_description">用于QQ带@信息推送</string>
+    <string name="notification_channel_qq_at_id">channel_qq_at</string>
+    <string name="notification_channel_qq_at_name">QQ-有人@我消息</string>
+
+    <string name="notification_channel_wechat_contact_descrption">用于微信联系人消息推送</string>
+    <string name="notification_channel_wechat_contact_id">channel_wechat_contact</string>
+    <string name="notification_channel_wechat_contact_name">微信-联系人消息</string>
+    <string name="notification_channel_wechat_discuss_descrption">用于微信讨论组消息推送</string>
+    <string name="notification_channel_wechat_discuss_id">channel_wechat_discuss</string>
+    <string name="notification_channel_wechat_discuss_name">微信-讨论组消息</string>
+    <string name="notification_channel_wechat_group_descrption">用于微信群消息推送</string>
+    <string name="notification_channel_wechat_group_id">channel_wechat_group</string>
+    <string name="notification_channel_wechat_group_name">微信-群消息</string>
+    <string name="notification_channel_wechat_at_description">用于微信带@信息推送</string>
+    <string name="notification_channel_wechat_at_id">channel_wechat_at</string>
+    <string name="notification_channel_wechat_at_name">微信-有人@我消息</string>
+
+</resources>

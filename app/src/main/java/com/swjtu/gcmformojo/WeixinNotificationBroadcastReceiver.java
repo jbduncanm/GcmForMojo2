@@ -56,7 +56,7 @@ public class WeixinNotificationBroadcastReceiver extends BroadcastReceiver {
                 msgCountMap.put(notifyId,0);
                 context.startActivity(intentNewWx);
                 } else {
-                Toast.makeText(context.getApplicationContext(), "未检测到微信"+wxPackgeName, Toast.LENGTH_LONG).show();
+                Toast.makeText(context.getApplicationContext(), R.string.toast_check_package_fail + wxPackgeName, Toast.LENGTH_LONG).show();
                 }
 
         }

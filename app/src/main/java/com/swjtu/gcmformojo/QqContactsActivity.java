@@ -1,10 +1,14 @@
 package com.swjtu.gcmformojo;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ShortcutManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
@@ -25,9 +29,11 @@ import java.util.concurrent.Future;
 import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
+import static com.swjtu.gcmformojo.MyApplication.mi_APP_ID;
 
-public class QqContactsActivity extends AppCompatActivity implements View.OnClickListener
-{
+public class QqContactsActivity extends Activity implements View.OnClickListener {
+
+    //public class QqContactsActivity extends AppCompatActivity implements View.OnClickListener
 
     // public final static ArrayList<QqFriend> qqFriendArrayList = new ArrayList<>();
     // public final static ArrayList<QqFriendGroup> qqFriendGroups= new ArrayList<>();
@@ -72,7 +78,7 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
                 msgDialogBundle.putString("senderType", "1");
                 msgDialogBundle.putString("msgType", QQ);
                 msgDialogBundle.putString("msgTitle", name);
-                msgDialogBundle.putString("msgBody", "主动聊天");
+                msgDialogBundle.putString("msgBody", getString(R.string.text_chat_initiative));
                 msgDialogBundle.putInt("notifyId", Integer.parseInt(p.get_id().substring(0, 9)));
                 msgDialogBundle.putString("msgTime", getCurTime());
 
@@ -81,6 +87,13 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
                 return true;
             }
         });
+
+        // Android 7.1 用于提升Shortcut启动性能
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            ShortcutManager mShortcutManager = getSystemService(ShortcutManager.class);
+            mShortcutManager.reportShortcutUsed("static_qq_contacts");
+        }
+
 
 
     }
@@ -187,9 +200,9 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
                     jsonObject.put("uid", "0");
 
                 if(!jsonObject.has("name") || jsonObject.getString("name")==null || jsonObject.getString("name").length()==0 )
-                    jsonObject.put("name", "空");
+                    jsonObject.put("name", getString(R.string.text_empty));
                 if(!jsonObject.has("markname") || jsonObject.getString("markname")==null || jsonObject.getString("markname").length()==0 )
-                    jsonObject.put("markname", "空");
+                    jsonObject.put("markname", getString(R.string.text_empty));
 
                 qqFriendArrayList.add(new QqFriend(jsonObject.getString("category"), jsonObject.getString("client_type"), jsonObject.getString("face"), jsonObject.getString("flag"), jsonObject.getString("id"), jsonObject.getString("is_vip"),
                         jsonObject.getString("markname"), jsonObject.getString("name"), jsonObject.getString("state"), jsonObject.getString("uid"), jsonObject.getString("vip_level")));
@@ -201,4 +214,9 @@ public class QqContactsActivity extends AppCompatActivity implements View.OnClic
         }
 
     }
+
+    protected void reportShortcutUsed(String Shortcutid) {
+
+    }
+
 }

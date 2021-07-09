@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.swjtu.gcmformojo.HelpActivity">
+    tools:context="com.swjtu.gcmformojo.CurrentUserActivity">
 
     <item
         android:id="@+id/action_qq_contacts"
@@ -10,10 +10,16 @@
         app:showAsAction="never" />
 
     <item
-    android:id="@+id/action_settings"
-    android:orderInCategory="100"
-    android:title="@string/action_settings"
-    app:showAsAction="never" />
+        android:id="@+id/action_wechat_contacts"
+        android:orderInCategory="100"
+        android:title="@string/action_wechat_contacts"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_help"

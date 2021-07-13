@@ -62,7 +62,7 @@
         <!-- 正式发布前应当把appid后的数字改为com.swjtu.gcmformojo在华为开发者平台上申请到的APPID，此处目前填写的为com.swjtu.gcmformojo1对应的APPID -->
         <meta-data
             android:name="com.huawei.hms.client.appid"
-            android:value="appid=100206047">
+            android:value="appid=10847419">
         </meta-data>
 
         <!-- HwPush专用，UpdateProvider用于HMS-SDK引导升级HMS，提供给系统安装器读取升级文件。 -->

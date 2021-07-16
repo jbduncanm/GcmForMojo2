@@ -7,8 +7,8 @@ android {
         applicationId "com.swjtu.gcmformojo"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 26
-        versionName '1.7.3'
+        versionCode 27
+        versionName '1.7.4'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -22,20 +22,21 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation  'com.android.support.constraint:constraint-layout:1.0.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:26.0.1'
     compile 'com.android.support:design:26.0.1'
-    compile 'com.android.support:multidex:1.0.1'
-    compile 'com.google.firebase:firebase-messaging:10.2.1'
+    compile 'com.android.support:multidex:1.0.2'
+    compile 'com.google.firebase:firebase-messaging:11.4.2'
     compile 'com.github.wenmingvs:AndroidProcess:-SNAPSHOT'
     compile 'com.meizu.flyme.internet:push-internal-publish:3.3.+@aar'
-    compile 'com.huawei.android.hms:push:2.5.3.302'
+    compile 'com.huawei.android.hms:push:2.5.3.305'
     testCompile 'junit:junit:4.12'
-    implementation files('lib/MiPush_SDK_Client_3_6_0.jar')
+    implementation  files('libs/MiPush_SDK_Client_3_5_2.jar')
+   // implementation  files('libs/HMS_SDK_2.5.3.305.jar')
 }
 
 

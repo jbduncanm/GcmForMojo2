@@ -462,6 +462,9 @@ public class MessageUtil {
                         //删除所有二维码
                         Log.i(MYTAG, "onMessageReceived: 准备删除二维码");
                         File file = new File(Environment.getExternalStorageDirectory() + "/GcmForMojo/");
+                        if (!file.exists()) {
+                            file.mkdirs();
+                        }
                         File[] childFiles = file.listFiles();
                         for (File temp : childFiles)
                         {
@@ -530,15 +533,8 @@ public class MessageUtil {
         PendingIntent pendingIntentQq = PendingIntent.getBroadcast(context, notifyId, intentQq, PendingIntent.FLAG_ONE_SHOT);
 
         //回复动作
-        Intent intentDialog;
-        PendingIntent pendingIntentDialog;
-        //根据系统版本判断可否直接回复
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            intentDialog = new Intent(context, ReplyService.class);
-        } else {
-            intentDialog = new Intent(context, DialogActivity.class);
-            intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
+        Intent intentDialog = new Intent(context, DialogActivity.class);
+
         Bundle msgDialogBundle = new Bundle();
         msgDialogBundle.putString("msgId", msgId);
         msgDialogBundle.putString("senderType", senderType);
@@ -549,12 +545,11 @@ public class MessageUtil {
         msgDialogBundle.putString("msgTime", getCurTime());
         msgDialogBundle.putString("qqPackgeName", qqPackgeName);
         msgDialogBundle.putString("fromNotify", "1");
+
         intentDialog.putExtras(msgDialogBundle);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            pendingIntentDialog = PendingIntent.getService(context, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
-        } else {
-            pendingIntentDialog = PendingIntent.getActivity(context, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
-        }
+        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntentDialog = PendingIntent.getActivity(context, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
+
         StringBuffer ticker = new StringBuffer();
         ticker.append(msgTitle);
         ticker.append("\r\n");
@@ -636,15 +631,24 @@ public class MessageUtil {
         if(qqIsReply)
             //针对安卓7.0及以上进行优化，直接进行通知栏回复
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                String replyLabel = context.getString(R.string.notification_action_reply);
-                RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
-                        .setLabel(replyLabel)
-                        .build();
-                NotificationCompat.Action reply_N = new NotificationCompat.Action.Builder(0, replyLabel, pendingIntentDialog)
-                        .addRemoteInput(remoteInput)
-                        .setAllowGeneratedReplies(true)
-                        .build();
-                notificationBuilder.addAction(reply_N);
+                //单独处理通知栏回复设置项的读取
+                Boolean notificationReply = mySettings.getBoolean("check_box_preference_notification_reply",true);
+                if (notificationReply) {
+                    Intent intentReply = new Intent(context, ReplyService.class);
+                    intentReply.putExtras(msgDialogBundle);
+                    PendingIntent pendingIntentReply = PendingIntent.getService(context, notifyId, intentReply, PendingIntent.FLAG_UPDATE_CURRENT);
+                    String replyLabel = context.getString(R.string.notification_action_reply);
+                    RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
+                            .setLabel(replyLabel)
+                            .build();
+                    NotificationCompat.Action reply_N = new NotificationCompat.Action.Builder(0, replyLabel, pendingIntentReply)
+                            .addRemoteInput(remoteInput)
+                            .setAllowGeneratedReplies(true)
+                            .build();
+                    notificationBuilder.addAction(reply_N);
+                } else {
+                    notificationBuilder.addAction(0, context.getString(R.string.notification_action_reply), pendingIntentDialog);
+                }
             } else {
                 notificationBuilder.addAction(0, context.getString(R.string.notification_action_reply), pendingIntentDialog);
             }
@@ -709,15 +713,9 @@ public class MessageUtil {
         PendingIntent pendingIntentWx = PendingIntent.getBroadcast(context, notifyId, intentWx, PendingIntent.FLAG_ONE_SHOT);
 
         //回复动作
-        Intent intentDialog;
-        PendingIntent pendingIntentDialog;
-        //根据系统版本判断可否直接回复
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            intentDialog = new Intent(context, ReplyService.class);
-        } else {
-            intentDialog = new Intent(context, DialogActivity.class);
-            intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
+        //TODO:回复闪退bug需要修复
+        Intent intentDialog = new Intent(context, DialogActivity.class);
+
         Bundle msgDialogBundle = new Bundle();
         msgDialogBundle.putString("msgId", msgId);
         msgDialogBundle.putString("senderType", senderType);
@@ -728,12 +726,10 @@ public class MessageUtil {
         msgDialogBundle.putString("msgTime", getCurTime());
         msgDialogBundle.putString("wxPackgeName", wxPackgeName);
         msgDialogBundle.putString("fromNotify", "1");
+
         intentDialog.putExtras(msgDialogBundle);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            pendingIntentDialog = PendingIntent.getService(context, 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
-        } else {
-            pendingIntentDialog = PendingIntent.getActivity(context, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
-        }
+        intentDialog.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntentDialog = PendingIntent.getActivity(context, notifyId, intentDialog, PendingIntent.FLAG_UPDATE_CURRENT);
 
         StringBuffer tickerWx = new StringBuffer();
         tickerWx.append(msgTitle);
@@ -821,15 +817,24 @@ public class MessageUtil {
         if(wxIsReply)
             //针对安卓7.0及以上进行优化，直接进行通知栏回复
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                String replyLabel = context.getString(R.string.notification_action_reply);
-                RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
-                        .setLabel(replyLabel)
-                        .build();
-                NotificationCompat.Action reply_N = new NotificationCompat.Action.Builder(0, replyLabel, pendingIntentDialog)
-                        .addRemoteInput(remoteInput)
-                        .setAllowGeneratedReplies(true)
-                        .build();
-                notificationBuilder.addAction(reply_N);
+                //单独处理通知栏回复设置项的读取
+                Boolean notificationReply = mySettings.getBoolean("check_box_preference_notification_reply",true);
+                if (notificationReply) {
+                    Intent intentReply = new Intent(context, ReplyService.class);
+                    intentReply.putExtras(msgDialogBundle);
+                    PendingIntent pendingIntentReply = PendingIntent.getService(context, notifyId, intentReply, PendingIntent.FLAG_UPDATE_CURRENT);
+                    String replyLabel = context.getString(R.string.notification_action_reply);
+                    RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
+                            .setLabel(replyLabel)
+                            .build();
+                    NotificationCompat.Action reply_N = new NotificationCompat.Action.Builder(0, replyLabel, pendingIntentReply)
+                            .addRemoteInput(remoteInput)
+                            .setAllowGeneratedReplies(true)
+                            .build();
+                    notificationBuilder.addAction(reply_N);
+                } else {
+                    notificationBuilder.addAction(0, context.getString(R.string.notification_action_reply), pendingIntentDialog);
+                }
             } else {
                 notificationBuilder.addAction(0, context.getString(R.string.notification_action_reply), pendingIntentDialog);
             }
@@ -888,7 +893,7 @@ public class MessageUtil {
 
         if (msgCount != 1)
         {
-            msgTitle = msgTitle + "(" + msgCount + "条新消息)";
+            msgTitle = msgTitle + "(" + msgCount +context.getString(R.string.notify_title_msgcount_new) +")";
         }
 
         int smallIcon;

@@ -184,10 +184,13 @@
     <string name="toast_check_package_fail">未检测到</string>
     <string name="toast_check_doze_fail">您的系统不支持浅睡模式</string>
     <string name="test">测试发送通知</string>
-    <string name="user_bot_qq_name">QQ机器人（未开放）</string>
-    <string name="user_bot_wechat_name">微信机器人（未开放）</string>
+    <string name="user_bot_qq_name">QQ机器人</string>
+    <string name="user_bot_wechat_name">微信机器人</string>
     <string name="user_bot_msg">用于控制服务器端</string>
     <string name="user_welcome_name">欢迎使用</string>
     <string name="user_welcome_msg">请点击右上角选项获取设备码</string>
+    <string name="text_send_success">[发送成功]</string>
+    <string name="text_control_relogin_in_progress">正在重新登录...</string>
+    <string name="text_control_stop_in_progress">正在注销...</string>
 
 </resources>

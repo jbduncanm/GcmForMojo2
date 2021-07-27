@@ -76,6 +76,7 @@ public class MessageUtil {
 
     public static void  MessageUtilDo(Context context ,String msgId,String msgType,String senderType,String msgTitle,String msgBody,String msgIsAt) {
 
+
         Map<String, List<Spanned>> msgSave;
         Map<Integer, Integer> msgCountMap;
         Map<String, Integer> msgIdMap;
@@ -159,27 +160,28 @@ public class MessageUtil {
             if (CurrentUserActivity.userHandler != null)
                 new userThread().start();
 
+
             //存储对话框消息记录：有可能存储后系统回收内存造成点击通知进入列表界面后为空，需要在点击时将相关变量传入会话列表界面。
             Spanned spannedMessage = toSpannedMessage(getColorMsgTime(msgType, false) + msgBody);
 
-            if (msgSave.get(msgId) == null)
-            {
+            if (msgSave.get(msgId) == null) {
 
                 List<Spanned> msgList = new ArrayList<>();
                 msgList.add(spannedMessage);
                 msgSave.put(msgId, msgList);
 
-            } else
-            {
+            } else {
 
                 List<Spanned> msgList = msgSave.get(msgId);
                 msgList.add(spannedMessage);
                 msgSave.put(msgId, msgList);
 
             }
+
             //如果回复窗口存在则发送handler消息，更新ui界面
-            if (DialogActivity.msgHandler != null)
+            if (DialogActivity.msgHandler != null){
                 new MsgThread().start();
+            }
 
             //提取设置数据
             String qqReciveType = mySettings.getString("qq_list_preference_1", "1");
@@ -713,7 +715,6 @@ public class MessageUtil {
         PendingIntent pendingIntentWx = PendingIntent.getBroadcast(context, notifyId, intentWx, PendingIntent.FLAG_ONE_SHOT);
 
         //回复动作
-        //TODO:回复闪退bug需要修复
         Intent intentDialog = new Intent(context, DialogActivity.class);
 
         Bundle msgDialogBundle = new Bundle();

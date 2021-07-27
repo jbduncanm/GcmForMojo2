@@ -67,23 +67,6 @@ public class CurrentUserActivity extends Activity {
         setContentView(R.layout.activity_current_user);
         getOverflowMenu();
 
-        //初始化通知分组（android O）及通知渠道
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationChannelInit(R.string.notification_channel_sys_id,R.string.notification_channel_sys_name,R.string.notification_channel_sys_description,NotificationManager.IMPORTANCE_DEFAULT,Color.YELLOW);
-            notificationChannelInit(R.string.notification_channel_qq_at_id,R.string.notification_channel_qq_at_name,R.string.notification_channel_qq_at_description,NotificationManager.IMPORTANCE_HIGH,Color.BLUE);
-            notificationChannelInit(R.string.notification_channel_qq_discuss_id,R.string.notification_channel_qq_discuss_name,R.string.notification_channel_qq_discuss_descrption,NotificationManager.IMPORTANCE_DEFAULT,Color.BLUE);
-            notificationChannelInit(R.string.notification_channel_qq_contact_id,R.string.notification_channel_qq_contact_name,R.string.notification_channel_qq_contact_descrption,NotificationManager.IMPORTANCE_HIGH,Color.BLUE);
-            notificationChannelInit(R.string.notification_channel_qq_group_id,R.string.notification_channel_qq_group_name,R.string.notification_channel_qq_group_descrption,NotificationManager.IMPORTANCE_DEFAULT,Color.BLUE);
-            notificationChannelInit(R.string.notification_channel_wechat_at_id,R.string.notification_channel_wechat_at_name,R.string.notification_channel_wechat_at_description,NotificationManager.IMPORTANCE_HIGH,Color.GREEN);
-            notificationChannelInit(R.string.notification_channel_wechat_discuss_id,R.string.notification_channel_wechat_discuss_name,R.string.notification_channel_wechat_discuss_descrption,NotificationManager.IMPORTANCE_DEFAULT,Color.GREEN);
-            notificationChannelInit(R.string.notification_channel_wechat_contact_id,R.string.notification_channel_wechat_contact_name,R.string.notification_channel_wechat_contact_descrption,NotificationManager.IMPORTANCE_HIGH,Color.GREEN);
-            notificationChannelInit(R.string.notification_channel_wechat_group_id,R.string.notification_channel_wechat_group_name,R.string.notification_channel_wechat_group_descrption,NotificationManager.IMPORTANCE_DEFAULT,Color.GREEN);
-            notificationGroupInit(R.string.notification_group_qq_id,R.string.notification_group_qq_name);
-            notificationGroupInit(R.string.notification_group_wechat_id,R.string.notification_group_wechat_name);
-            notificationGroupInit(R.string.notification_group_sys_id,R.string.notification_group_sys_name);
-        }
-
-
         currentUserList = MyApplication.getInstance().getCurrentUserList();
 
         verifyStoragePermissions(this);
@@ -324,11 +307,11 @@ public class CurrentUserActivity extends Activity {
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
 
-
+        //由于机器人接受消息后会变成SYS状态，此处直接进行更改，并在MyApplication内做相应处理
         if (!isHaveMsg(currentUserList,"2"))
-            currentUserList.add(new User(getString(R.string.user_bot_wechat_name), "2", WEIXIN, getString(R.string.user_bot_msg), getCurTime(), "1", 2, "0"));
+            currentUserList.add(new User(getString(R.string.user_bot_wechat_name), "2", SYS, getString(R.string.user_bot_msg), getCurTime(), "1", 2, "0"));
         if (!isHaveMsg(currentUserList,"1"))
-            currentUserList.add(new User(getString(R.string.user_bot_qq_name), "1", QQ, getString(R.string.user_bot_msg), getCurTime(), "1", 1, "0"));
+            currentUserList.add(new User(getString(R.string.user_bot_qq_name), "1", SYS, getString(R.string.user_bot_msg), getCurTime(), "1", 1, "0"));
         if (!isHaveMsg(currentUserList,"0"))
             currentUserList.add(new User(getString(R.string.user_welcome_name), "0", SYS, getString(R.string.user_welcome_msg), getCurTime(), "1", 0, "0"));
 
@@ -381,37 +364,6 @@ public class CurrentUserActivity extends Activity {
         }
     }
 
-    //首次运行时的通知渠道初始化
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void notificationChannelInit(int id_input, int name_input, int description_input, int importance_input,int color_input) {
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // 通知渠道的id
-        String id = getString(id_input);
-        // 用户可以看到的通知渠道的名字.
-        CharSequence name = getString(name_input);
-        // 用户可以看到的通知渠道的描述
-        String description = getString(description_input);
-        int importance = importance_input;
-        NotificationChannel mChannel = new NotificationChannel(id, name, importance);
-        // 配置通知渠道的属性
-        mChannel.setDescription(description);
-        // 设置通知出现时的闪灯（如果 android 设备支持的话）
-        mChannel.enableLights(true);
-        mChannel.setLightColor(color_input);
-        mNotificationManager.createNotificationChannel(mChannel);
-    }
 
-    //通知分组初始化
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void notificationGroupInit(int group_id, int group_name) {
-        // 通知渠道组的id.
-        String group = getString(group_id);
-        // 用户可见的通知渠道组名称.
-        CharSequence name = getString(group_name);
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.createNotificationChannelGroup(new NotificationChannelGroup(group, name));
-
-
-    }
 
 }

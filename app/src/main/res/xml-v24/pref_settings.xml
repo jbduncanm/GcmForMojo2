@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <PreferenceCategory android:title="@string/settings_category_global">
+
+        <ListPreference
+            android:defaultValue="GCM"
+            android:title="@string/settings_title_push_channel"
+            android:summary="%s"
+            android:entries="@array/push_type"
+            android:entryValues="@array/push_type_value"
+            android:key="push_type" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/settings_title_notification_reply"
+            android:summaryOn="@string/settings_summary_on_notification_reply"
+            android:summaryOff="@string/settings_summary_off_notification_reply"
+            android:key="check_box_preference_notification_reply" />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/settings_category_qq">
+
+   <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/settings_title_qq_push_switch"
+            android:summaryOn="@string/settings_summary_on_push_switch"
+            android:summaryOff="@string/settings_summary_off_push_switch"
+            android:key="check_box_preference_qq" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/settings_title_message_detail"
+            android:summaryOn="@string/settings_summary_on_message_detail"
+            android:summaryOff="@string/settings_summary_off_message_detail"
+            android:key="check_box_preference_qq_detail" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/settings_title_group_message"
+            android:summaryOn="@string/settings_summary_on_group_message"
+            android:summaryOff="@string/settings_summary_off_group_message"
+            android:key="check_box_preference_qq_isReciveGroup" />
+
+        <ListPreference
+            android:defaultValue="1"
+            android:title="@string/settings_title_notification_click_action"
+            android:summary="%s"
+            android:entries="@array/qq_notify_click"
+            android:entryValues="@array/qq_notify_click_values"
+            android:key="qq_notify_click" />
+
+        <RingtonePreference
+            android:defaultValue=""
+            android:title="@string/settings_title_notification_sound"
+            android:key="ringtone_preference_qq"
+            android:ringtoneType="notification" />
+
+        <ListPreference
+            android:defaultValue="1"
+            android:title="@string/settings_title_notification_vibration"
+            android:summary="%s"
+            android:entries="@array/qq_list_preference_vibrate_entries"
+            android:entryValues="@array/qq_list_preference_vibrate_entry_values"
+            android:key="qq_list_preference_vibrate" />
+
+        <ListPreference
+            android:defaultValue="1"
+            android:title="@string/settings_title_notification_receive_method"
+            android:summary="%s"
+            android:entries="@array/qq_list_preference_entries"
+            android:entryValues="@array/qq_list_preference_entry_values"
+            android:key="qq_list_preference_1" />
+
+        <EditTextPreference
+            android:defaultValue="com.tencent.mobileqq"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_title_qq_package"
+            android:key="edit_text_preference_qq_packgename"
+            android:summary="{v}" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:title="@string/settings_title_reply"
+            android:key="check_box_preference_qq_reply"
+            android:summary="@string/settings_summary_reply_qq" />
+
+        <EditTextPreference
+            android:defaultValue="http://127.0.0.1:5000"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_title_reply_url"
+            android:key="edit_text_preference_qq_replyurl"
+            android:summary="{v}" />
+        
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:title="@string/settings_title_reply_validation"
+                android:key="check_box_preference_qq_validation"
+                android:summary="@string/settings_summary_reply_validation" />
+
+        <EditTextPreference
+                android:defaultValue=""
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="@string/settings_title_reply_salt"
+                android:key="edit_text_preference_qq_salt"
+                android:summary="@string/settings_summary_reply_salt" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_category_wechat">
+
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/settings_title_wechat_push_switch"
+            android:summaryOn="@string/settings_summary_on_push_switch"
+            android:summaryOff="@string/settings_summary_off_push_switch"
+            android:key="check_box_preference_wx" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/settings_title_message_detail"
+            android:summaryOn="@string/settings_summary_on_message_detail"
+            android:summaryOff="@string/settings_summary_off_message_detail"
+            android:key="check_box_preference_wx_detail" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/settings_title_group_message"
+            android:summaryOn="@string/settings_summary_on_group_message"
+            android:summaryOff="@string/settings_summary_off_group_message"
+            android:key="check_box_preference_wx_isReciveGroup" />
+
+        <ListPreference
+            android:defaultValue="1"
+            android:title="@string/settings_title_notification_click_action"
+            android:summary="%s"
+            android:entries="@array/wx_notify_click"
+            android:entryValues="@array/wx_notify_click_values"
+            android:key="wx_notify_click" />
+
+        <RingtonePreference
+            android:defaultValue=""
+            android:title="@string/settings_title_notification_sound"
+            android:key="ringtone_preference_wx"
+            android:ringtoneType="notification" />
+
+        <ListPreference
+            android:defaultValue="1"
+            android:title="@string/settings_title_notification_vibration"
+            android:summary="%s"
+            android:entries="@array/wx_list_preference_vibrate_entries"
+            android:entryValues="@array/wx_list_preference_vibrate_entry_values"
+            android:key="wx_list_preference_vibrate" />
+
+        <ListPreference
+            android:defaultValue="1"
+            android:title="@string/settings_title_notification_receive_method"
+            android:summary="%s"
+            android:entries="@array/wx_list_preference_entries"
+            android:entryValues="@array/wx_list_preference_entry_values"
+            android:key="wx_list_preference_1" />
+
+        <EditTextPreference
+            android:defaultValue="com.tencent.mm"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_title_wechat_package"
+            android:key="edit_text_preference_wx_packgename"
+            android:summary="{v}" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:title="@string/settings_title_reply"
+            android:key="check_box_preference_wx_reply"
+            android:summary="@string/settings_summary_reply_wechat"/>
+
+        <EditTextPreference
+            android:defaultValue="http://127.0.0.1:3000"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_title_reply_url"
+            android:key="edit_text_preference_wx_replyurl"
+            android:summary="{v}" />
+
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:title="@string/settings_title_reply_validation"
+                android:key="check_box_preference_wx_validation"
+                android:summary="@string/settings_summary_reply_validation" />
+
+        <EditTextPreference
+                android:defaultValue=""
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="@string/settings_title_reply_salt"
+                android:key="edit_text_preference_wx_salt"
+                android:summary="@string/settings_summary_reply_salt" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

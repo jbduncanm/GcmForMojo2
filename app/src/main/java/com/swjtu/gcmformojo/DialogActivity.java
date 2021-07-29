@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.swjtu.gcmformojo.MessageUtil.MessageUtilDo;
 import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.SYS;
@@ -50,6 +51,7 @@ import static com.swjtu.gcmformojo.MyApplication.isQqOnline;
 import static com.swjtu.gcmformojo.MyApplication.isWxOnline;
 import static com.swjtu.gcmformojo.MyApplication.mySettings;
 import static com.swjtu.gcmformojo.MyApplication.qqColor;
+import static com.swjtu.gcmformojo.MyApplication.sysReceiveColor;
 import static com.swjtu.gcmformojo.MyApplication.toSpannedMessage;
 import static com.swjtu.gcmformojo.MyApplication.wxColor;
 
@@ -223,6 +225,8 @@ public class DialogActivity extends Activity implements View.OnClickListener {
                 switch (msgId) {
                     case "0":
                         imgMsgType.setImageResource(R.mipmap.pin);
+                        imageButton_send.setEnabled(false);
+                        editText_content.setEnabled(false);
                         break;
                     case "1":
                         imgMsgType.setImageResource(R.mipmap.qq);
@@ -233,9 +237,7 @@ public class DialogActivity extends Activity implements View.OnClickListener {
                     default:
                         imgMsgType.setImageResource(R.mipmap.pin);
                 }
-                imageButton_send.setEnabled(false);
-                editText_content.setEnabled(false);
-                editText_content.setText(getString(R.string.text_system_control));
+                editText_content.setHint(R.string.text_system_control);
                 editText_content.clearFocus();
         }
 
@@ -253,7 +255,7 @@ public class DialogActivity extends Activity implements View.OnClickListener {
                    str    =    "<font color='"+wxColor+"'><small>"+ msgTime +"</small></font><br>";
                    break;
                case SYS:
-                   str    =    "<small>"+ msgTime +"</small><br>";
+                   str    =    "<font color='"+sysReceiveColor+"'><small>"+ msgTime +"</small></font><br>";
                    break;
            }
 
@@ -311,7 +313,9 @@ public class DialogActivity extends Activity implements View.OnClickListener {
 
     public void sendMsgAction() {
         if(editText_content.getText().toString().length()==0)
+        {
             return;
+        }
         String sendResult = sendMessage(editText_content.getText().toString(), msgId, senderType, msgType);
         String isSucess;
         switch (sendResult) {
@@ -322,7 +326,39 @@ public class DialogActivity extends Activity implements View.OnClickListener {
                 isSucess = "";
                 break;
             default:
-                isSucess = "[!"+sendResult+"] ";
+                if(sendResult.contains("success")){
+                    isSucess = "";
+                } else {
+                    //处理会话窗口中本地执行的命令
+                    switch (msgId) {
+                        case "1":
+                            if(editText_content.getText().toString().toLowerCase().contains("help")){
+                                isSucess = "";
+                            } else if (editText_content.getText().toString().toLowerCase().contains("relogin")) {
+                                isSucess = "[!"+getString(R.string.text_send_failed)+":"+sendResult+"] ";
+                            } else if (editText_content.getText().toString().toLowerCase().contains("stop")) {
+                                isSucess = "[!"+getString(R.string.text_send_failed)+":"+sendResult+"] ";
+                            }
+                            else {
+                                isSucess = "[!"+sendResult+"] ";
+                            }
+                            break;
+                        case "2":
+                            if(editText_content.getText().toString().toLowerCase().contains("help")){
+                                isSucess = "";
+                            } else if (editText_content.getText().toString().toLowerCase().contains("relogin")) {
+                                isSucess = "[!"+getString(R.string.text_send_failed)+":"+sendResult+"] ";
+                            } else if (editText_content.getText().toString().toLowerCase().contains("stop")) {
+                                isSucess = "[!"+getString(R.string.text_send_failed)+":"+sendResult+"] ";
+                            }
+                            else {
+                                isSucess = "[!"+sendResult+"] ";
+                            }
+                            break;
+                        default:
+                            isSucess = "[!"+sendResult+"] ";
+                    }
+                }
                 break;
         }
 
@@ -357,10 +393,73 @@ public class DialogActivity extends Activity implements View.OnClickListener {
         msgAdapter.notifyDataSetChanged();
         msgListView.setSelection(msgSave.get(msgId).size());
 
+        //系统控制处理
+        String content = editText_content.getText().toString().toLowerCase();
+        if(sendResult.contains("success")){
+            switch(msgId){
+                case "1":
+                    switch(content){
+                        case "relogin":
+                            MessageUtilDo(this,msgId,SYS,"1",getString(R.string.user_bot_qq_name),getString(R.string.text_control_relogin_in_progress),"0");
+                            break;
+                        case "stop":
+                            MessageUtilDo(this,msgId,SYS,"1",getString(R.string.user_bot_qq_name),getString(R.string.text_control_stop_in_progress),"0");
+                            break;
+                    }
+                    break;
+                case "2":
+                    switch(content){
+                        case "relogin":
+                            MessageUtilDo(this,msgId,SYS,"1",getString(R.string.user_bot_wechat_name),getString(R.string.text_control_relogin_in_progress),"0");
+                            break;
+                        case "stop":
+                            MessageUtilDo(this,msgId,SYS,"1",getString(R.string.user_bot_wechat_name),getString(R.string.text_control_stop_in_progress),"0");
+                            break;
+                    }
+                    break;
+            }
+        } else {
+            switch(msgId){
+                case "1":
+                    switch(content){
+                        case "help":
+                            MessageUtilDo(this,msgId,SYS,"1",getString(R.string.user_bot_qq_name),getString(R.string.text_control_help),"0");
+                            break;
+                        case "relogin":
+                            break;
+                        case "stop":
+                            break;
+                        default:
+                            MessageUtilDo(this,msgId,SYS,"1",getString(R.string.user_bot_qq_name),getString(R.string.text_control_unsupported),"0");
+                            break;
+                    }
+                    break;
+                case "2":
+                    switch(content){
+                        case "help":
+                            MessageUtilDo(this,msgId,SYS,"1",getString(R.string.user_bot_wechat_name),getString(R.string.text_control_help),"0");
+                            break;
+                        case "relogin":
+                            break;
+                        case "stop":
+                            break;
+                        default:
+                            MessageUtilDo(this,msgId,SYS,"1",getString(R.string.user_bot_wechat_name),getString(R.string.text_control_unsupported),"0");
+                            break;
+                    }
+                    break;
+            }
+        }
+
         //发送失败，不清空输入框
-        if(isSucess.equals(""))
+        if(isSucess.equals("")) {
             editText_content.setText("");
+        } else if (isSucess.equals(getString(R.string.text_send_success))){
+            editText_content.setText("");
+        }
         //    DialogActivity.this.finish();
+
+
     }
 
 
@@ -389,47 +488,105 @@ public class DialogActivity extends Activity implements View.OnClickListener {
 
         Boolean validationRequired=false;
         String validationSalt="";
-        
-        if(msgType.equals(QQ)){
-            urlServer=Settings.getString("edit_text_preference_qq_replyurl","");
-            urlQX="openqq";
-            if(Settings.getBoolean("check_box_preference_qq_validation",false)) {
-                validationRequired = true;
-                validationSalt=Settings.getString("edit_text_preference_qq_salt","");
-            }
-        }else if(msgType.equals(WEIXIN)){
-            urlServer=Settings.getString("edit_text_preference_wx_replyurl","");
-            urlQX="openwx";
-            if(Settings.getBoolean("check_box_preference_wx_validation",false)) {
-                validationRequired = true;
-                validationSalt=Settings.getString("edit_text_preference_wx_salt","");
-            }
-        }
 
-        switch (senderType) {
+        //提前对SYS类型信息进行处理，从对应的控制渠道发送指令，并对不支持指令予以忽略
+        switch(msgId){
             case "1":
-                urlType="/"+urlQX+"/send_friend_message";
+                //QQ机器人控制
+                msgType = QQ;
                 break;
             case "2":
-                urlType="/"+urlQX+"/send_group_message";
+                //微信机器人控制
+                msgType = WEIXIN;
                 break;
-            case "3":
-                urlType="/"+urlQX+"/send_discuss_message";
+            default:
+                //正常信息，不做处理
                 break;
         }
 
-        urlSend=urlServer+urlType;
-        msgSendRequest.put("id",msgId);
-        msgSendRequest.put("content",msgSend);
-        if(validationRequired) {
-            String sign="";
-            try{
-                sign=getMD5(msgSend+msgId+validationSalt);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-            msgSendRequest.put("sign",sign);
+        switch(msgType) {
+            case QQ:
+                urlServer=Settings.getString("edit_text_preference_qq_replyurl","");
+                urlQX="openqq";
+                if(Settings.getBoolean("check_box_preference_qq_validation",false)) {
+                    validationRequired = true;
+                    validationSalt=Settings.getString("edit_text_preference_qq_salt","");
+                }
+                break;
+            case WEIXIN:
+                urlServer=Settings.getString("edit_text_preference_wx_replyurl","");
+                urlQX="openwx";
+                if(Settings.getBoolean("check_box_preference_wx_validation",false)) {
+                    validationRequired = true;
+                    validationSalt=Settings.getString("edit_text_preference_wx_salt","");
+                }
+                break;
         }
+
+        switch (msgId) {
+            case "1":
+                //QQ机器人控制
+                switch (msgSend) {
+                    case "relogin":
+                        //重新启动mojo
+                        urlType="/"+urlQX+"/"+"relogin";
+                        break;
+                    case "stop":
+                        //停止Mojo
+                        urlType="/"+urlQX+"/"+"stop_client";
+                        break;
+                    default:
+                        //其他消息暂时不做特殊处理，直接忽略
+                        //urlType="/"+urlQX+"/";
+                        return getString(R.string.text_control_unsupported_short);
+                }
+                break;
+            case "2":
+                //微信机器人控制
+                switch (msgSend) {
+                    case "relogin":
+                        //重新启动mojo
+                        urlType="/"+urlQX+"/"+"relogin";
+                        break;
+                    case "stop":
+                        //停止Mojo
+                        urlType="/"+urlQX+"/"+"stop_client";
+                        break;
+                    default:
+                        //其他消息暂时不做特殊处理，直接忽略
+                        //urlType="/"+urlQX+"/";
+                        return getString(R.string.text_control_unsupported_short);
+                }
+                break;
+            default:
+                switch (senderType) {
+                    case "1":
+                        urlType="/"+urlQX+"/send_friend_message";
+                        break;
+                    case "2":
+                        urlType="/"+urlQX+"/send_group_message";
+                        break;
+                    case "3":
+                        urlType="/"+urlQX+"/send_discuss_message";
+                        break;
+                }
+                msgSendRequest.put("id",msgId);
+                msgSendRequest.put("content",msgSend);
+                if(validationRequired) {
+                    String sign="";
+                    try{
+                        sign=getMD5(msgSend+msgId+validationSalt);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                    msgSendRequest.put("sign",sign);
+                }
+                break;
+        }
+
+        Log.e("sendmsg","sending");
+        urlSend=urlServer+urlType;
+        Log.e("sendmsg",urlSend);
         return doGetRequestResutl(urlSend,msgSendRequest);
 
     }
@@ -468,7 +625,6 @@ public class DialogActivity extends Activity implements View.OnClickListener {
         {
             JSONObject jsonObject = new JSONObject(sendResultJson);
             sendResult = jsonObject.getString("status");
-            Log.e("doReuqestUrl",sendResult);
         }
         catch (JSONException e)
         {

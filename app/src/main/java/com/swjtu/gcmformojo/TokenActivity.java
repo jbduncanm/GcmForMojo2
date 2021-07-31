@@ -11,13 +11,9 @@ import com.huawei.android.hms.agent.common.handler.ConnectHandler;
 import com.huawei.android.hms.agent.push.handler.GetTokenHandler;
 import com.huawei.hms.support.api.push.TokenResult;
 
-import static com.swjtu.gcmformojo.MyApplication.deviceFmToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceGcmToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceHwToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceMiToken;
-import static com.swjtu.gcmformojo.MyApplication.fm_APP_ID;
-import static com.swjtu.gcmformojo.MyApplication.fm_APP_KEY;
-import static com.swjtu.gcmformojo.MyApplication.getInstance;
 import static com.swjtu.gcmformojo.MyApplication.miSettings;
 import static com.swjtu.gcmformojo.MyApplication.mySettings;
 
@@ -83,6 +79,7 @@ public class TokenActivity extends Activity {
                     myToken.setText(tokenNo);
                 }
                 break;
+                /*
             case "FmPush":
                 com.meizu.cloud.pushsdk.PushManager.register(this, fm_APP_ID, fm_APP_KEY);
                 if(deviceFmToken!=null)
@@ -91,6 +88,7 @@ public class TokenActivity extends Activity {
                     myToken.setText(tokenNo);
                 }
                 break;
+                */
         }
 
 

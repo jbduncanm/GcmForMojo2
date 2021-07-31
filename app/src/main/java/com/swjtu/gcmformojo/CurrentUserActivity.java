@@ -2,18 +2,13 @@ package com.swjtu.gcmformojo;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,20 +22,15 @@ import com.huawei.android.hms.agent.HMSAgent;
 import com.huawei.android.hms.agent.common.handler.ConnectHandler;
 import com.huawei.android.hms.agent.push.handler.GetTokenHandler;
 import com.huawei.hms.support.api.push.TokenResult;
-import com.meizu.cloud.pushsdk.PushManager;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.swjtu.gcmformojo.MyApplication.QQ;
 import static com.swjtu.gcmformojo.MyApplication.SYS;
-import static com.swjtu.gcmformojo.MyApplication.WEIXIN;
 import static com.swjtu.gcmformojo.MyApplication.deviceGcmToken;
 import static com.swjtu.gcmformojo.MyApplication.deviceMiToken;
-import static com.swjtu.gcmformojo.MyApplication.fm_APP_ID;
-import static com.swjtu.gcmformojo.MyApplication.fm_APP_KEY;
 import static com.swjtu.gcmformojo.MyApplication.getCurTime;
 import static com.swjtu.gcmformojo.MyApplication.miSettings;
 import static com.swjtu.gcmformojo.MyApplication.mi_APP_ID;
@@ -121,11 +111,6 @@ public class CurrentUserActivity extends Activity {
                 });
                 //stopMiPush();
                 //  Log.e(MYTAG, "使用HwPush推送");
-                break;
-            case "FmPush":
-                PushManager.register(this, fm_APP_ID, fm_APP_KEY);
-                //stopMiPush();
-              //  Log.e(MYTAG, "使用FmPush推送");
                 break;
             default:
                 deviceGcmToken = FirebaseInstanceId.getInstance().getToken();

@@ -27,8 +27,6 @@ import java.util.List;
 import static com.swjtu.gcmformojo.MyApplication.MYTAG;
 import static com.swjtu.gcmformojo.MyApplication.PREF;
 import static com.swjtu.gcmformojo.MyApplication.deviceGcmToken;
-import static com.swjtu.gcmformojo.MyApplication.fm_APP_ID;
-import static com.swjtu.gcmformojo.MyApplication.fm_APP_KEY;
 import static com.swjtu.gcmformojo.MyApplication.getInstance;
 import static com.swjtu.gcmformojo.MyApplication.miSettings;
 import static com.swjtu.gcmformojo.MyApplication.mi_APP_ID;
@@ -84,12 +82,6 @@ public class FragmentPreferences extends Activity {
                 });
                 stopMiPush();
                 Log.e(MYTAG, "使用HwPush推送");
-                break;
-            case "FmPush":
-                com.meizu.cloud.pushsdk.PushManager.register(this, fm_APP_ID, fm_APP_KEY);
-                stopMiPush();
-                stopHwPush();
-                Log.e(MYTAG, "使用FmPush推送");
                 break;
             default:
                 deviceGcmToken = FirebaseInstanceId.getInstance().getToken();

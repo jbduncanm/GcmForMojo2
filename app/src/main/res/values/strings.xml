@@ -188,8 +188,8 @@
     <string name="user_welcome_msg">请点击右上角选项获取设备码</string>
     <string name="text_send_success">发送成功</string>
     <string name="text_send_failed">发送失败</string>
-    <string name="text_control_relogin_in_progress">正在重新登录...</string>
-    <string name="text_control_stop_in_progress">正在注销...</string>
+    <string name="text_control_relogin_in_progress">正在重新登录</string>
+    <string name="text_control_stop_in_progress">正在注销</string>
     <string name="text_control_help">目前支持命令：\n\t(1)relogin - 重新登录\n\t（2）stop - 停止服务端</string>
     <string name="text_control_unsupported">不支持的命令，如需查看命令列表，请输入help。</string>
     <string name="text_control_unsupported_short">不支持的命令</string>

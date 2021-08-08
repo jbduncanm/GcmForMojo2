@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.swjtu.gcmformojo"
         minSdkVersion 16
@@ -11,32 +11,26 @@ android {
         versionName '1.7.4'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     productFlavors {
-    }
-
-    defaultConfig {
-        // Enabling multidex support.
-        multiDexEnabled true
     }
 }
 
 dependencies {
     implementation  'com.android.support.constraint:constraint-layout:1.0.2'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.android.support:multidex:1.0.3'
-    compile 'com.google.firebase:firebase-messaging:12.0.1'
-    compile 'com.github.wenmingvs:AndroidProcess:-SNAPSHOT'
-    //compile 'com.meizu.flyme.internet:push-internal-publish:3.3.+@aar'
-    compile 'com.huawei.android.hms:push:2.5.3.305'
-    testCompile 'junit:junit:4.12'
-    //implementation  files('libs/MiPush_SDK_Client_3_5_2.jar')
-   // implementation  files('libs/HMS_SDK_2.5.3.305.jar')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.google.firebase:firebase-messaging:12.0.1'
+    implementation 'com.github.wenmingvs:AndroidProcess:-SNAPSHOT'
+    testImplementation 'junit:junit:4.12'
+    implementation  files('libs/MiPush_SDK_Client_3_5_2.jar')
+    implementation  files('libs/HMS_SDK_2.5.3.305.jar')
 }
 
 

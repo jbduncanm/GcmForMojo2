@@ -574,7 +574,7 @@ public class MessageUtil {
                 .setContentText(msgBody)
                 .setStyle(new NotificationCompat.BigTextStyle() // 设置通知样式为大型文本样式
                         .bigText(msgBody))
-                .setSubText(context.getString(R.string.notification_group_qq_name))
+             //   .setSubText(context.getString(R.string.notification_group_qq_name))
                 .setAutoCancel(true)
                 .setNumber(msgCount)
                 .setSound(defaultSoundUri)
@@ -760,7 +760,7 @@ public class MessageUtil {
                 .setStyle(new NotificationCompat.BigTextStyle() // 设置通知样式为大型文本样式
                         .bigText(msgBody))
                 .setContentText(msgBody)
-                .setSubText(context.getString(R.string.notification_group_wechat_name))
+             //   .setSubText(context.getString(R.string.notification_group_wechat_name))
                 .setAutoCancel(true)
                 .setNumber(msgCount)
                 .setSound(defaultSoundUri)
@@ -926,7 +926,7 @@ public class MessageUtil {
                 .setStyle(new NotificationCompat.BigTextStyle() // 设置通知样式为大型文本样式
                         .bigText(msgBody))
                 .setContentText(msgBody)
-                .setSubText(context.getString(R.string.notification_group_sys_name))
+            //    .setSubText(context.getString(R.string.notification_group_sys_name))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setDefaults(defaults)

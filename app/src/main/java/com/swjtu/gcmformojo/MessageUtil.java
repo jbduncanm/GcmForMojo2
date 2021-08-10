@@ -816,7 +816,7 @@ public class MessageUtil {
 
         Boolean wxIsReply=mySettings.getBoolean("check_box_preference_wx_reply",false);
         if(wxIsReply)
-            //针对安卓7.0及以上进行优化，直接进行通知栏回复
+            //针对安卓7.0及以上进行优化，直接进行通知栏回复，需开启回复功能
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 //单独处理通知栏回复设置项的读取
                 Boolean notificationReply = mySettings.getBoolean("check_box_preference_notification_reply",true);
